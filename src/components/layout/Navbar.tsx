@@ -1,5 +1,6 @@
 import { Link, useNavigate } from 'react-router-dom';
 import { Bell, Sun, Moon, Search, PenLine, Settings } from 'lucide-react';
+import logoSrc from '@/assets/logo.png';
 import { useAuth } from '@/contexts/AuthContext';
 import { useTheme } from '@/contexts/ThemeContext';
 import { getLevel, LEVEL_CONFIG } from '@/constants';
@@ -51,6 +52,7 @@ export default function Navbar() {
       <div className="max-w-screen-xl mx-auto w-full px-4 flex items-center gap-4">
         {/* Logo */}
         <Link to={user ? '/feed' : '/'} className="flex items-center gap-1.5 shrink-0">
+          <img src={logoSrc} alt="Inktella" className="w-7 h-7 object-contain" />
           <span className="font-serif font-bold text-xl text-foreground tracking-tight">Inktella</span>
         </Link>
 
