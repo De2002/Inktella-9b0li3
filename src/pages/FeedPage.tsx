@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import FeedTabs from '@/components/features/FeedTabs';
@@ -100,6 +100,32 @@ export default function FeedPage() {
   const [followSuggestions, setFollowSuggestions] = useState<UserProfile[]>([]);
   const [followedSet, setFollowedSet] = useState<Set<string>>(new Set());
   const [followPending, setFollowPending] = useState<string | null>(null);
+
+  // ── Scroll-aware header visibility ───────────────────────────────────────────
+  const [headerVisible, setHeaderVisible] = useState(true);
+  const lastScrollY = useRef(0);
+  const ticking = useRef(false);
+
+  useEffect(() => {
+    function onScroll() {
+      if (ticking.current) return;
+      ticking.current = true;
+      requestAnimationFrame(() => {
+        const y = window.scrollY;
+        const diff = y - lastScrollY.current;
+        // Show when scrolling up or near top; hide when scrolling down >8px
+        if (y < 60 || diff < -4) {
+          setHeaderVisible(true);
+        } else if (diff > 8) {
+          setHeaderVisible(false);
+        }
+        lastScrollY.current = y;
+        ticking.current = false;
+      });
+    }
+    window.addEventListener('scroll', onScroll, { passive: true });
+    return () => window.removeEventListener('scroll', onScroll);
+  }, []);
 
   useEffect(() => {
     if (!user) { navigate('/', { replace: true }); return; }
@@ -307,8 +333,13 @@ export default function FeedPage() {
 
   return (
     <div className="max-w-2xl mx-auto">
-      {/* Sticky header: Mode switcher + tabs */}
-      <div className="sticky top-16 z-30 bg-background/95 backdrop-blur-md border-b border-border">
+      {/* Sticky header: Mode switcher + tabs — hides on scroll down, reveals on scroll up */}
+      <div
+        className={cn(
+          'sticky top-16 z-30 bg-background/95 backdrop-blur-md border-b border-border transition-transform duration-300 ease-in-out',
+          headerVisible ? 'translate-y-0' : '-translate-y-full'
+        )}
+      >
 
         {/* Modern / Classics switcher */}
         <div className="flex items-stretch min-h-[52px] relative overflow-hidden">

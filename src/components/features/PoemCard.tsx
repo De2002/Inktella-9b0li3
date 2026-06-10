@@ -15,13 +15,7 @@ interface PoemCardProps {
   onUpdate?: (id: string, updates: Partial<Poem>) => void;
 }
 
-const FEED_LABEL_CONFIG: Record<FeedLabel, { icon: string; label: string; color: string }> = {
-  picks: { icon: '⭐', label: 'PICKS', color: 'text-ink-600 dark:text-ink-400' },
-  latest: { icon: '🕐', label: 'LATEST', color: 'text-blue-600 dark:text-blue-400' },
-  discussed: { icon: '💬', label: 'DISCUSSED', color: 'text-brand-600 dark:text-brand-400' },
-  hearted: { icon: '❤️', label: 'HEARTED', color: 'text-red-500' },
-  undiscovered: { icon: '✨', label: 'UNDISCOVERED', color: 'text-tella-600 dark:text-tella-400' },
-};
+
 
 function truncateLines(text: string, maxLines: number) {
   const lines = text.split('\n');
@@ -44,7 +38,6 @@ export default function PoemCard({ poem, feedLabel, onFeedbackClick, onUpdate }:
 
   const { text: previewText, truncated } = truncateLines(poem.content, 6);
   const displayText = expanded ? poem.content : previewText;
-  const labelConfig = feedLabel ? FEED_LABEL_CONFIG[feedLabel] : null;
 
   async function handleLike() {
     if (!user) { navigate('/auth'); return; }
@@ -78,14 +71,6 @@ export default function PoemCard({ poem, feedLabel, onFeedbackClick, onUpdate }:
 
   return (
     <article className="poem-entry">
-      {/* Feed label */}
-      {labelConfig && (
-        <div className={`flex items-center gap-1.5 text-xs font-semibold tracking-wider mb-3 ${labelConfig.color}`}>
-          <span>{labelConfig.icon}</span>
-          <span>{labelConfig.label}</span>
-        </div>
-      )}
-
       {/* Author row */}
       <div className="flex items-center justify-between mb-3">
         <Link to={`/profile/${author?.username}`} className="flex items-center gap-2.5 group">
