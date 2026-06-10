@@ -66,6 +66,7 @@ export interface Poem {
   // User state
   is_liked?: boolean;
   is_bookmarked?: boolean;
+  is_pushed?: boolean;
   // Feed label
   feed_label?: FeedLabel;
 }

@@ -19,7 +19,46 @@ const MODE_DESCRIPTIONS: Record<Mode, string> = {
   classics: 'Read, like, share, and let AI illuminate what the poem is doing.',
 };
 
-// Static mock poems for when DB is empty
+const PAGE_SIZE = 15;
+
+// ── Poem enrichment helper ────────────────────────────────────────────────────
+async function enrichPoems(rawPoems: any[], userId: string | undefined): Promise<Poem[]> {
+  return Promise.all(rawPoems.map(async (poem: any) => {
+    const [likesRes, feedbackRes, likedRes, bookmarkedRes, pushedRes] = await Promise.all([
+      supabase.from('poem_likes').select('*', { count: 'exact', head: true }).eq('poem_id', poem.id),
+      supabase.from('feedback').select('*', { count: 'exact', head: true }).eq('poem_id', poem.id),
+      userId
+        ? supabase.from('poem_likes').select('poem_id').match({ poem_id: poem.id, user_id: userId }).maybeSingle()
+        : Promise.resolve({ data: null }),
+      userId
+        ? supabase.from('poem_bookmarks').select('poem_id').match({ poem_id: poem.id, user_id: userId }).maybeSingle()
+        : Promise.resolve({ data: null }),
+      userId
+        ? supabase.from('poem_boosts').select('id').match({ poem_id: poem.id, user_id: userId, feed_type: 'picks' }).maybeSingle()
+        : Promise.resolve({ data: null }),
+    ]);
+
+    return {
+      ...poem,
+      tags: poem.poem_tags?.map((pt: any) => pt.tag).filter(Boolean) || [],
+      like_count: likesRes.count || 0,
+      feedback_count: feedbackRes.count || 0,
+      is_liked: !!likedRes.data,
+      is_bookmarked: !!bookmarkedRes.data,
+      is_pushed: !!pushedRes.data,
+    } as Poem;
+  }));
+}
+
+// ── Base poem select fragment ─────────────────────────────────────────────────
+const POEM_SELECT = `
+  *,
+  author:user_profiles!poems_user_id_fkey(id, username, avatar_url, tella_balance, bio),
+  topic:topics(id, name, slug, color),
+  poem_tags(tag:tags(id, name))
+`;
+
+// ── Static mock poems for when DB is empty ────────────────────────────────────
 const MOCK_POEMS: Poem[] = [
   {
     id: 'mock-1',
@@ -33,8 +72,8 @@ const MOCK_POEMS: Poem[] = [
     created_at: new Date(Date.now() - 7200000).toISOString(),
     updated_at: new Date(Date.now() - 7200000).toISOString(),
     author: { id: 'mock', username: 'maya.writes', email: '', tella_balance: 342, ink_balance: 88, level: 'guide' },
-    tags: [{ id: '1', name: 'Life' }, { id: '2', name: 'Healing' }, { id: '3', name: 'Rain' }],
-    like_count: 234, feedback_count: 28, is_liked: false, is_bookmarked: false, feed_label: 'picks',
+    tags: [{ id: '1', name: 'Life' }, { id: '2', name: 'Healing' }],
+    like_count: 234, feedback_count: 28, is_liked: false, is_bookmarked: false,
   },
   {
     id: 'mock-2',
@@ -48,8 +87,8 @@ const MOCK_POEMS: Poem[] = [
     created_at: new Date(Date.now() - 18000000).toISOString(),
     updated_at: new Date(Date.now() - 18000000).toISOString(),
     author: { id: 'mock2', username: 'silent.ink', email: '', tella_balance: 89, ink_balance: 55, level: 'observer' },
-    tags: [{ id: '4', name: 'Sadness' }, { id: '5', name: 'Overthinking' }],
-    like_count: 412, feedback_count: 41, is_liked: true, is_bookmarked: false, feed_label: 'hearted',
+    tags: [{ id: '4', name: 'Sadness' }],
+    like_count: 412, feedback_count: 41, is_liked: true, is_bookmarked: false,
   },
   {
     id: 'mock-3',
@@ -64,7 +103,7 @@ const MOCK_POEMS: Poem[] = [
     updated_at: new Date(Date.now() - 14400000).toISOString(),
     author: { id: 'mock3', username: 'wordwanderer', email: '', tella_balance: 1200, ink_balance: 210, level: 'critic' },
     tags: [{ id: '7', name: 'Overthinking' }],
-    like_count: 178, feedback_count: 63, is_liked: false, is_bookmarked: false, feed_label: 'discussed',
+    like_count: 178, feedback_count: 63, is_liked: false, is_bookmarked: false,
   },
   {
     id: 'mock-4',
@@ -79,12 +118,12 @@ const MOCK_POEMS: Poem[] = [
     updated_at: new Date(Date.now() - 86400000).toISOString(),
     author: { id: 'mock5', username: 'river.notes', email: '', tella_balance: 567, ink_balance: 140, level: 'guide' },
     tags: [{ id: '9', name: 'Grief' }, { id: '11', name: 'Memory' }],
-    like_count: 98, feedback_count: 18, is_liked: false, is_bookmarked: false, feed_label: 'picks',
+    like_count: 98, feedback_count: 18, is_liked: false, is_bookmarked: false,
   },
 ];
 
 export default function FeedPage() {
-  const { user } = useAuth();
+  const { user, profile } = useAuth();
   const navigate = useNavigate();
 
   const [mode, setMode] = useState<Mode>('modern');
@@ -95,13 +134,14 @@ export default function FeedPage() {
   const [activeFeedback, setActiveFeedback] = useState<Poem | null>(null);
   const [page, setPage] = useState(0);
   const [hasMore, setHasMore] = useState(true);
+
   // Following feed state
   const [followingIds, setFollowingIds] = useState<string[] | null>(null);
   const [followSuggestions, setFollowSuggestions] = useState<UserProfile[]>([]);
   const [followedSet, setFollowedSet] = useState<Set<string>>(new Set());
   const [followPending, setFollowPending] = useState<string | null>(null);
 
-  // ── Scroll-aware header visibility ───────────────────────────────────────────
+  // ── Scroll-aware header visibility ───────────────────────────────────────
   const [headerVisible, setHeaderVisible] = useState(true);
   const lastScrollY = useRef(0);
   const ticking = useRef(false);
@@ -113,7 +153,6 @@ export default function FeedPage() {
       requestAnimationFrame(() => {
         const y = window.scrollY;
         const diff = y - lastScrollY.current;
-        // Show when scrolling up or near top; hide when scrolling down >8px
         if (y < 60 || diff < -4) {
           setHeaderVisible(true);
         } else if (diff > 8) {
@@ -136,10 +175,10 @@ export default function FeedPage() {
     }
   }, [user, activeTab, classicsTab, mode]);
 
+  // ── Following tab ─────────────────────────────────────────────────────────
   async function loadFollowingTab() {
     setLoading(true);
     setPoems([]);
-    // Fetch who the user follows
     const { data: followsData } = await supabase
       .from('follows')
       .select('following_id')
@@ -147,8 +186,8 @@ export default function FeedPage() {
     const ids = (followsData || []).map((f: any) => f.following_id);
     setFollowingIds(ids);
     setFollowedSet(new Set(ids));
+
     if (ids.length === 0) {
-      // Load follow suggestions: top Guides + Critics
       const { data: suggestions } = await supabase
         .from('user_profiles')
         .select('*')
@@ -160,41 +199,23 @@ export default function FeedPage() {
       setLoading(false);
       return;
     }
-    // Fetch poems from followed users
+
+    // Recency-boosted — newest posts from followed users first
     const { data } = await supabase
       .from('poems')
-      .select(`
-        *,
-        author:user_profiles!poems_user_id_fkey(id, username, avatar_url, tella_balance),
-        topic:topics(id, name, slug, color),
-        poem_tags(tag:tags(id, name))
-      `)
+      .select(POEM_SELECT)
       .eq('published', true)
       .in('user_id', ids)
       .order('created_at', { ascending: false })
       .limit(30);
+
     if (!data || data.length === 0) {
       setPoems([]);
       setLoading(false);
       return;
     }
-    const enriched = await Promise.all(data.map(async (poem: any) => {
-      const [likesRes, feedbackRes, likedRes, bookmarkedRes] = await Promise.all([
-        supabase.from('poem_likes').select('*', { count: 'exact', head: true }).eq('poem_id', poem.id),
-        supabase.from('feedback').select('*', { count: 'exact', head: true }).eq('poem_id', poem.id),
-        supabase.from('poem_likes').select('poem_id').match({ poem_id: poem.id, user_id: user!.id }).single(),
-        supabase.from('poem_bookmarks').select('poem_id').match({ poem_id: poem.id, user_id: user!.id }).single(),
-      ]);
-      return {
-        ...poem,
-        tags: poem.poem_tags?.map((pt: any) => pt.tag).filter(Boolean) || [],
-        like_count: likesRes.count || 0,
-        feedback_count: feedbackRes.count || 0,
-        is_liked: !!likedRes.data,
-        is_bookmarked: !!bookmarkedRes.data,
-        feed_label: 'latest' as any,
-      };
-    }));
+
+    const enriched = await enrichPoems(data, user!.id);
     setPoems(enriched);
     setHasMore(false);
     setLoading(false);
@@ -214,78 +235,174 @@ export default function FeedPage() {
     setFollowPending(null);
   }
 
+  // ── Main fetch (all other tabs) ───────────────────────────────────────────
   const fetchPoems = useCallback(async (reset = false) => {
     setLoading(true);
     const currentPage = reset ? 0 : page;
+    const offset = currentPage * PAGE_SIZE;
 
-    let query = supabase
-      .from('poems')
-      .select(`
-        *,
-        author:user_profiles!poems_user_id_fkey(id, username, avatar_url, tella_balance),
-        topic:topics(id, name, slug, color),
-        poem_tags(tag:tags(id, name))
-      `)
-      .eq('published', true)
-      .range(currentPage * 15, (currentPage + 1) * 15 - 1);
+    let data: any[] | null = null;
 
-    // Tab ordering
-    const tab = mode === 'modern' ? activeTab : classicsTab;
-    switch (tab) {
-      case 'discussed':
-        query = query.order('revision_count', { ascending: false }).order('created_at', { ascending: false });
-        break;
-      case 'hearted':
-        query = query.order('view_count', { ascending: false }).order('created_at', { ascending: false });
-        break;
-      case 'undiscovered':
-        query = query.order('created_at', { ascending: false }).lte('view_count', 20);
-        break;
-      default:
-        query = query.order('created_at', { ascending: false });
+    if (mode === 'modern') {
+      switch (activeTab) {
+
+        // ── PICKS: query via DB function, then hydrate full poem rows ─────────
+        case 'picks': {
+          const { data: pickIds } = await supabase.rpc('get_picks_feed', {
+            p_limit: PAGE_SIZE,
+            p_offset: offset,
+          });
+
+          if (!pickIds || pickIds.length === 0) {
+            // Not enough picks yet — fall through to latest with informational note
+            const { data: fallback } = await supabase
+              .from('poems')
+              .select(POEM_SELECT)
+              .eq('published', true)
+              .order('created_at', { ascending: false })
+              .range(offset, offset + PAGE_SIZE - 1);
+            data = fallback || [];
+            break;
+          }
+
+          const ids = pickIds.map((r: any) => r.poem_id);
+          const { data: poemRows } = await supabase
+            .from('poems')
+            .select(POEM_SELECT)
+            .in('id', ids)
+            .eq('published', true);
+
+          // Re-sort to match the scoring order returned by the DB function
+          const idOrder = new Map(ids.map((id: string, i: number) => [id, i]));
+          data = (poemRows || []).sort((a: any, b: any) => (idOrder.get(a.id) ?? 99) - (idOrder.get(b.id) ?? 99));
+          break;
+        }
+
+        // ── LATEST: pure chronological ────────────────────────────────────────
+        case 'latest': {
+          const { data: rows } = await supabase
+            .from('poems')
+            .select(POEM_SELECT)
+            .eq('published', true)
+            .order('created_at', { ascending: false })
+            .range(offset, offset + PAGE_SIZE - 1);
+          data = rows || [];
+          break;
+        }
+
+        // ── DISCUSSED: via DB scoring function ────────────────────────────────
+        case 'discussed': {
+          const { data: discussedIds } = await supabase.rpc('get_discussed_feed', {
+            p_limit: PAGE_SIZE,
+            p_offset: offset,
+          });
+
+          if (!discussedIds || discussedIds.length === 0) {
+            // Fallback: poems with any feedback, latest first
+            const { data: fallback } = await supabase
+              .from('poems')
+              .select(POEM_SELECT)
+              .eq('published', true)
+              .gt('revision_count', 0)
+              .order('created_at', { ascending: false })
+              .range(offset, offset + PAGE_SIZE - 1);
+            data = fallback || [];
+            break;
+          }
+
+          const ids = discussedIds.map((r: any) => r.poem_id);
+          const { data: poemRows } = await supabase
+            .from('poems')
+            .select(POEM_SELECT)
+            .in('id', ids)
+            .eq('published', true);
+
+          const idOrder = new Map(ids.map((id: string, i: number) => [id, i]));
+          data = (poemRows || []).sort((a: any, b: any) => (idOrder.get(a.id) ?? 99) - (idOrder.get(b.id) ?? 99));
+          break;
+        }
+
+        // ── HEARTED: via DB scoring function ──────────────────────────────────
+        case 'hearted': {
+          const { data: heartedIds } = await supabase.rpc('get_hearted_feed', {
+            p_limit: PAGE_SIZE,
+            p_offset: offset,
+          });
+
+          if (!heartedIds || heartedIds.length === 0) {
+            const { data: fallback } = await supabase
+              .from('poems')
+              .select(POEM_SELECT)
+              .eq('published', true)
+              .order('view_count', { ascending: false })
+              .range(offset, offset + PAGE_SIZE - 1);
+            data = fallback || [];
+            break;
+          }
+
+          const ids = heartedIds.map((r: any) => r.poem_id);
+          const { data: poemRows } = await supabase
+            .from('poems')
+            .select(POEM_SELECT)
+            .in('id', ids)
+            .eq('published', true);
+
+          const idOrder = new Map(ids.map((id: string, i: number) => [id, i]));
+          data = (poemRows || []).sort((a: any, b: any) => (idOrder.get(a.id) ?? 99) - (idOrder.get(b.id) ?? 99));
+          break;
+        }
+
+        // ── UNDISCOVERED: very low view count, newest first ───────────────────
+        case 'undiscovered': {
+          const { data: rows } = await supabase
+            .from('poems')
+            .select(POEM_SELECT)
+            .eq('published', true)
+            .lte('view_count', 20)
+            .order('created_at', { ascending: false })
+            .range(offset, offset + PAGE_SIZE - 1);
+          data = rows || [];
+          break;
+        }
+
+        default:
+          data = [];
+      }
+
+    } else {
+      // ── CLASSICS tabs ───────────────────────────────────────────────────────
+      let query = supabase
+        .from('poems')
+        .select(POEM_SELECT)
+        .eq('published', true)
+        .range(offset, offset + PAGE_SIZE - 1);
+
+      switch (classicsTab) {
+        case 'discussed':
+          query = query.order('revision_count', { ascending: false }).order('created_at', { ascending: false });
+          break;
+        case 'hearted':
+          query = query.order('view_count', { ascending: false }).order('created_at', { ascending: false });
+          break;
+        default:
+          query = query.order('created_at', { ascending: false });
+      }
+
+      const { data: rows } = await query;
+      data = rows || [];
     }
 
-    const { data, error } = await query;
-
-    if (error || !data || data.length === 0) {
+    // Fall back to mock poems if DB returned nothing
+    if (!data || data.length === 0) {
       setPoems(reset ? MOCK_POEMS : prev => [...prev, ...MOCK_POEMS]);
       setHasMore(false);
       setLoading(false);
       return;
     }
 
-    const enriched = await Promise.all(data.map(async (poem) => {
-      const [likesRes, feedbackRes, likedRes, bookmarkedRes, likersRes] = await Promise.all([
-        supabase.from('poem_likes').select('*', { count: 'exact', head: true }).eq('poem_id', poem.id),
-        supabase.from('feedback').select('*', { count: 'exact', head: true }).eq('poem_id', poem.id),
-        user ? supabase.from('poem_likes').select('poem_id').match({ poem_id: poem.id, user_id: user.id }).single() : Promise.resolve({ data: null }),
-        user ? supabase.from('poem_bookmarks').select('poem_id').match({ poem_id: poem.id, user_id: user.id }).single() : Promise.resolve({ data: null }),
-        // Fetch recent likers for Classics
-        supabase.from('poem_likes')
-          .select('user:user_profiles!poem_likes_user_id_fkey(username, avatar_url)')
-          .eq('poem_id', poem.id)
-          .order('created_at', { ascending: false })
-          .limit(5),
-      ]);
-
-      const recentLikers = (likersRes.data || [])
-        .map((l: any) => l.user)
-        .filter(Boolean);
-
-      return {
-        ...poem,
-        tags: poem.poem_tags?.map((pt: any) => pt.tag).filter(Boolean) || [],
-        like_count: likesRes.count || 0,
-        feedback_count: feedbackRes.count || 0,
-        is_liked: !!likedRes.data,
-        is_bookmarked: !!bookmarkedRes.data,
-        feed_label: activeTab as any,
-        recent_likers: recentLikers,
-      };
-    }));
-
+    const enriched = await enrichPoems(data, user?.id);
     setPoems(reset ? enriched : prev => [...prev, ...enriched]);
-    setHasMore(data.length === 15);
+    setHasMore(data.length === PAGE_SIZE);
     if (reset) setPage(1);
     else setPage(p => p + 1);
     setLoading(false);
@@ -331,6 +448,9 @@ export default function FeedPage() {
     </div>
   );
 
+  // Empty state messages per tab
+  const PICKS_EMPTY = activeTab === 'picks' && mode === 'modern';
+
   return (
     <div className="max-w-2xl mx-auto">
       {/* Sticky header: Mode switcher + tabs — hides on scroll down, reveals on scroll up */}
@@ -340,10 +460,8 @@ export default function FeedPage() {
           headerVisible ? 'translate-y-0' : '-translate-y-full'
         )}
       >
-
         {/* Modern / Classics switcher */}
         <div className="flex items-stretch min-h-[52px] relative overflow-hidden">
-          {/* Modern button */}
           <button
             onClick={() => handleModeSwitch('modern')}
             className={cn(
@@ -369,7 +487,6 @@ export default function FeedPage() {
             </svg>
           </div>
 
-          {/* Classics button */}
           <button
             onClick={() => handleModeSwitch('classics')}
             className={cn(
@@ -405,9 +522,10 @@ export default function FeedPage() {
       </div>
 
       {/* Content */}
-      <div className={cn('pb-24 lg:pb-8', mode === 'modern' ? 'px-4' : 'px-4')}>
+      <div className="pb-24 lg:pb-8 px-4">
         {loading && poems.length === 0 ? skeletonLoader : (
           <>
+            {/* Following: empty / no follows */}
             {mode === 'modern' && activeTab === 'following' && !loading && followingIds?.length === 0 ? (
               <FollowEmptyState
                 suggestions={followSuggestions}
@@ -423,6 +541,19 @@ export default function FeedPage() {
                 <p className="font-serif italic text-foreground-muted text-lg mb-1">No poems yet.</p>
                 <p className="text-xs text-foreground-muted">The poets you follow haven't published recently.</p>
               </div>
+
+            ) : mode === 'modern' && PICKS_EMPTY && !loading && poems.length === 0 ? (
+              // Picks empty state — hint without revealing algorithm
+              <div className="py-20 text-center px-4">
+                <div className="w-14 h-14 rounded-full bg-purple-50 dark:bg-purple-900/20 flex items-center justify-center mx-auto mb-4">
+                  <span className="text-2xl">◆</span>
+                </div>
+                <h3 className="font-serif font-semibold text-lg text-foreground mb-2">Picks is building.</h3>
+                <p className="text-sm text-foreground-muted max-w-xs mx-auto leading-relaxed">
+                  Poems here are selected by the community's most trusted readers. Keep reading, giving feedback, and earning Tella — your voice shapes what lands here.
+                </p>
+              </div>
+
             ) : mode === 'modern' ? (
               poems.map(poem => (
                 <PoemCard
@@ -470,14 +601,35 @@ export default function FeedPage() {
   );
 }
 
-// Classics Tabs component
+// ── Classics Tabs ─────────────────────────────────────────────────────────────
 const CLASSICS_TABS: { id: ClassicsTab; label: string }[] = [
   { id: 'recent', label: 'Recent' },
   { id: 'hearted', label: 'Hearted' },
   { id: 'discussed', label: 'Discussed' },
 ];
 
-// ─── Follow Empty State ───────────────────────────────────────────────────────
+function ClassicsTabs({ active, onChange }: { active: ClassicsTab; onChange: (t: ClassicsTab) => void }) {
+  return (
+    <div className="flex items-center gap-0 overflow-x-auto scrollbar-hide px-4">
+      {CLASSICS_TABS.map(({ id, label }) => (
+        <button
+          key={id}
+          onClick={() => onChange(id)}
+          className={cn(
+            'px-3 py-3 text-sm font-medium whitespace-nowrap border-b-2 transition-all shrink-0',
+            active === id
+              ? 'text-tella-600 dark:text-tella-400 border-tella-500'
+              : 'text-foreground-muted hover:text-foreground border-transparent hover:border-border'
+          )}
+        >
+          {label}
+        </button>
+      ))}
+    </div>
+  );
+}
+
+// ── Follow Empty State ────────────────────────────────────────────────────────
 interface FollowEmptyStateProps {
   suggestions: UserProfile[];
   followedSet: Set<string>;
@@ -488,7 +640,6 @@ interface FollowEmptyStateProps {
 function FollowEmptyState({ suggestions, followedSet, followPending, onFollow }: FollowEmptyStateProps) {
   return (
     <div className="py-8 px-2">
-      {/* Header */}
       <div className="text-center mb-8">
         <div className="w-16 h-16 rounded-full bg-brand-50 dark:bg-brand-900/20 flex items-center justify-center mx-auto mb-4">
           <Users size={26} className="text-brand-500" />
@@ -499,7 +650,6 @@ function FollowEmptyState({ suggestions, followedSet, followPending, onFollow }:
         </p>
       </div>
 
-      {/* Suggestions */}
       {suggestions.length > 0 && (
         <div>
           <div className="flex items-center gap-3 mb-4">
@@ -518,13 +668,9 @@ function FollowEmptyState({ suggestions, followedSet, followPending, onFollow }:
                   key={poet.id}
                   className="flex items-center gap-3 p-3 rounded-xl border border-border hover:border-border-subtle bg-surface hover:bg-background-subtle transition-all"
                 >
-                  {/* Avatar */}
                   <Link to={`/profile/${poet.username}`} className="shrink-0">
                     <div
-                      className={cn(
-                        'w-10 h-10 rounded-full flex items-center justify-center text-xs font-bold overflow-hidden',
-                        cfg.borderClass
-                      )}
+                      className={cn('w-10 h-10 rounded-full flex items-center justify-center text-xs font-bold overflow-hidden', cfg.borderClass)}
                       style={{ background: cfg.color + '18', color: cfg.color }}
                     >
                       {poet.avatar_url
@@ -533,21 +679,15 @@ function FollowEmptyState({ suggestions, followedSet, followPending, onFollow }:
                       }
                     </div>
                   </Link>
-
-                  {/* Info */}
                   <Link to={`/profile/${poet.username}`} className="flex-1 min-w-0 group">
                     <p className="text-sm font-semibold text-foreground group-hover:text-brand-500 transition-colors leading-none">
                       @{poet.username}
                     </p>
-                    <p className={cn('text-xs mt-0.5 font-medium', cfg.textClass)}>
-                      {cfg.badgeText}
-                    </p>
+                    <p className={cn('text-xs mt-0.5 font-medium', cfg.textClass)}>{cfg.badgeText}</p>
                     {poet.bio && (
                       <p className="text-xs text-foreground-muted mt-0.5 line-clamp-1">{poet.bio}</p>
                     )}
                   </Link>
-
-                  {/* Follow button */}
                   <button
                     onClick={() => onFollow(poet.id)}
                     disabled={isPending}
@@ -579,27 +719,6 @@ function FollowEmptyState({ suggestions, followedSet, followPending, onFollow }:
           No suggestions right now. Explore poems and follow poets you connect with.
         </p>
       )}
-    </div>
-  );
-}
-
-function ClassicsTabs({ active, onChange }: { active: ClassicsTab; onChange: (t: ClassicsTab) => void }) {
-  return (
-    <div className="flex items-center gap-0 overflow-x-auto scrollbar-hide px-4">
-      {CLASSICS_TABS.map(({ id, label }) => (
-        <button
-          key={id}
-          onClick={() => onChange(id)}
-          className={cn(
-            'px-3 py-3 text-sm font-medium whitespace-nowrap border-b-2 transition-all shrink-0',
-            active === id
-              ? 'text-tella-600 dark:text-tella-400 border-tella-500'
-              : 'text-foreground-muted hover:text-foreground border-transparent hover:border-border'
-          )}
-        >
-          {label}
-        </button>
-      ))}
     </div>
   );
 }

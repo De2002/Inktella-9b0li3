@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { Heart, MessageSquare, Bookmark, MoreHorizontal, BookOpen, Feather } from 'lucide-react';
-import { formatTimeAgo, cn, getInitials, getLevelConfig } from '@/lib/utils';
+import { Heart, Bookmark, MoreHorizontal, BookOpen, Feather, ArrowUpFromLine } from 'lucide-react';
+import { formatTimeAgo, cn, getInitials } from '@/lib/utils';
 import { getLevel, LEVEL_CONFIG } from '@/constants';
 import type { Poem, FeedLabel } from '@/types';
 import { supabase } from '@/lib/supabase';
@@ -15,8 +15,6 @@ interface PoemCardProps {
   onUpdate?: (id: string, updates: Partial<Poem>) => void;
 }
 
-
-
 function truncateLines(text: string, maxLines: number) {
   const lines = text.split('\n');
   if (lines.length <= maxLines) return { text, truncated: false };
@@ -24,7 +22,7 @@ function truncateLines(text: string, maxLines: number) {
 }
 
 export default function PoemCard({ poem, feedLabel, onFeedbackClick, onUpdate }: PoemCardProps) {
-  const { user } = useAuth();
+  const { user, profile } = useAuth();
   const navigate = useNavigate();
   const [expanded, setExpanded] = useState(false);
   const [liked, setLiked] = useState(poem.is_liked || false);
@@ -32,9 +30,19 @@ export default function PoemCard({ poem, feedLabel, onFeedbackClick, onUpdate }:
   const [bookmarked, setBookmarked] = useState(poem.is_bookmarked || false);
   const [likePending, setLikePending] = useState(false);
 
+  // Picks push state (for Critics)
+  const [pushed, setPushed] = useState(poem.is_pushed || false);
+  const [pushPending, setPushPending] = useState(false);
+
   const author = poem.author;
   const authorLevel = author ? getLevel(author.tella_balance || 0) : 'observer';
   const levelCfg = LEVEL_CONFIG[authorLevel];
+
+  // Is the current viewer a Critic?
+  const viewerLevel = profile ? getLevel(profile.tella_balance) : 'observer';
+  const isCritic = viewerLevel === 'critic';
+  // Don't show push on own poem
+  const canPush = isCritic && user && poem.user_id !== user.id;
 
   const { text: previewText, truncated } = truncateLines(poem.content, 6);
   const displayText = expanded ? poem.content : previewText;
@@ -67,6 +75,35 @@ export default function PoemCard({ poem, feedLabel, onFeedbackClick, onUpdate }:
       await supabase.from('poem_bookmarks').insert({ poem_id: poem.id, user_id: user.id });
       toast.success('Saved to bookmarks');
     }
+  }
+
+  async function handlePush() {
+    if (!user || !canPush || pushPending) return;
+    setPushPending(true);
+
+    if (pushed) {
+      // Withdraw push
+      setPushed(false);
+      await supabase
+        .from('poem_boosts')
+        .delete()
+        .match({ poem_id: poem.id, user_id: user.id, feed_type: 'picks' });
+      toast.success('Push withdrawn');
+    } else {
+      // Push for Picks
+      const { error } = await supabase
+        .from('poem_boosts')
+        .insert({ poem_id: poem.id, user_id: user.id, feed_type: 'picks' });
+      if (error) {
+        // Already pushed (unique constraint)
+        setPushed(true);
+        toast('Already pushed this poem');
+      } else {
+        setPushed(true);
+        toast.success('Poem pushed for Picks');
+      }
+    }
+    setPushPending(false);
   }
 
   return (
@@ -188,7 +225,7 @@ export default function PoemCard({ poem, feedLabel, onFeedbackClick, onUpdate }:
         {/* Bookmark */}
         <button
           onClick={handleBookmark}
-          className={cn('action-btn ml-auto', bookmarked && 'text-brand-500')}
+          className={cn('action-btn', bookmarked && 'text-brand-500')}
         >
           <Bookmark size={15} className={bookmarked ? 'fill-brand-500 text-brand-500' : ''} />
         </button>
@@ -199,6 +236,33 @@ export default function PoemCard({ poem, feedLabel, onFeedbackClick, onUpdate }:
             <BookOpen size={15} />
             <span className="hidden sm:inline">Behind the Poem</span>
           </Link>
+        )}
+
+        {/* ── Critic Push button (Picks approval) ── */}
+        {canPush && (
+          <button
+            onClick={handlePush}
+            disabled={pushPending}
+            title={pushed ? 'Withdraw your push' : 'Push for Picks'}
+            className={cn(
+              'action-btn ml-auto transition-all',
+              pushed
+                ? 'text-purple-500 hover:text-purple-400'
+                : 'text-foreground-muted hover:text-purple-500',
+              pushPending && 'opacity-50 cursor-wait'
+            )}
+          >
+            <ArrowUpFromLine
+              size={14}
+              className={cn('transition-transform', pushed && '-translate-y-0.5')}
+              strokeWidth={pushed ? 2.5 : 1.75}
+            />
+          </button>
+        )}
+
+        {/* If critic can't push (own poem), keep bookmark on far right */}
+        {!canPush && (
+          <span className="ml-auto" />
         )}
       </div>
     </article>
