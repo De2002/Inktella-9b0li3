@@ -1,0 +1,273 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    /* Background */
+    --background: 40 33% 98%;
+    --background-subtle: 40 25% 96%;
+    --surface: 0 0% 100%;
+    --surface-raised: 40 20% 97%;
+
+    /* Borders */
+    --border: 35 20% 88%;
+    --border-subtle: 35 15% 93%;
+
+    /* Text */
+    --foreground: 20 10% 10%;
+    --foreground-secondary: 20 8% 40%;
+    --foreground-muted: 20 6% 58%;
+
+    /* Brand */
+    --brand: 253 89% 64%;
+    --brand-foreground: 0 0% 100%;
+
+    /* Ink currency (amber) */
+    --ink-accent: 38 92% 50%;
+
+    /* Tella (purple) */
+    --tella-accent: 258 90% 66%;
+  }
+
+  .dark {
+    --background: 20 8% 7%;
+    --background-subtle: 20 7% 10%;
+    --surface: 20 7% 11%;
+    --surface-raised: 20 6% 14%;
+
+    --border: 20 8% 20%;
+    --border-subtle: 20 7% 16%;
+
+    --foreground: 35 15% 94%;
+    --foreground-secondary: 35 10% 68%;
+    --foreground-muted: 35 8% 48%;
+
+    --brand: 253 89% 68%;
+    --brand-foreground: 0 0% 100%;
+
+    --ink-accent: 38 92% 54%;
+    --tella-accent: 258 90% 70%;
+  }
+
+  * {
+    border-color: hsl(var(--border));
+  }
+
+  body {
+    background-color: hsl(var(--background));
+    color: hsl(var(--foreground));
+    font-family: 'Inter', system-ui, sans-serif;
+    font-size: 16px;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  h1, h2, h3 {
+    font-family: 'Playfair Display', Georgia, serif;
+    font-weight: 600;
+    line-height: 1.25;
+  }
+}
+
+@layer utilities {
+  .bg-background { background-color: hsl(var(--background)); }
+  .bg-background-subtle { background-color: hsl(var(--background-subtle)); }
+  .bg-surface { background-color: hsl(var(--surface)); }
+  .bg-surface-raised { background-color: hsl(var(--surface-raised)); }
+  .text-foreground { color: hsl(var(--foreground)); }
+  .text-foreground-secondary { color: hsl(var(--foreground-secondary)); }
+  .text-foreground-muted { color: hsl(var(--foreground-muted)); }
+  .border-border { border-color: hsl(var(--border)); }
+  .border-border-subtle { border-color: hsl(var(--border-subtle)); }
+
+  /* Level borders - dotted style */
+  .border-observer {
+    border: 2px dotted #64748B;
+  }
+  .border-guide {
+    border: 2px dotted #F59E0B;
+  }
+  .border-critic {
+    border: 2px dotted #A855F7;
+  }
+
+  /* Poem text - poetic line spacing */
+  .poem-text {
+    font-family: 'Playfair Display', Georgia, serif;
+    line-height: 1.85;
+    font-size: 1.0625rem;
+    white-space: pre-line;
+  }
+
+  .poem-title {
+    font-family: 'Playfair Display', Georgia, serif;
+    font-weight: 600;
+  }
+
+  /* Scrollbar styling */
+  ::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  ::-webkit-scrollbar-thumb {
+    background: hsl(var(--border));
+    border-radius: 3px;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: hsl(var(--foreground-muted));
+  }
+
+  /* Smooth scroll */
+  html {
+    scroll-behavior: smooth;
+  }
+
+  /* Feed poem entry - no card, editorial spacing */
+  .poem-entry {
+    padding: 1.75rem 0;
+    border-bottom: 1px solid hsl(var(--border-subtle));
+  }
+
+  .poem-entry:last-child {
+    border-bottom: none;
+  }
+
+  /* Tag pill */
+  .tag-pill {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.2rem 0.65rem;
+    border-radius: 9999px;
+    font-size: 0.75rem;
+    font-weight: 500;
+    background-color: hsl(var(--background-subtle));
+    color: hsl(var(--foreground-secondary));
+    border: 1px solid hsl(var(--border));
+    transition: all 0.15s ease;
+    cursor: pointer;
+  }
+
+  .tag-pill:hover {
+    background-color: hsl(var(--brand) / 0.1);
+    color: hsl(var(--brand));
+    border-color: hsl(var(--brand) / 0.3);
+  }
+
+  /* Feedback panel transitions */
+  .feedback-slide-in {
+    animation: slideInRight 0.3s ease-out;
+  }
+
+  @keyframes slideInRight {
+    from { transform: translateX(100%); opacity: 0; }
+    to { transform: translateX(0); opacity: 1; }
+  }
+
+  .sheet-slide-up {
+    animation: slideUpSheet 0.3s ease-out;
+  }
+
+  @keyframes slideUpSheet {
+    from { transform: translateY(100%); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+  }
+
+  /* Skeleton loading */
+  .skeleton {
+    background: linear-gradient(
+      90deg,
+      hsl(var(--background-subtle)) 25%,
+      hsl(var(--border)) 50%,
+      hsl(var(--background-subtle)) 75%
+    );
+    background-size: 200% 100%;
+    animation: shimmer 1.5s infinite;
+    border-radius: 4px;
+  }
+
+  @keyframes shimmer {
+    0% { background-position: -200% 0; }
+    100% { background-position: 200% 0; }
+  }
+
+  /* Quote styling */
+  .inktella-quote {
+    font-family: 'Playfair Display', Georgia, serif;
+    font-style: italic;
+    font-size: 1.125rem;
+    color: hsl(var(--foreground-secondary));
+    border-left: 3px solid hsl(var(--brand));
+    padding-left: 1rem;
+    line-height: 1.7;
+  }
+
+  /* Action button base */
+  .action-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    padding: 0.35rem 0.65rem;
+    border-radius: 0.5rem;
+    font-size: 0.8125rem;
+    font-weight: 500;
+    color: hsl(var(--foreground-secondary));
+    transition: all 0.15s ease;
+    cursor: pointer;
+    background: transparent;
+    border: none;
+    outline: none;
+  }
+
+  .action-btn:hover {
+    color: hsl(var(--foreground));
+    background-color: hsl(var(--background-subtle));
+  }
+
+  .action-btn.active {
+    color: hsl(var(--brand));
+  }
+
+  /* Divider with text */
+  .divider-text {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    color: hsl(var(--foreground-muted));
+    font-size: 0.8125rem;
+  }
+
+  .divider-text::before,
+  .divider-text::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background-color: hsl(var(--border));
+  }
+
+  /* Settings page input */
+  .settings-input {
+    width: 100%;
+    background-color: hsl(var(--background-subtle));
+    border: 1px solid hsl(var(--border));
+    border-radius: 0.75rem;
+    padding: 0.6rem 0.875rem;
+    font-size: 0.9375rem;
+    color: hsl(var(--foreground));
+    outline: none;
+    transition: border-color 0.15s ease;
+    font-family: 'Inter', system-ui, sans-serif;
+  }
+
+  .settings-input::placeholder {
+    color: hsl(var(--foreground-muted));
+  }
+
+  .settings-input:focus {
+    border-color: hsl(var(--brand) / 0.6);
+  }
+}

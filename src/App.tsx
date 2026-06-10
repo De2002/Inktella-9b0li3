@@ -1,0 +1,57 @@
+import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { Toaster } from 'sonner';
+import { AuthProvider } from '@/contexts/AuthContext';
+import { ThemeProvider } from '@/contexts/ThemeContext';
+import AppLayout from '@/components/layout/AppLayout';
+import LandingPage from '@/pages/LandingPage';
+import FeedPage from '@/pages/FeedPage';
+import AuthPage from '@/pages/AuthPage';
+import ExplorePage from '@/pages/ExplorePage';
+import TopicPage from '@/pages/TopicPage';
+import PoemPage from '@/pages/PoemPage';
+import WritePage from '@/pages/WritePage';
+import ProfilePage from '@/pages/ProfilePage';
+import InkPage from '@/pages/InkPage';
+import NotificationsPage from '@/pages/NotificationsPage';
+import CriticNotesPage from '@/pages/CriticNotesPage';
+import SettingsPage from '@/pages/SettingsPage';
+import NotFoundPage from '@/pages/NotFoundPage';
+
+export default function App() {
+  return (
+    <ThemeProvider>
+      <AuthProvider>
+        <BrowserRouter>
+          <Routes>
+            <Route path="/auth" element={<AuthPage />} />
+            <Route element={<AppLayout />}>
+              <Route path="/" element={<LandingPage />} />
+              <Route path="/feed" element={<FeedPage />} />
+              <Route path="/explore" element={<ExplorePage />} />
+              <Route path="/topic/:slug" element={<TopicPage />} />
+              <Route path="/poem/:id" element={<PoemPage />} />
+              <Route path="/write" element={<WritePage />} />
+              <Route path="/profile/:username" element={<ProfilePage />} />
+              <Route path="/ink" element={<InkPage />} />
+              <Route path="/notifications" element={<NotificationsPage />} />
+              <Route path="/critic-notes" element={<CriticNotesPage />} />
+              <Route path="/settings" element={<SettingsPage />} />
+              <Route path="*" element={<NotFoundPage />} />
+            </Route>
+          </Routes>
+        </BrowserRouter>
+        <Toaster
+          position="bottom-right"
+          toastOptions={{
+            style: {
+              background: 'hsl(var(--surface))',
+              color: 'hsl(var(--foreground))',
+              border: '1px solid hsl(var(--border))',
+              fontFamily: 'Inter, sans-serif',
+            },
+          }}
+        />
+      </AuthProvider>
+    </ThemeProvider>
+  );
+}
