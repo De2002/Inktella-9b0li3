@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { Heart, Bookmark, MoreHorizontal, BookOpen, MessageSquare, Share2, ArrowUpFromLine } from 'lucide-react';
+import { Heart, Bookmark, BookOpen, MessageSquare, Share2, ArrowUpFromLine } from 'lucide-react';
 import { formatTimeAgo, cn, getInitials } from '@/lib/utils';
 import { getLevel, LEVEL_CONFIG } from '@/constants';
 import type { Poem, FeedLabel } from '@/types';
@@ -108,44 +108,6 @@ export default function PoemCard({ poem, feedLabel, onFeedbackClick, onUpdate }:
 
   return (
     <article className="poem-entry">
-      {/* Author row */}
-      <div className="flex items-center justify-between mb-3">
-        <Link to={`/profile/${author?.username}`} className="flex items-center gap-2.5 group">
-          <div
-            className={`w-9 h-9 rounded-full flex items-center justify-center text-xs font-bold shrink-0 overflow-hidden ${levelCfg.borderClass}`}
-            style={{ background: levelCfg.color + '15', color: levelCfg.color }}
-          >
-            {author?.avatar_url ? (
-              <img src={author.avatar_url} alt={author.username} className="w-full h-full object-cover" />
-            ) : (
-              getInitials(author?.username || '?')
-            )}
-          </div>
-          <div>
-            <div className="flex items-center gap-1.5">
-              <span className="text-sm font-semibold text-foreground group-hover:text-brand-500 transition-colors leading-none">
-                {author?.username || 'Poet'}
-              </span>
-              <span className={`text-[10px] font-medium px-1.5 py-0.5 rounded-full ${levelCfg.bgClass} ${levelCfg.textClass}`}>
-                {levelCfg.label}
-              </span>
-            </div>
-            <span className="text-xs text-foreground-muted">{formatTimeAgo(poem.created_at)}</span>
-          </div>
-        </Link>
-
-        <div className="flex items-center gap-1">
-          {!author || poem.user_id !== user?.id ? (
-            <button className="text-xs font-medium text-brand-500 hover:text-brand-600 border border-brand-200 dark:border-brand-800 hover:bg-brand-50 dark:hover:bg-brand-900/20 px-2.5 py-1 rounded-full transition-all">
-              Follow
-            </button>
-          ) : null}
-          <button className="p-1.5 text-foreground-muted hover:text-foreground rounded-lg hover:bg-background-subtle transition-colors">
-            <MoreHorizontal size={15} />
-          </button>
-        </div>
-      </div>
-
       {/* Topic tag */}
       {poem.topic && (
         <Link to={`/topic/${poem.topic.slug}`} className="text-xs font-medium text-brand-500 hover:text-brand-600 mb-2 block transition-colors">
