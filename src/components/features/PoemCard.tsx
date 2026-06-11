@@ -115,28 +115,16 @@ export default function PoemCard({ poem, feedLabel, onFeedbackClick, onUpdate }:
         </Link>
       )}
 
-      {/* Poem text FIRST (prominently) */}
-      <div className="poem-text text-foreground-secondary leading-[1.85] text-base mb-4">
-        {displayText}
-      </div>
-
-      {truncated && !expanded && (
-        <button
-          onClick={() => setExpanded(true)}
-          className="text-sm font-medium text-brand-500 hover:text-brand-600 transition-colors mb-4 block"
-        >
-          Read more
-        </button>
-      )}
-
-      {/* Title and Author - above engagement bar */}
-      <div className="mb-3">
-        <Link to={`/poem/${poem.id}`}>
-          <h2 className="poem-title text-lg sm:text-xl text-foreground hover:text-brand-600 dark:hover:text-brand-400 transition-colors leading-tight font-semibold mb-2">
-            {poem.title}
-          </h2>
-        </Link>
-        <Link to={`/profile/${author?.username}`} className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full border border-border hover:border-brand-400 transition-colors">
+      {/* Title (left) and Author badge (right) - above poem text */}
+      <div className="flex items-start justify-between gap-4 mb-4">
+        <div className="flex-1 min-w-0">
+          <Link to={`/poem/${poem.id}`}>
+            <h2 className="poem-title text-lg sm:text-xl text-foreground hover:text-brand-600 dark:hover:text-brand-400 transition-colors leading-tight font-semibold">
+              {poem.title}
+            </h2>
+          </Link>
+        </div>
+        <Link to={`/profile/${author?.username}`} className="flex items-center gap-2 px-3 py-1.5 rounded-full border border-border hover:border-brand-400 transition-colors shrink-0">
           {/* Profile Picture */}
           <div
             className={`w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold shrink-0 overflow-hidden ${levelCfg.borderClass}`}
@@ -159,7 +147,21 @@ export default function PoemCard({ poem, feedLabel, onFeedbackClick, onUpdate }:
         </Link>
       </div>
 
-      {/* Tags - below title and author */}
+      {/* Poem text */}
+      <div className="poem-text text-foreground-secondary leading-[1.85] text-base mb-4">
+        {displayText}
+      </div>
+
+      {truncated && !expanded && (
+        <button
+          onClick={() => setExpanded(true)}
+          className="text-sm font-medium text-brand-500 hover:text-brand-600 transition-colors mb-4 block"
+        >
+          Read more
+        </button>
+      )}
+
+      {/* Tags - below poem text */}
       {poem.tags && poem.tags.length > 0 && (
         <div className="flex flex-wrap gap-1.5 mb-4">
           {poem.tags.map(tag => (
