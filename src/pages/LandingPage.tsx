@@ -372,10 +372,14 @@ export default function LandingPage() {
           <p className="font-serif font-bold text-lg text-foreground">Inktella</p>
         </div>
         <p className="text-foreground-muted text-sm">Poetry grows through feedback.</p>
-        <div className="flex items-center justify-center gap-4 mt-4 text-sm text-foreground-muted">
+        <div className="flex items-center justify-center gap-4 mt-4 text-sm text-foreground-muted flex-wrap">
           <Link to="/explore" className="hover:text-foreground transition-colors">Explore</Link>
           <Link to="/auth" className="hover:text-foreground transition-colors">Join free</Link>
           <Link to="/critic-notes" className="hover:text-foreground transition-colors">Critic Notes</Link>
+          <span className="text-border">•</span>
+          <Link to="/terms" className="hover:text-foreground transition-colors">Terms</Link>
+          <Link to="/privacy" className="hover:text-foreground transition-colors">Privacy</Link>
+          <Link to="/contact" className="hover:text-foreground transition-colors">Contact</Link>
         </div>
       </footer>
     </div>
