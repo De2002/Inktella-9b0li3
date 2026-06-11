@@ -15,6 +15,9 @@ import InkPage from '@/pages/InkPage';
 import NotificationsPage from '@/pages/NotificationsPage';
 import CriticNotesPage from '@/pages/CriticNotesPage';
 import SettingsPage from '@/pages/SettingsPage';
+import TermsOfUsePage from '@/pages/TermsOfUsePage';
+import PrivacyPolicyPage from '@/pages/PrivacyPolicyPage';
+import ContactPage from '@/pages/ContactPage';
 import NotFoundPage from '@/pages/NotFoundPage';
 
 export default function App() {
@@ -36,6 +39,9 @@ export default function App() {
               <Route path="/notifications" element={<NotificationsPage />} />
               <Route path="/critic-notes" element={<CriticNotesPage />} />
               <Route path="/settings" element={<SettingsPage />} />
+              <Route path="/terms" element={<TermsOfUsePage />} />
+              <Route path="/privacy" element={<PrivacyPolicyPage />} />
+              <Route path="/contact" element={<ContactPage />} />
               <Route path="*" element={<NotFoundPage />} />
             </Route>
           </Routes>
