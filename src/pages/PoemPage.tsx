@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { useParams, Link, useSearchParams, useNavigate } from 'react-router-dom';
 import {
   ArrowLeft, Heart, MessageSquare, BookOpen, Share2,
-  Bookmark, Feather, Sparkles, X, Loader2, PenLine,
+  Bookmark, Feather, Sparkles, X, Loader2, PenLine, DoorOpen,
 } from 'lucide-react';
 import { supabase } from '@/lib/supabase';
 import type { Poem } from '@/types';
@@ -424,70 +424,62 @@ function ModernPoemPage({ id }: { id: string }) {
         </div>
       )}
 
-      <div className="flex items-center gap-4 py-4 border-t border-b border-border mb-4 text-sm text-foreground-muted">
-        <span className="flex items-center gap-1.5">
-          <Heart size={14} className={liked ? 'fill-red-500 text-red-500' : ''} />
-          {likeCount}
-        </span>
-        <span className="flex items-center gap-1.5">
-          <MessageSquare size={14} />
-          {feedbackCount} voices
-        </span>
-        <span className="flex items-center gap-1.5 text-xs">
-          {poem.revision_count > 0 ? `${poem.revision_count} revision${poem.revision_count === 1 ? '' : 's'}` : 'First draft'}
-        </span>
-      </div>
+      {/* Icon-only action bar */}
+      <div className="flex items-center justify-center gap-0 py-4 border-t border-b border-border mb-6">
+        <button
+          onClick={handleLike}
+          className="flex-1 flex items-center justify-center py-3 text-foreground-muted hover:text-foreground hover:bg-background-subtle transition-all relative group"
+          title={liked ? 'Hearted' : 'Heart'}
+        >
+          <Heart size={18} className={liked ? 'fill-red-500 text-red-500' : ''} />
+          {likeCount > 0 && (
+            <span className="absolute -top-2 -right-2 text-xs font-semibold bg-red-500 text-white rounded-full w-5 h-5 flex items-center justify-center">
+              {likeCount}
+            </span>
+          )}
+        </button>
+        <div className="w-px h-6 bg-border" />
 
-      <div className="flex items-center gap-2 mb-6 flex-wrap">
-        <button onClick={handleLike} className={cn('action-btn min-h-[44px]', liked && 'text-red-500 bg-red-50 dark:bg-red-900/20')}>
-          <Heart size={16} className={liked ? 'fill-red-500' : ''} />
-          {liked ? 'Hearted' : 'Heart'}
+        <button
+          onClick={() => setFeedbackOpen(true)}
+          className="flex-1 flex items-center justify-center py-3 text-foreground-muted hover:text-foreground hover:bg-background-subtle transition-all relative group"
+          title="Give Feedback"
+        >
+          <MessageSquare size={18} />
+          {feedbackCount > 0 && (
+            <span className="absolute -top-2 -right-2 text-xs font-semibold bg-blue-500 text-white rounded-full w-5 h-5 flex items-center justify-center">
+              {feedbackCount}
+            </span>
+          )}
         </button>
-        <button onClick={() => setFeedbackOpen(true)} className="action-btn min-h-[44px] bg-brand-50 dark:bg-brand-900/20 text-brand-600 dark:text-brand-400 hover:bg-brand-100">
-          <Feather size={16} />
-          Give Feedback
-        </button>
-        <button onClick={() => setBehindOpen(true)} className="action-btn min-h-[44px]">
-          <BookOpen size={16} />
-          <span>Behind the Poem</span>
-        </button>
-        <button onClick={handleShare} className="action-btn min-h-[44px]">
-          <Share2 size={16} />
-        </button>
-        <button onClick={handleBookmark} className={cn('action-btn min-h-[44px]', bookmarked && 'text-brand-500')}>
-          <Bookmark size={16} className={bookmarked ? 'fill-brand-500' : ''} />
-        </button>
-        {/* Edit button — only for the poem author */}
-        {user && poem.user_id === user.id && (
-          <button
-            onClick={() => navigate(`/write?edit=${poem.id}`)}
-            className="action-btn min-h-[44px] ml-auto border border-brand-200 dark:border-brand-800 text-brand-600 dark:text-brand-400 hover:bg-brand-50 dark:hover:bg-brand-900/20"
-          >
-            <PenLine size={16} />
-            Edit
-          </button>
-        )}
-        {(!user || poem.user_id !== user.id) && <BoostButton poemId={poem.id} className="ml-auto" />}
-        {user && poem.user_id === user.id && <BoostButton poemId={poem.id} />}
-      </div>
+        <div className="w-px h-6 bg-border" />
 
-      {poem.revision_count > 0 && (
         <button
           onClick={() => setBehindOpen(true)}
-          className="w-full flex items-center justify-between p-4 bg-background-subtle border border-border rounded-xl hover:border-brand-300 dark:hover:border-brand-700 transition-colors mb-6"
+          className="flex-1 flex items-center justify-center py-3 text-foreground-muted hover:text-foreground hover:bg-background-subtle transition-all"
+          title="Behind the Poem"
         >
-          <div className="flex items-center gap-3 text-left">
-            <div className="w-9 h-9 bg-brand-50 dark:bg-brand-900/20 rounded-lg flex items-center justify-center shrink-0">
-              <BookOpen size={16} className="text-brand-500" />
-            </div>
-            <div>
-              <p className="font-semibold text-sm text-foreground">Behind the Poem</p>
-              <p className="text-xs text-foreground-muted">See how this poem evolved</p>
-            </div>
-          </div>
-          <ArrowLeft size={16} className="text-foreground-muted rotate-180" />
+          <DoorOpen size={18} />
         </button>
-      )}
+        <div className="w-px h-6 bg-border" />
+
+        <button
+          onClick={handleShare}
+          className="flex-1 flex items-center justify-center py-3 text-foreground-muted hover:text-foreground hover:bg-background-subtle transition-all"
+          title="Share"
+        >
+          <Share2 size={18} />
+        </button>
+        <div className="w-px h-6 bg-border" />
+
+        <button
+          onClick={handleBookmark}
+          className={cn('flex-1 flex items-center justify-center py-3 transition-all', bookmarked ? 'text-brand-500 hover:bg-background-subtle' : 'text-foreground-muted hover:text-foreground hover:bg-background-subtle')}
+          title={bookmarked ? 'Remove bookmark' : 'Bookmark'}
+        >
+          <Bookmark size={18} className={bookmarked ? 'fill-brand-500' : ''} />
+        </button>
+      </div>
 
       <div className="border-t border-border pt-5">
         <div className="flex items-center justify-between mb-4">
