@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { useParams, Link, useSearchParams, useNavigate } from 'react-router-dom';
 import {
   ArrowLeft, Heart, MessageSquare, BookOpen, Share2,
-  Bookmark, Feather, Sparkles, X, Loader2, PenLine, DoorOpen,
+  Bookmark, Feather, Sparkles, X, Loader2, PenLine, DoorOpen, MoreHorizontal,
 } from 'lucide-react';
 import { supabase } from '@/lib/supabase';
 import type { Poem } from '@/types';
@@ -341,6 +341,9 @@ function ModernPoemPage({ id }: { id: string }) {
 
   const [feedbackOpen, setFeedbackOpen] = useState(searchParams.get('tab') === 'feedback');
   const [behindOpen, setBehindOpen] = useState(searchParams.get('tab') === 'journey');
+  const [menuOpen, setMenuOpen] = useState(false);
+
+  const isOwner = user?.id === poem?.user_id;
 
   async function handleLike() {
     if (!user) { navigate('/auth'); return; }
@@ -382,9 +385,59 @@ function ModernPoemPage({ id }: { id: string }) {
 
   return (
     <div className="max-w-2xl mx-auto px-4 py-6 pb-24 lg:pb-8">
-      <button onClick={() => navigate(-1)} className="flex items-center gap-1.5 text-sm text-foreground-muted hover:text-foreground transition-colors mb-6">
-        <ArrowLeft size={14} /> Back
-      </button>
+      {/* Header with Back and Edit/Menu */}
+      <div className="flex items-center justify-between gap-4 mb-6">
+        {/* Back button in box */}
+        <button
+          onClick={() => navigate(-1)}
+          className="inline-flex items-center justify-center w-10 h-10 rounded-lg border border-border text-foreground-muted hover:text-foreground hover:bg-background-subtle transition-colors shrink-0"
+          title="Go back"
+        >
+          <ArrowLeft size={18} />
+        </button>
+
+        {/* Spacer */}
+        <div className="flex-1" />
+
+        {/* Edit button (owner only) or Three-dot menu (others) */}
+        {isOwner ? (
+          <Link
+            to={`/write?edit=${poem?.id}`}
+            className="inline-flex items-center gap-2 px-4 py-2 rounded-lg border border-brand-200 dark:border-brand-800 bg-brand-50 dark:bg-brand-900/20 text-brand-600 dark:text-brand-400 hover:bg-brand-100 dark:hover:bg-brand-900/30 transition-colors font-medium text-sm"
+          >
+            <PenLine size={16} />
+            Edit poem
+          </Link>
+        ) : (
+          <div className="relative">
+            <button
+              onClick={() => setMenuOpen(!menuOpen)}
+              className="inline-flex items-center justify-center w-10 h-10 rounded-lg border border-border text-foreground-muted hover:text-foreground hover:bg-background-subtle transition-colors"
+              title="More options"
+            >
+              <MoreHorizontal size={18} />
+            </button>
+            
+            {/* Dropdown menu */}
+            {menuOpen && (
+              <>
+                <div
+                  className="fixed inset-0 z-40"
+                  onClick={() => setMenuOpen(false)}
+                />
+                <div className="absolute right-0 top-12 z-50 min-w-48 bg-surface border border-border rounded-lg shadow-lg overflow-hidden">
+                  <button className="w-full text-left px-4 py-2.5 text-sm text-foreground hover:bg-background-subtle transition-colors flex items-center gap-2">
+                    <span>Report poem</span>
+                  </button>
+                  <button className="w-full text-left px-4 py-2.5 text-sm text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors flex items-center gap-2">
+                    <span>Block poet</span>
+                  </button>
+                </div>
+              </>
+            )}
+          </div>
+        )}
+      </div>
 
       {poem.topic && (
         <Link to={`/topic/${poem.topic.slug}`} className="text-sm font-medium text-brand-500 hover:text-brand-600 transition-colors mb-1 block">
