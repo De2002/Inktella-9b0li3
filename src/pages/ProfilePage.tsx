@@ -119,7 +119,7 @@ export default function ProfilePage() {
 
       <div className="px-4 max-w-2xl mx-auto">
         {/* Avatar + actions */}
-        <div className="flex items-end justify-between -mt-10 mb-3">
+        <div className="flex items-end justify-between -mt-10 mb-3 relative z-10">
           <div
             className={cn('w-20 h-20 rounded-full overflow-hidden flex items-center justify-center text-xl font-bold bg-surface border-4 border-background', levelCfg.borderClass)}
             style={{ color: levelCfg.color, background: levelCfg.color + '15' }}

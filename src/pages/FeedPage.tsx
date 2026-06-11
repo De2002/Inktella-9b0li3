@@ -58,69 +58,7 @@ const POEM_SELECT = `
   poem_tags(tag:tags(id, name))
 `;
 
-// ── Static mock poems for when DB is empty ────────────────────────────────────
-const MOCK_POEMS: Poem[] = [
-  {
-    id: 'mock-1',
-    user_id: 'mock',
-    title: 'after the rain',
-    content: `the city smells like something new\nroads still wet, but I'm not.\nsomething inside me\nfinally learned how to breathe.\n\nI stood outside until my hair\nbecame the sky's\nlast argument.`,
-    published: true,
-    revision_count: 2,
-    ink_spent: 10,
-    view_count: 89,
-    created_at: new Date(Date.now() - 7200000).toISOString(),
-    updated_at: new Date(Date.now() - 7200000).toISOString(),
-    author: { id: 'mock', username: 'maya.writes', email: '', tella_balance: 342, ink_balance: 88, level: 'guide' },
-    tags: [{ id: '1', name: 'Life' }, { id: '2', name: 'Healing' }],
-    like_count: 234, feedback_count: 28, is_liked: false, is_bookmarked: false,
-  },
-  {
-    id: 'mock-2',
-    user_id: 'mock2',
-    title: 'loud silence',
-    content: `everyone talks.\nno one listens.\nthis is how the world\nbecame so tired.\n\nI have stopped waiting\nfor the noise to stop.\nI have started being it.`,
-    published: true,
-    revision_count: 0,
-    ink_spent: 10,
-    view_count: 201,
-    created_at: new Date(Date.now() - 18000000).toISOString(),
-    updated_at: new Date(Date.now() - 18000000).toISOString(),
-    author: { id: 'mock2', username: 'silent.ink', email: '', tella_balance: 89, ink_balance: 55, level: 'observer' },
-    tags: [{ id: '4', name: 'Sadness' }],
-    like_count: 412, feedback_count: 41, is_liked: true, is_bookmarked: false,
-  },
-  {
-    id: 'mock-3',
-    user_id: 'mock3',
-    title: 'between the thoughts',
-    content: `there is a space\nbetween what I feel\nand what I know—\nthat's where I live most days.\n\nno one has a name for it.\nmaybe that's okay.\nmaybe I'm just\nthe space.`,
-    published: true,
-    revision_count: 3,
-    ink_spent: 10,
-    view_count: 67,
-    created_at: new Date(Date.now() - 14400000).toISOString(),
-    updated_at: new Date(Date.now() - 14400000).toISOString(),
-    author: { id: 'mock3', username: 'wordwanderer', email: '', tella_balance: 1200, ink_balance: 210, level: 'critic' },
-    tags: [{ id: '7', name: 'Overthinking' }],
-    like_count: 178, feedback_count: 63, is_liked: false, is_bookmarked: false,
-  },
-  {
-    id: 'mock-4',
-    user_id: 'mock4',
-    title: 'cartography of grief',
-    content: `grief has a geography.\nthere are places I can't go back to\nnot because they're gone—\nbut because I'd have to be someone\nwho doesn't know what I know now.\n\nthe map is not the territory.\nbut the map is all I have.`,
-    published: true,
-    revision_count: 2,
-    ink_spent: 10,
-    view_count: 155,
-    created_at: new Date(Date.now() - 86400000).toISOString(),
-    updated_at: new Date(Date.now() - 86400000).toISOString(),
-    author: { id: 'mock5', username: 'river.notes', email: '', tella_balance: 567, ink_balance: 140, level: 'guide' },
-    tags: [{ id: '9', name: 'Grief' }, { id: '11', name: 'Memory' }],
-    like_count: 98, feedback_count: 18, is_liked: false, is_bookmarked: false,
-  },
-];
+// Platform runs on real user data only — no mocks
 
 export default function FeedPage() {
   const { user, profile } = useAuth();
@@ -392,9 +330,9 @@ export default function FeedPage() {
       data = rows || [];
     }
 
-    // Fall back to mock poems if DB returned nothing
+    // No data — show empty state, don't inject mocks
     if (!data || data.length === 0) {
-      setPoems(reset ? MOCK_POEMS : prev => [...prev, ...MOCK_POEMS]);
+      setPoems(reset ? [] : prev => prev);
       setHasMore(false);
       setLoading(false);
       return;
@@ -449,7 +387,6 @@ export default function FeedPage() {
   );
 
   // Empty state messages per tab
-  const PICKS_EMPTY = activeTab === 'picks' && mode === 'modern';
 
   return (
     <div className="max-w-2xl mx-auto">
@@ -542,17 +479,8 @@ export default function FeedPage() {
                 <p className="text-xs text-foreground-muted">The poets you follow haven't published recently.</p>
               </div>
 
-            ) : mode === 'modern' && PICKS_EMPTY && !loading && poems.length === 0 ? (
-              // Picks empty state — hint without revealing algorithm
-              <div className="py-20 text-center px-4">
-                <div className="w-14 h-14 rounded-full bg-purple-50 dark:bg-purple-900/20 flex items-center justify-center mx-auto mb-4">
-                  <span className="text-2xl">◆</span>
-                </div>
-                <h3 className="font-serif font-semibold text-lg text-foreground mb-2">Picks is building.</h3>
-                <p className="text-sm text-foreground-muted max-w-xs mx-auto leading-relaxed">
-                  Poems here are selected by the community's most trusted readers. Keep reading, giving feedback, and earning Tella — your voice shapes what lands here.
-                </p>
-              </div>
+            ) : mode === 'modern' && !loading && poems.length === 0 ? (
+              <FeedEmptyState tab={activeTab} />
 
             ) : mode === 'modern' ? (
               poems.map(poem => (
@@ -597,6 +525,53 @@ export default function FeedPage() {
       {activeFeedback && (
         <FeedbackPanel poem={activeFeedback} onClose={() => setActiveFeedback(null)} />
       )}
+    </div>
+  );
+}
+
+// ── Per-tab empty states ─────────────────────────────────────────────────────
+const EMPTY_STATE_CONFIG: Record<FeedTab, { icon: string; title: string; body: string }> = {
+  picks: {
+    icon: '◆',
+    title: 'Picks is building.',
+    body: "Poems here are selected by the community's most trusted readers. Keep reading, giving feedback, and earning Tella — your voice shapes what lands here.",
+  },
+  latest: {
+    icon: '✦',
+    title: 'No poems published yet.',
+    body: 'Be the first to publish. Head to Write and share something with the community.',
+  },
+  discussed: {
+    icon: '◎',
+    title: 'No conversations yet.',
+    body: 'Poems spark discussion when the community engages with feedback. Start reading and leave a note.',
+  },
+  hearted: {
+    icon: '♡',
+    title: 'Nothing hearted yet.',
+    body: 'Show a poem some love. Poems you like or save will start appearing here.',
+  },
+  undiscovered: {
+    icon: '·',
+    title: 'All caught up.',
+    body: 'Every new poem has been discovered. Come back when more are published.',
+  },
+  following: {
+    icon: '◈',
+    title: 'No poems yet.',
+    body: 'The poets you follow have not published recently.',
+  },
+};
+
+function FeedEmptyState({ tab }: { tab: FeedTab }) {
+  const cfg = EMPTY_STATE_CONFIG[tab] || EMPTY_STATE_CONFIG.latest;
+  return (
+    <div className="py-20 text-center px-4">
+      <div className="w-14 h-14 rounded-full bg-background-subtle flex items-center justify-center mx-auto mb-4">
+        <span className="text-2xl text-foreground-muted">{cfg.icon}</span>
+      </div>
+      <h3 className="font-serif font-semibold text-lg text-foreground mb-2">{cfg.title}</h3>
+      <p className="text-sm text-foreground-muted max-w-xs mx-auto leading-relaxed">{cfg.body}</p>
     </div>
   );
 }
