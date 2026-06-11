@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { Heart, Bookmark, MoreHorizontal, BookOpen, Feather, ArrowUpFromLine } from 'lucide-react';
+import { Heart, Bookmark, BookOpen, MessageSquare, Share2, ArrowUpFromLine } from 'lucide-react';
 import { formatTimeAgo, cn, getInitials } from '@/lib/utils';
 import { getLevel, LEVEL_CONFIG } from '@/constants';
 import type { Poem, FeedLabel } from '@/types';
@@ -108,144 +108,94 @@ export default function PoemCard({ poem, feedLabel, onFeedbackClick, onUpdate }:
 
   return (
     <article className="poem-entry">
-      {/* Author row */}
-      <div className="flex items-center justify-between mb-3">
-        <Link to={`/profile/${author?.username}`} className="flex items-center gap-2.5 group">
-          <div
-            className={`w-9 h-9 rounded-full flex items-center justify-center text-xs font-bold shrink-0 overflow-hidden ${levelCfg.borderClass}`}
-            style={{ background: levelCfg.color + '15', color: levelCfg.color }}
-          >
-            {author?.avatar_url ? (
-              <img src={author.avatar_url} alt={author.username} className="w-full h-full object-cover" />
-            ) : (
-              getInitials(author?.username || '?')
-            )}
-          </div>
-          <div>
-            <div className="flex items-center gap-1.5">
-              <span className="text-sm font-semibold text-foreground group-hover:text-brand-500 transition-colors leading-none">
-                {author?.username || 'Poet'}
-              </span>
-              <span className={`text-[10px] font-medium px-1.5 py-0.5 rounded-full ${levelCfg.bgClass} ${levelCfg.textClass}`}>
-                {levelCfg.label}
-              </span>
-            </div>
-            <span className="text-xs text-foreground-muted">{formatTimeAgo(poem.created_at)}</span>
-          </div>
+      {/* Topic tag */}
+      {poem.topic && (
+        <Link to={`/topic/${poem.topic.slug}`} className="text-xs font-medium text-brand-500 hover:text-brand-600 mb-2 block transition-colors">
+          {poem.topic.name}
         </Link>
-
-        <div className="flex items-center gap-1">
-          {!author || poem.user_id !== user?.id ? (
-            <button className="text-xs font-medium text-brand-500 hover:text-brand-600 border border-brand-200 dark:border-brand-800 hover:bg-brand-50 dark:hover:bg-brand-900/20 px-2.5 py-1 rounded-full transition-all">
-              Follow
-            </button>
-          ) : null}
-          <button className="p-1.5 text-foreground-muted hover:text-foreground rounded-lg hover:bg-background-subtle transition-colors">
-            <MoreHorizontal size={15} />
-          </button>
-        </div>
-      </div>
-
-      {/* Content layout with optional image */}
-      <div className={cn('flex gap-4', poem.image_url ? 'items-start' : '')}>
-        <div className="flex-1 min-w-0">
-          {/* Topic tag */}
-          {poem.topic && (
-            <Link to={`/topic/${poem.topic.slug}`} className="text-xs font-medium text-brand-500 hover:text-brand-600 mb-1 block transition-colors">
-              {poem.topic.name}
-            </Link>
-          )}
-
-          {/* Title */}
-          <Link to={`/poem/${poem.id}`}>
-            <h2 className="poem-title text-xl sm:text-2xl text-foreground mb-2 hover:text-brand-600 dark:hover:text-brand-400 transition-colors leading-snug">
-              {poem.title}
-            </h2>
-          </Link>
-
-          {/* Poem text */}
-          <div className="poem-text text-foreground-secondary leading-[1.85]">
-            {displayText}
-          </div>
-
-          {truncated && !expanded && (
-            <button
-              onClick={() => setExpanded(true)}
-              className="mt-2 text-sm font-medium text-brand-500 hover:text-brand-600 transition-colors"
-            >
-              Read more
-            </button>
-          )}
-        </div>
-
-        {/* Optional image */}
-        {poem.image_url && (
-          <Link to={`/poem/${poem.id}`} className="hidden sm:block shrink-0 w-28 h-28 sm:w-36 sm:h-36 rounded-xl overflow-hidden">
-            <img
-              src={poem.image_url}
-              alt={poem.title}
-              className="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
-            />
-          </Link>
-        )}
-      </div>
-
-      {/* Tags */}
-      {poem.tags && poem.tags.length > 0 && (
-        <div className="flex flex-wrap gap-1.5 mt-3">
-          {poem.tags.map(tag => (
-            <span key={tag.id} className="tag-pill">{tag.name}</span>
-          ))}
-        </div>
       )}
 
-      {/* Actions */}
-      <div className="flex items-center gap-1 mt-3 -ml-1.5">
-        {/* Like */}
+      {/* Poem text FIRST (prominently) */}
+      <div className="poem-text text-foreground-secondary leading-[1.85] text-base mb-4">
+        {displayText}
+      </div>
+
+      {truncated && !expanded && (
+        <button
+          onClick={() => setExpanded(true)}
+          className="text-sm font-medium text-brand-500 hover:text-brand-600 transition-colors mb-4 block"
+        >
+          Read more
+        </button>
+      )}
+
+      {/* Icon-only engagement bar */}
+      <div className="flex items-center justify-start gap-0 py-3 border-t border-b border-border mb-4">
         <button
           onClick={handleLike}
-          className={cn('action-btn', liked && 'active text-red-500 hover:text-red-600')}
+          className="flex-1 flex items-center justify-center py-2 text-foreground-muted hover:text-foreground hover:bg-background-subtle transition-all relative group max-w-[60px]"
+          title={liked ? 'Hearted' : 'Heart'}
         >
-          <Heart size={15} className={liked ? 'fill-red-500 text-red-500' : ''} />
-          <span>{likeCount > 0 ? likeCount : ''}</span>
-        </button>
-
-        {/* Feedback */}
-        <button
-          onClick={() => onFeedbackClick?.(poem)}
-          className="action-btn"
-        >
-          <Feather size={15} />
-          <span>Give feedback</span>
-          {(poem.feedback_count || 0) > 0 && (
-            <span className="text-foreground-muted">· {poem.feedback_count}</span>
+          <Heart size={16} className={liked ? 'fill-red-500 text-red-500' : ''} />
+          {likeCount > 0 && (
+            <span className="absolute -top-1 -right-1 text-xs font-semibold bg-red-500 text-white rounded-full w-4 h-4 flex items-center justify-center">
+              {likeCount > 9 ? '9+' : likeCount}
+            </span>
           )}
         </button>
+        <div className="w-px h-5 bg-border" />
 
-        {/* Bookmark */}
+        <button
+          onClick={() => onFeedbackClick?.(poem)}
+          className="flex-1 flex items-center justify-center py-2 text-foreground-muted hover:text-foreground hover:bg-background-subtle transition-all relative group max-w-[60px]"
+          title="Give Feedback"
+        >
+          <MessageSquare size={16} />
+          {(poem.feedback_count || 0) > 0 && (
+            <span className="absolute -top-1 -right-1 text-xs font-semibold bg-blue-500 text-white rounded-full w-4 h-4 flex items-center justify-center">
+              {poem.feedback_count! > 9 ? '9+' : poem.feedback_count}
+            </span>
+          )}
+        </button>
+        <div className="w-px h-5 bg-border" />
+
+        <button
+          onClick={() => navigate(`/poem/${poem.id}`)}
+          className="flex-1 flex items-center justify-center py-2 text-foreground-muted hover:text-foreground hover:bg-background-subtle transition-all max-w-[60px]"
+          title="Read Full Poem"
+        >
+          <BookOpen size={16} />
+        </button>
+        <div className="w-px h-5 bg-border" />
+
+        <button
+          onClick={() => navigate(`/poem/${poem.id}`)}
+          className="flex-1 flex items-center justify-center py-2 text-foreground-muted hover:text-foreground hover:bg-background-subtle transition-all max-w-[60px]"
+          title="Share"
+        >
+          <Share2 size={16} />
+        </button>
+        <div className="w-px h-5 bg-border" />
+
         <button
           onClick={handleBookmark}
-          className={cn('action-btn', bookmarked && 'text-brand-500')}
+          className={cn('flex-1 flex items-center justify-center py-2 transition-all max-w-[60px]', bookmarked ? 'text-brand-500 hover:bg-background-subtle' : 'text-foreground-muted hover:text-foreground hover:bg-background-subtle')}
+          title={bookmarked ? 'Remove bookmark' : 'Bookmark'}
         >
-          <Bookmark size={15} className={bookmarked ? 'fill-brand-500 text-brand-500' : ''} />
+          <Bookmark size={16} className={bookmarked ? 'fill-brand-500' : ''} />
         </button>
 
-        {/* Behind the Poem */}
-        {poem.revision_count > 0 && (
-          <Link to={`/poem/${poem.id}?tab=journey`} className="action-btn text-foreground-muted">
-            <BookOpen size={15} />
-            <span className="hidden sm:inline">Behind the Poem</span>
-          </Link>
+        {/* ── Critic Push button (Picks approval) on far right ── */}
+        {canPush && (
+          <div className="w-px h-5 bg-border ml-auto" />
         )}
-
-        {/* ── Critic Push button (Picks approval) ── */}
         {canPush && (
           <button
             onClick={handlePush}
             disabled={pushPending}
             title={pushed ? 'Withdraw your push' : 'Push for Picks'}
             className={cn(
-              'action-btn ml-auto transition-all',
+              'flex items-center justify-center py-2 transition-all max-w-[60px]',
               pushed
                 ? 'text-purple-500 hover:text-purple-400'
                 : 'text-foreground-muted hover:text-purple-500',
@@ -259,12 +209,32 @@ export default function PoemCard({ poem, feedLabel, onFeedbackClick, onUpdate }:
             />
           </button>
         )}
-
-        {/* If critic can't push (own poem), keep bookmark on far right */}
-        {!canPush && (
-          <span className="ml-auto" />
-        )}
       </div>
+
+      {/* Bottom row: Title (left) | Author (right) */}
+      <div className="flex items-start justify-between gap-4">
+        <div className="flex-1 min-w-0">
+          <Link to={`/poem/${poem.id}`}>
+            <h2 className="poem-title text-lg sm:text-xl text-foreground hover:text-brand-600 dark:hover:text-brand-400 transition-colors leading-tight font-semibold">
+              {poem.title}
+            </h2>
+          </Link>
+        </div>
+        <div className="text-right shrink-0">
+          <Link to={`/profile/${author?.username}`} className="text-sm font-medium text-foreground hover:text-brand-500 transition-colors">
+            by {author?.username || 'Poet'}
+          </Link>
+        </div>
+      </div>
+
+      {/* Tags */}
+      {poem.tags && poem.tags.length > 0 && (
+        <div className="flex flex-wrap gap-1.5 mt-2">
+          {poem.tags.map(tag => (
+            <span key={tag.id} className="tag-pill">{tag.name}</span>
+          ))}
+        </div>
+      )}
     </article>
   );
 }
