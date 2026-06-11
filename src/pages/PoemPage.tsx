@@ -439,15 +439,10 @@ function ModernPoemPage({ id }: { id: string }) {
         )}
       </div>
 
-      {poem.topic && (
-        <Link to={`/topic/${poem.topic.slug}`} className="text-sm font-medium text-brand-500 hover:text-brand-600 transition-colors mb-1 block">
-          {poem.topic.name} · Published {formatTimeAgo(poem.created_at)}
-        </Link>
-      )}
+      {/* Title and Author - above engagement bar */}
+      <h1 className="poem-title text-3xl sm:text-4xl text-foreground mb-4 leading-tight">{poem.title}</h1>
 
-      <h1 className="poem-title text-3xl sm:text-4xl text-foreground mb-4 mt-1 leading-tight">{poem.title}</h1>
-
-      <Link to={`/profile/${author?.username}`} className="flex items-center gap-3 mb-8 group">
+      <Link to={`/profile/${author?.username}`} className="flex items-center gap-3 mb-6 group">
         <div
           className={cn('w-10 h-10 rounded-full overflow-hidden flex items-center justify-center text-sm font-bold shrink-0', levelCfg.borderClass)}
           style={{ background: levelCfg.color + '15', color: levelCfg.color }}
@@ -463,6 +458,12 @@ function ModernPoemPage({ id }: { id: string }) {
         </div>
       </Link>
 
+      {poem.topic && (
+        <Link to={`/topic/${poem.topic.slug}`} className="text-sm font-medium text-brand-500 hover:text-brand-600 transition-colors mb-4 block">
+          {poem.topic.name} · Published {formatTimeAgo(poem.created_at)}
+        </Link>
+      )}
+
       {poem.image_url && (
         <div className="rounded-2xl overflow-hidden mb-6 max-h-72">
           <img src={poem.image_url} alt={poem.title} className="w-full h-full object-cover" />
@@ -472,7 +473,7 @@ function ModernPoemPage({ id }: { id: string }) {
       <div className="poem-text text-foreground leading-[1.9] text-lg mb-8">{poem.content}</div>
 
       {poem.tags && poem.tags.length > 0 && (
-        <div className="flex flex-wrap gap-2 mb-6">
+        <div className="flex flex-wrap gap-2 mb-8">
           {poem.tags.map(tag => <span key={tag.id} className="tag-pill">{tag.name}</span>)}
         </div>
       )}
