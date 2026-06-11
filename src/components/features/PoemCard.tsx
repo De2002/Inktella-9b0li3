@@ -129,6 +129,15 @@ export default function PoemCard({ poem, feedLabel, onFeedbackClick, onUpdate }:
         </button>
       )}
 
+      {/* Tags */}
+      {poem.tags && poem.tags.length > 0 && (
+        <div className="flex flex-wrap gap-1.5 mb-4">
+          {poem.tags.map(tag => (
+            <span key={tag.id} className="tag-pill">{tag.name}</span>
+          ))}
+        </div>
+      )}
+
       {/* Icon-only engagement bar */}
       <div className="flex items-center justify-start gap-0 py-3 border-t border-b border-border mb-4">
         <button
@@ -242,15 +251,6 @@ export default function PoemCard({ poem, feedLabel, onFeedbackClick, onUpdate }:
           </div>
         </Link>
       </div>
-
-      {/* Tags */}
-      {poem.tags && poem.tags.length > 0 && (
-        <div className="flex flex-wrap gap-1.5 mt-2">
-          {poem.tags.map(tag => (
-            <span key={tag.id} className="tag-pill">{tag.name}</span>
-          ))}
-        </div>
-      )}
     </article>
   );
 }
