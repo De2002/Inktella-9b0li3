@@ -211,7 +211,7 @@ export default function PoemCard({ poem, feedLabel, onFeedbackClick, onUpdate }:
         )}
       </div>
 
-      {/* Bottom row: Title (left) | Author (right) */}
+      {/* Bottom row: Title (left) | Author badge (right) */}
       <div className="flex items-start justify-between gap-4">
         <div className="flex-1 min-w-0">
           <Link to={`/poem/${poem.id}`}>
@@ -220,11 +220,27 @@ export default function PoemCard({ poem, feedLabel, onFeedbackClick, onUpdate }:
             </h2>
           </Link>
         </div>
-        <div className="text-right shrink-0">
-          <Link to={`/profile/${author?.username}`} className="text-sm font-medium text-foreground hover:text-brand-500 transition-colors">
-            by {author?.username || 'Poet'}
-          </Link>
-        </div>
+        <Link to={`/profile/${author?.username}`} className="flex items-center gap-2 px-3 py-2 rounded-full border border-border hover:border-brand-400 transition-colors shrink-0">
+          {/* Profile Picture */}
+          <div
+            className={`w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold shrink-0 overflow-hidden ${levelCfg.borderClass}`}
+            style={{ background: levelCfg.color + '15', color: levelCfg.color }}
+          >
+            {author?.avatar_url ? (
+              <img src={author.avatar_url} alt={author?.username} className="w-full h-full object-cover" />
+            ) : (
+              getInitials(author?.username || '?')
+            )}
+          </div>
+          {/* User Badge */}
+          <div
+            className="w-5 h-5 rounded-full flex items-center justify-center text-[10px] font-bold shrink-0 border border-border"
+            style={{ background: levelCfg.color + '25', color: levelCfg.color }}
+            title={levelCfg.label}
+          >
+            {levelCfg.label.charAt(0)}
+          </div>
+        </Link>
       </div>
 
       {/* Tags */}
