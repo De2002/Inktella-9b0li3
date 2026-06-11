@@ -129,7 +129,37 @@ export default function PoemCard({ poem, feedLabel, onFeedbackClick, onUpdate }:
         </button>
       )}
 
-      {/* Tags */}
+      {/* Title and Author - above engagement bar */}
+      <div className="mb-3">
+        <Link to={`/poem/${poem.id}`}>
+          <h2 className="poem-title text-lg sm:text-xl text-foreground hover:text-brand-600 dark:hover:text-brand-400 transition-colors leading-tight font-semibold mb-2">
+            {poem.title}
+          </h2>
+        </Link>
+        <Link to={`/profile/${author?.username}`} className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full border border-border hover:border-brand-400 transition-colors">
+          {/* Profile Picture */}
+          <div
+            className={`w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold shrink-0 overflow-hidden ${levelCfg.borderClass}`}
+            style={{ background: levelCfg.color + '15', color: levelCfg.color }}
+          >
+            {author?.avatar_url ? (
+              <img src={author.avatar_url} alt={author?.username} className="w-full h-full object-cover" />
+            ) : (
+              getInitials(author?.username || '?')
+            )}
+          </div>
+          {/* User Badge */}
+          <div
+            className="w-4 h-4 rounded-full flex items-center justify-center text-[9px] font-bold shrink-0 border border-border"
+            style={{ background: levelCfg.color + '25', color: levelCfg.color }}
+            title={levelCfg.label}
+          >
+            {levelCfg.label.charAt(0)}
+          </div>
+        </Link>
+      </div>
+
+      {/* Tags - below title and author */}
       {poem.tags && poem.tags.length > 0 && (
         <div className="flex flex-wrap gap-1.5 mb-4">
           {poem.tags.map(tag => (
@@ -218,38 +248,6 @@ export default function PoemCard({ poem, feedLabel, onFeedbackClick, onUpdate }:
             />
           </button>
         )}
-      </div>
-
-      {/* Bottom row: Title (left) | Author badge (right) */}
-      <div className="flex items-start justify-between gap-4">
-        <div className="flex-1 min-w-0">
-          <Link to={`/poem/${poem.id}`}>
-            <h2 className="poem-title text-lg sm:text-xl text-foreground hover:text-brand-600 dark:hover:text-brand-400 transition-colors leading-tight font-semibold">
-              {poem.title}
-            </h2>
-          </Link>
-        </div>
-        <Link to={`/profile/${author?.username}`} className="flex items-center gap-2 px-3 py-2 rounded-full border border-border hover:border-brand-400 transition-colors shrink-0">
-          {/* Profile Picture */}
-          <div
-            className={`w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold shrink-0 overflow-hidden ${levelCfg.borderClass}`}
-            style={{ background: levelCfg.color + '15', color: levelCfg.color }}
-          >
-            {author?.avatar_url ? (
-              <img src={author.avatar_url} alt={author?.username} className="w-full h-full object-cover" />
-            ) : (
-              getInitials(author?.username || '?')
-            )}
-          </div>
-          {/* User Badge */}
-          <div
-            className="w-5 h-5 rounded-full flex items-center justify-center text-[10px] font-bold shrink-0 border border-border"
-            style={{ background: levelCfg.color + '25', color: levelCfg.color }}
-            title={levelCfg.label}
-          >
-            {levelCfg.label.charAt(0)}
-          </div>
-        </Link>
       </div>
     </article>
   );
