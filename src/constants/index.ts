@@ -66,7 +66,6 @@ export const FEED_TABS = [
   { id: 'latest', label: 'Latest', icon: 'Clock', description: 'Recently published poems.' },
   { id: 'discussed', label: 'Discussed', icon: 'MessageSquare', description: 'Most feedback and conversations.' },
   { id: 'hearted', label: 'Hearted', icon: 'Heart', description: 'Most loved by the community.' },
-  { id: 'undiscovered', label: 'Undiscovered', icon: 'Feather', description: 'Hidden gems that need more love and feedback.' },
 ] as const;
 
 export const INKTELLA_QUOTES = [

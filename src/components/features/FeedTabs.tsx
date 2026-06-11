@@ -1,4 +1,4 @@
-import { Star, Clock, MessageSquare, Heart, Feather, Users } from 'lucide-react';
+import { Star, Clock, MessageSquare, Heart, Users } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import type { FeedTab } from '@/types';
 
@@ -8,7 +8,6 @@ const TABS: { id: FeedTab; label: string; icon: React.ElementType; description: 
   { id: 'following', label: 'Following', icon: Users, description: 'Poems from poets you follow.' },
   { id: 'discussed', label: 'Discussed', icon: MessageSquare, description: 'Most feedback and conversations.' },
   { id: 'hearted', label: 'Hearted', icon: Heart, description: 'Most loved by the community.' },
-  { id: 'undiscovered', label: 'Undiscovered', icon: Feather, description: 'Hidden gems that need more love.' },
 ];
 
 interface FeedTabsProps {

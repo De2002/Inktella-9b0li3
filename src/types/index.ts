@@ -71,7 +71,7 @@ export interface Poem {
   feed_label?: FeedLabel;
 }
 
-export type FeedLabel = 'picks' | 'latest' | 'discussed' | 'hearted' | 'undiscovered';
+export type FeedLabel = 'picks' | 'latest' | 'discussed' | 'hearted';
 
 export interface PoemDraft {
   id: string;
@@ -166,4 +166,4 @@ export interface InkTransaction {
   created_at: string;
 }
 
-export type FeedTab = 'picks' | 'latest' | 'discussed' | 'hearted' | 'undiscovered' | 'following';
+export type FeedTab = 'picks' | 'latest' | 'discussed' | 'hearted' | 'following';

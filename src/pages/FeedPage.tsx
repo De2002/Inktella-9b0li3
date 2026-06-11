@@ -58,8 +58,6 @@ const POEM_SELECT = `
   poem_tags(tag:tags(id, name))
 `;
 
-// Platform runs on real user data only — no mocks
-
 export default function FeedPage() {
   const { user, profile } = useAuth();
   const navigate = useNavigate();
@@ -138,7 +136,7 @@ export default function FeedPage() {
       return;
     }
 
-    // Recency-boosted — newest posts from followed users first
+    // Recency-ranked — newest posts from followed users first
     const { data } = await supabase
       .from('poems')
       .select(POEM_SELECT)
@@ -184,7 +182,10 @@ export default function FeedPage() {
     if (mode === 'modern') {
       switch (activeTab) {
 
-        // ── PICKS: query via DB function, then hydrate full poem rows ─────────
+        // ── PICKS ─────────────────────────────────────────────────────────────
+        // Only poems that have earned ≥10 distinct Critic approvals via poem_boosts.
+        // Ranked: critic Tella weight → feedback vs like ratio → 48h freshness.
+        // No fallback — empty state is informative, not misleading.
         case 'picks': {
           const { data: pickIds } = await supabase.rpc('get_picks_feed', {
             p_limit: PAGE_SIZE,
@@ -192,14 +193,7 @@ export default function FeedPage() {
           });
 
           if (!pickIds || pickIds.length === 0) {
-            // Not enough picks yet — fall through to latest with informational note
-            const { data: fallback } = await supabase
-              .from('poems')
-              .select(POEM_SELECT)
-              .eq('published', true)
-              .order('created_at', { ascending: false })
-              .range(offset, offset + PAGE_SIZE - 1);
-            data = fallback || [];
+            data = [];
             break;
           }
 
@@ -210,13 +204,14 @@ export default function FeedPage() {
             .in('id', ids)
             .eq('published', true);
 
-          // Re-sort to match the scoring order returned by the DB function
+          // Preserve the DB scoring order (critic_score desc → freshness)
           const idOrder = new Map(ids.map((id: string, i: number) => [id, i]));
           data = (poemRows || []).sort((a: any, b: any) => (idOrder.get(a.id) ?? 99) - (idOrder.get(b.id) ?? 99));
           break;
         }
 
-        // ── LATEST: pure chronological ────────────────────────────────────────
+        // ── LATEST ────────────────────────────────────────────────────────────
+        // Pure chronological — no scoring, no bias.
         case 'latest': {
           const { data: rows } = await supabase
             .from('poems')
@@ -228,7 +223,10 @@ export default function FeedPage() {
           break;
         }
 
-        // ── DISCUSSED: via DB scoring function ────────────────────────────────
+        // ── DISCUSSED ─────────────────────────────────────────────────────────
+        // Poems with ≥5 feedback entries.
+        // Ranked by: raw count × diversity ratio × critic participation bonus.
+        // No fallback — empty state tells the truth.
         case 'discussed': {
           const { data: discussedIds } = await supabase.rpc('get_discussed_feed', {
             p_limit: PAGE_SIZE,
@@ -236,15 +234,7 @@ export default function FeedPage() {
           });
 
           if (!discussedIds || discussedIds.length === 0) {
-            // Fallback: poems with any feedback, latest first
-            const { data: fallback } = await supabase
-              .from('poems')
-              .select(POEM_SELECT)
-              .eq('published', true)
-              .gt('revision_count', 0)
-              .order('created_at', { ascending: false })
-              .range(offset, offset + PAGE_SIZE - 1);
-            data = fallback || [];
+            data = [];
             break;
           }
 
@@ -255,12 +245,15 @@ export default function FeedPage() {
             .in('id', ids)
             .eq('published', true);
 
+          // Preserve DB score ordering
           const idOrder = new Map(ids.map((id: string, i: number) => [id, i]));
           data = (poemRows || []).sort((a: any, b: any) => (idOrder.get(a.id) ?? 99) - (idOrder.get(b.id) ?? 99));
           break;
         }
 
-        // ── HEARTED: via DB scoring function ──────────────────────────────────
+        // ── HEARTED ───────────────────────────────────────────────────────────
+        // heart score = likes×2 + saves×3, time-decayed, unique-user weighted.
+        // +10% stability bonus for poems liked across multiple days.
         case 'hearted': {
           const { data: heartedIds } = await supabase.rpc('get_hearted_feed', {
             p_limit: PAGE_SIZE,
@@ -268,13 +261,7 @@ export default function FeedPage() {
           });
 
           if (!heartedIds || heartedIds.length === 0) {
-            const { data: fallback } = await supabase
-              .from('poems')
-              .select(POEM_SELECT)
-              .eq('published', true)
-              .order('view_count', { ascending: false })
-              .range(offset, offset + PAGE_SIZE - 1);
-            data = fallback || [];
+            data = [];
             break;
           }
 
@@ -285,26 +272,15 @@ export default function FeedPage() {
             .in('id', ids)
             .eq('published', true);
 
+          // Preserve heart-score ordering from the DB function
           const idOrder = new Map(ids.map((id: string, i: number) => [id, i]));
           data = (poemRows || []).sort((a: any, b: any) => (idOrder.get(a.id) ?? 99) - (idOrder.get(b.id) ?? 99));
           break;
         }
 
-        // ── UNDISCOVERED: very low view count, newest first ───────────────────
-        case 'undiscovered': {
-          const { data: rows } = await supabase
-            .from('poems')
-            .select(POEM_SELECT)
-            .eq('published', true)
-            .lte('view_count', 20)
-            .order('created_at', { ascending: false })
-            .range(offset, offset + PAGE_SIZE - 1);
-          data = rows || [];
-          break;
-        }
-
         default:
           data = [];
+          break;
       }
 
     } else {
@@ -317,7 +293,8 @@ export default function FeedPage() {
 
       switch (classicsTab) {
         case 'discussed':
-          query = query.order('revision_count', { ascending: false }).order('created_at', { ascending: false });
+          // Classics Discussed: most feedback first (using feedback count proxy via revision_count is wrong — order by created_at for now, proper discussed uses the same DB fn)
+          query = query.order('created_at', { ascending: false });
           break;
         case 'hearted':
           query = query.order('view_count', { ascending: false }).order('created_at', { ascending: false });
@@ -330,9 +307,9 @@ export default function FeedPage() {
       data = rows || [];
     }
 
-    // No data — show empty state, don't inject mocks
+    // No data — honest empty state, no mock injection
     if (!data || data.length === 0) {
-      setPoems(reset ? [] : prev => prev);
+      if (reset) setPoems([]);
       setHasMore(false);
       setLoading(false);
       return;
@@ -385,8 +362,6 @@ export default function FeedPage() {
       ))}
     </div>
   );
-
-  // Empty state messages per tab
 
   return (
     <div className="max-w-2xl mx-auto">
@@ -462,7 +437,7 @@ export default function FeedPage() {
       <div className="pb-24 lg:pb-8 px-4">
         {loading && poems.length === 0 ? skeletonLoader : (
           <>
-            {/* Following: empty / no follows */}
+            {/* Following: no follows yet */}
             {mode === 'modern' && activeTab === 'following' && !loading && followingIds?.length === 0 ? (
               <FollowEmptyState
                 suggestions={followSuggestions}
@@ -534,7 +509,7 @@ const EMPTY_STATE_CONFIG: Record<FeedTab, { icon: string; title: string; body: s
   picks: {
     icon: '◆',
     title: 'Picks is building.',
-    body: "Poems here are selected by the community's most trusted readers. Keep reading, giving feedback, and earning Tella — your voice shapes what lands here.",
+    body: 'This feed shows only poems the community\'s most trusted readers have approved. Keep giving feedback, earning Tella, and earning your critical voice.',
   },
   latest: {
     icon: '✦',
@@ -544,17 +519,12 @@ const EMPTY_STATE_CONFIG: Record<FeedTab, { icon: string; title: string; body: s
   discussed: {
     icon: '◎',
     title: 'No conversations yet.',
-    body: 'Poems spark discussion when the community engages with feedback. Start reading and leave a note.',
+    body: 'Poems appear here once they generate meaningful discussion. Start reading and leave substantive feedback.',
   },
   hearted: {
     icon: '♡',
     title: 'Nothing hearted yet.',
-    body: 'Show a poem some love. Poems you like or save will start appearing here.',
-  },
-  undiscovered: {
-    icon: '·',
-    title: 'All caught up.',
-    body: 'Every new poem has been discovered. Come back when more are published.',
+    body: 'Poems appear here once readers start liking and saving them. Show a poem some love.',
   },
   following: {
     icon: '◈',
