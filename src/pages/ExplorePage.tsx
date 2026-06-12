@@ -1,11 +1,18 @@
-import { useState, useEffect } from 'react';
-import { Search, TrendingUp } from 'lucide-react';
-import { useSearchParams, Link } from 'react-router-dom';
+import { useState, useEffect, useRef } from 'react';
+import { Search, SlidersHorizontal, Check } from 'lucide-react';
+import { useSearchParams } from 'react-router-dom';
 import TopicCard from '@/components/features/TopicCard';
 import { supabase } from '@/lib/supabase';
 import type { Topic } from '@/types';
 
-const FEATURED_TOPICS = ['love', 'loss', 'nature', 'identity', 'healing'];
+type SortOption = 'most' | 'least' | 'az' | 'za';
+
+const SORT_OPTIONS: { value: SortOption; label: string }[] = [
+  { value: 'most', label: 'Most poems' },
+  { value: 'least', label: 'Least poems' },
+  { value: 'az', label: 'Alphabetical (A–Z)' },
+  { value: 'za', label: 'Alphabetical (Z–A)' },
+];
 
 export default function ExplorePage() {
   const [searchParams] = useSearchParams();
@@ -13,10 +20,23 @@ export default function ExplorePage() {
   const [topics, setTopics] = useState<Topic[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState(q);
+  const [sort, setSort] = useState<SortOption>('az');
+  const [menuOpen, setMenuOpen] = useState(false);
+  const menuRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     fetchTopics();
   }, []);
+
+  useEffect(() => {
+    function handleClick(e: MouseEvent) {
+      if (menuRef.current && !menuRef.current.contains(e.target as Node)) {
+        setMenuOpen(false);
+      }
+    }
+    if (menuOpen) document.addEventListener('mousedown', handleClick);
+    return () => document.removeEventListener('mousedown', handleClick);
+  }, [menuOpen]);
 
   async function fetchTopics() {
     setLoading(true);
@@ -37,73 +57,101 @@ export default function ExplorePage() {
     setLoading(false);
   }
 
-  const filtered = topics.filter(t =>
-    !search || t.name.toLowerCase().includes(search.toLowerCase()) || t.description?.toLowerCase().includes(search.toLowerCase())
-  );
-
-  const featured = filtered.filter(t => FEATURED_TOPICS.includes(t.slug)).slice(0, 3);
-  const rest = filtered.filter(t => !FEATURED_TOPICS.includes(t.slug) || !featured.find(f => f.id === t.id));
+  const filtered = topics
+    .filter(t =>
+      !search || t.name.toLowerCase().includes(search.toLowerCase()) || t.description?.toLowerCase().includes(search.toLowerCase())
+    )
+    .sort((a, b) => {
+      switch (sort) {
+        case 'most':
+          return (b.poem_count || 0) - (a.poem_count || 0);
+        case 'least':
+          return (a.poem_count || 0) - (b.poem_count || 0);
+        case 'za':
+          return b.name.localeCompare(a.name);
+        case 'az':
+        default:
+          return a.name.localeCompare(b.name);
+      }
+    });
 
   return (
     <div className="max-w-3xl mx-auto px-4 py-6 pb-24 lg:pb-8">
       {/* Header */}
-      <div className="mb-6">
-        <h1 className="font-serif font-bold text-3xl text-foreground mb-1">Explore</h1>
-        <p className="text-foreground-muted text-sm">Discover poems by theme. Every topic is a world.</p>
+      <div className="relative flex items-center justify-center mb-6">
+        <h1 className="font-serif font-bold text-2xl text-brand-500">Categories</h1>
+        <div ref={menuRef} className="absolute right-0">
+          <button
+            type="button"
+            aria-label="Sort topics"
+            aria-haspopup="menu"
+            aria-expanded={menuOpen}
+            onClick={() => setMenuOpen(o => !o)}
+            className={`p-2 transition-colors ${menuOpen ? 'text-brand-500' : 'text-foreground-muted hover:text-brand-500'}`}
+          >
+            <SlidersHorizontal size={20} />
+          </button>
+          {menuOpen && (
+            <div
+              role="menu"
+              className="absolute right-0 top-full mt-1 w-52 bg-background border border-border rounded-xl shadow-lg overflow-hidden z-20"
+            >
+              <p className="px-4 pt-3 pb-1 text-xs font-semibold text-foreground-muted uppercase tracking-wide">Sort by</p>
+              {SORT_OPTIONS.map(opt => (
+                <button
+                  key={opt.value}
+                  type="button"
+                  role="menuitemradio"
+                  aria-checked={sort === opt.value}
+                  onClick={() => {
+                    setSort(opt.value);
+                    setMenuOpen(false);
+                  }}
+                  className="w-full flex items-center justify-between gap-2 px-4 py-2.5 text-sm text-foreground hover:bg-background-subtle transition-colors text-left"
+                >
+                  <span>{opt.label}</span>
+                  {sort === opt.value && <Check size={16} className="text-brand-500 shrink-0" />}
+                </button>
+              ))}
+            </div>
+          )}
+        </div>
       </div>
 
       {/* Search */}
-      <div className="relative mb-8">
-        <Search size={16} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-foreground-muted" />
+      <div className="relative mb-4">
+        <Search size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-foreground-muted" />
         <input
           type="text"
           value={search}
           onChange={e => setSearch(e.target.value)}
-          placeholder="Search topics..."
-          className="w-full pl-10 pr-4 py-3 bg-background-subtle border border-border rounded-xl text-sm text-foreground placeholder:text-foreground-muted outline-none focus:border-brand-400 transition-colors"
+          placeholder="Search"
+          className="w-full pl-11 pr-4 py-3 bg-background-subtle border border-border rounded-full text-sm text-foreground placeholder:text-foreground-muted outline-none focus:border-brand-400 transition-colors"
         />
       </div>
 
       {loading ? (
-        <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
+        <div className="divide-y divide-border">
           {Array.from({ length: 9 }).map((_, i) => (
-            <div key={i} className="skeleton rounded-xl h-48" />
-          ))}
-        </div>
-      ) : (
-        <>
-          {/* Featured - large cards */}
-          {!search && featured.length > 0 && (
-            <div className="mb-8">
-              <div className="flex items-center gap-2 mb-4">
-                <TrendingUp size={15} className="text-brand-500" />
-                <h2 className="font-semibold text-sm text-foreground">Featured Topics</h2>
-              </div>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                {featured[0] && <TopicCard topic={featured[0]} variant="hero" className="sm:col-span-2 h-52" />}
-                {featured.slice(1, 3).map(t => (
-                  <TopicCard key={t.id} topic={t} variant="hero" className="h-44" />
-                ))}
+            <div key={i} className="flex items-center gap-4 py-3">
+              <div className="skeleton w-12 h-12 rounded-full" />
+              <div className="flex-1">
+                <div className="skeleton h-4 w-32 rounded mb-2" />
+                <div className="skeleton h-3 w-20 rounded" />
               </div>
             </div>
-          )}
-
-          {/* All topics grid */}
-          <div>
-            {!search && <h2 className="font-semibold text-sm text-foreground mb-4">All Topics</h2>}
-            {filtered.length === 0 ? (
-              <div className="py-16 text-center">
-                <p className="font-serif text-foreground-muted italic">No topics match "{search}"</p>
-              </div>
-            ) : (
-              <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
-                {(search ? filtered : rest).map(t => (
-                  <TopicCard key={t.id} topic={t} />
-                ))}
-              </div>
-            )}
-          </div>
-        </>
+          ))}
+        </div>
+      ) : filtered.length === 0 ? (
+        <div className="py-16 text-center">
+          <p className="font-serif text-foreground-muted italic">No topics match "{search}"</p>
+        </div>
+      ) : (
+        <div className="divide-y divide-border">
+          {filtered.map(t => (
+            <TopicCard key={t.id} topic={t} variant="list" />
+          ))}
+        </div>
       )}
     </div>
   );

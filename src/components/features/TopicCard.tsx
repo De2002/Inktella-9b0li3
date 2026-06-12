@@ -1,15 +1,45 @@
 import { Link } from 'react-router-dom';
 import { cn } from '@/lib/utils';
 import type { Topic } from '@/types';
-import { BookOpen, Users } from 'lucide-react';
+import { BookOpen, Users, ChevronRight } from 'lucide-react';
 
 interface TopicCardProps {
   topic: Topic;
   className?: string;
-  variant?: 'default' | 'compact' | 'hero';
+  variant?: 'default' | 'compact' | 'hero' | 'list';
 }
 
 export default function TopicCard({ topic, className, variant = 'default' }: TopicCardProps) {
+  if (variant === 'list') {
+    return (
+      <Link
+        to={`/topic/${topic.slug}`}
+        className={cn(
+          'flex items-center gap-4 py-3 group',
+          className
+        )}
+      >
+        <div
+          className="w-12 h-12 rounded-full overflow-hidden shrink-0"
+          style={{ background: topic.color + '20' }}
+        >
+          {topic.image_url ? (
+            <img src={topic.image_url} alt={topic.name} className="w-full h-full object-cover" />
+          ) : (
+            <div className="w-full h-full flex items-center justify-center font-serif text-lg font-bold" style={{ color: topic.color }}>
+              {topic.name[0]}
+            </div>
+          )}
+        </div>
+        <div className="flex-1 min-w-0">
+          <p className="font-semibold text-base text-foreground group-hover:text-brand-500 transition-colors truncate">{topic.name}</p>
+          <p className="text-sm text-foreground-muted">{topic.poem_count || 0} poems</p>
+        </div>
+        <ChevronRight size={20} className="text-foreground-muted shrink-0 group-hover:text-brand-500 transition-colors" />
+      </Link>
+    );
+  }
+
   if (variant === 'compact') {
     return (
       <Link
