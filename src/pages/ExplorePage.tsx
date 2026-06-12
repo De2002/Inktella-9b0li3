@@ -1,9 +1,18 @@
-import { useState, useEffect } from 'react';
-import { Search, SlidersHorizontal } from 'lucide-react';
+import { useState, useEffect, useRef } from 'react';
+import { Search, SlidersHorizontal, Check } from 'lucide-react';
 import { useSearchParams } from 'react-router-dom';
 import TopicCard from '@/components/features/TopicCard';
 import { supabase } from '@/lib/supabase';
 import type { Topic } from '@/types';
+
+type SortOption = 'most' | 'least' | 'az' | 'za';
+
+const SORT_OPTIONS: { value: SortOption; label: string }[] = [
+  { value: 'most', label: 'Most poems' },
+  { value: 'least', label: 'Least poems' },
+  { value: 'az', label: 'Alphabetical (A–Z)' },
+  { value: 'za', label: 'Alphabetical (Z–A)' },
+];
 
 export default function ExplorePage() {
   const [searchParams] = useSearchParams();
@@ -11,10 +20,23 @@ export default function ExplorePage() {
   const [topics, setTopics] = useState<Topic[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState(q);
+  const [sort, setSort] = useState<SortOption>('az');
+  const [menuOpen, setMenuOpen] = useState(false);
+  const menuRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     fetchTopics();
   }, []);
+
+  useEffect(() => {
+    function handleClick(e: MouseEvent) {
+      if (menuRef.current && !menuRef.current.contains(e.target as Node)) {
+        setMenuOpen(false);
+      }
+    }
+    if (menuOpen) document.addEventListener('mousedown', handleClick);
+    return () => document.removeEventListener('mousedown', handleClick);
+  }, [menuOpen]);
 
   async function fetchTopics() {
     setLoading(true);
@@ -35,22 +57,65 @@ export default function ExplorePage() {
     setLoading(false);
   }
 
-  const filtered = topics.filter(t =>
-    !search || t.name.toLowerCase().includes(search.toLowerCase()) || t.description?.toLowerCase().includes(search.toLowerCase())
-  );
+  const filtered = topics
+    .filter(t =>
+      !search || t.name.toLowerCase().includes(search.toLowerCase()) || t.description?.toLowerCase().includes(search.toLowerCase())
+    )
+    .sort((a, b) => {
+      switch (sort) {
+        case 'most':
+          return (b.poem_count || 0) - (a.poem_count || 0);
+        case 'least':
+          return (a.poem_count || 0) - (b.poem_count || 0);
+        case 'za':
+          return b.name.localeCompare(a.name);
+        case 'az':
+        default:
+          return a.name.localeCompare(b.name);
+      }
+    });
 
   return (
     <div className="max-w-3xl mx-auto px-4 py-6 pb-24 lg:pb-8">
       {/* Header */}
       <div className="relative flex items-center justify-center mb-6">
         <h1 className="font-serif font-bold text-2xl text-brand-500">Categories</h1>
-        <button
-          type="button"
-          aria-label="Filter topics"
-          className="absolute right-0 p-2 text-foreground-muted hover:text-brand-500 transition-colors"
-        >
-          <SlidersHorizontal size={20} />
-        </button>
+        <div ref={menuRef} className="absolute right-0">
+          <button
+            type="button"
+            aria-label="Sort topics"
+            aria-haspopup="menu"
+            aria-expanded={menuOpen}
+            onClick={() => setMenuOpen(o => !o)}
+            className={`p-2 transition-colors ${menuOpen ? 'text-brand-500' : 'text-foreground-muted hover:text-brand-500'}`}
+          >
+            <SlidersHorizontal size={20} />
+          </button>
+          {menuOpen && (
+            <div
+              role="menu"
+              className="absolute right-0 top-full mt-1 w-52 bg-background border border-border rounded-xl shadow-lg overflow-hidden z-20"
+            >
+              <p className="px-4 pt-3 pb-1 text-xs font-semibold text-foreground-muted uppercase tracking-wide">Sort by</p>
+              {SORT_OPTIONS.map(opt => (
+                <button
+                  key={opt.value}
+                  type="button"
+                  role="menuitemradio"
+                  aria-checked={sort === opt.value}
+                  onClick={() => {
+                    setSort(opt.value);
+                    setMenuOpen(false);
+                  }}
+                  className="w-full flex items-center justify-between gap-2 px-4 py-2.5 text-sm text-foreground hover:bg-background-subtle transition-colors text-left"
+                >
+                  <span>{opt.label}</span>
+                  {sort === opt.value && <Check size={16} className="text-brand-500 shrink-0" />}
+                </button>
+              ))}
+            </div>
+          )}
+        </div>
       </div>
 
       {/* Search */}
