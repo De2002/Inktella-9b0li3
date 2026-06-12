@@ -1,5 +1,5 @@
 import { Link, useNavigate } from 'react-router-dom';
-import { Bell, Sun, Moon, Search, PenLine, Settings } from 'lucide-react';
+import { Bell, Sun, Moon, Search, PenLine, Settings, User, Droplet } from 'lucide-react';
 import logoSrc from '@/assets/logo.png';
 import { useAuth } from '@/contexts/AuthContext';
 import { useTheme } from '@/contexts/ThemeContext';
@@ -118,7 +118,7 @@ export default function Navbar() {
                 </button>
 
                 {profileOpen && (
-                  <div className="absolute right-0 top-12 w-52 bg-surface border border-border rounded-xl shadow-lg py-1.5 z-50">
+                  <div className="absolute right-0 top-12 w-52 bg-surface border border-border rounded-xl shadow-lg py-1.5 z-50 md:block hidden">
                     <div className="px-3 py-2.5 border-b border-border">
                       <p className="font-medium text-sm text-foreground">{user.username}</p>
                       <p className="text-xs text-foreground-muted">{user.email}</p>
@@ -143,6 +143,44 @@ export default function Navbar() {
                         Sign out
                       </button>
                     </div>
+                  </div>
+                )}
+
+                {/* Mobile icon menu */}
+                {profileOpen && (
+                  <div className="absolute right-0 top-12 bg-surface border border-border rounded-xl shadow-lg md:hidden flex items-center gap-1 p-2 z-50">
+                    <Link
+                      to={`/profile/${user.username}`}
+                      onClick={() => setProfileOpen(false)}
+                      className="p-2 text-foreground-secondary hover:text-foreground hover:bg-background-subtle rounded-lg transition-colors"
+                      title="Profile"
+                    >
+                      <User size={18} />
+                    </Link>
+                    <Link
+                      to="/ink"
+                      onClick={() => setProfileOpen(false)}
+                      className="p-2 text-foreground-secondary hover:text-foreground hover:bg-background-subtle rounded-lg transition-colors"
+                      title="Ink"
+                    >
+                      <Droplet size={18} />
+                    </Link>
+                    <Link
+                      to="/write"
+                      onClick={() => setProfileOpen(false)}
+                      className="p-2 text-foreground-secondary hover:text-foreground hover:bg-background-subtle rounded-lg transition-colors"
+                      title="Write Poem"
+                    >
+                      <PenLine size={18} />
+                    </Link>
+                    <Link
+                      to="/settings"
+                      onClick={() => setProfileOpen(false)}
+                      className="p-2 text-foreground-secondary hover:text-foreground hover:bg-background-subtle rounded-lg transition-colors"
+                      title="Settings"
+                    >
+                      <Settings size={18} />
+                    </Link>
                   </div>
                 )}
               </div>
