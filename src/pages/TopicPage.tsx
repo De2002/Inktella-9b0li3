@@ -143,7 +143,7 @@ export default function TopicPage() {
                 </p>
 
                 {/* Stat mini-cards + Add button */}
-                <div className="flex gap-3">
+                <div className="flex flex-col sm:flex-row gap-3">
                   <div className="flex flex-col items-center justify-center px-5 py-3 rounded-xl border border-border bg-background-subtle min-w-[90px]">
                     <span className="font-serif font-bold text-2xl text-foreground leading-none">{poems.length}</span>
                     <span className="text-[11px] text-foreground-muted mt-1 tracking-wide uppercase">Poems</span>
@@ -154,7 +154,7 @@ export default function TopicPage() {
                   </div>
                   <Link
                     to={`/write?topic=${topic.id}`}
-                    className="flex items-center justify-center px-5 py-3 rounded-xl border border-border bg-background-subtle hover:bg-background-hover transition-colors h-fit"
+                    className="flex items-center justify-center px-5 py-3 rounded-xl border border-border bg-background-subtle hover:bg-background-hover transition-colors h-fit sm:h-auto"
                     title="Add a poem"
                   >
                     <Plus size={24} className="text-foreground" />
