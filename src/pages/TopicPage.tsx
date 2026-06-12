@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
-import { PenLine } from 'lucide-react';
+import { PenLine, Plus } from 'lucide-react';
 import { supabase } from '@/lib/supabase';
 import type { Topic, Poem, FeedTab } from '@/types';
 import FeedTabs from '@/components/features/FeedTabs';
@@ -92,77 +92,94 @@ export default function TopicPage() {
 
   return (
     <div className="pb-24 lg:pb-8">
-      {/* Redesigned topic banner */}
+      {/* Topic section with banner image */}
       {topic && (
-        <div className="flex border-b border-border" style={{ minHeight: '260px' }}>
+        <>
+          {/* Banner image - full width above description */}
+          <div className="w-full h-48 sm:h-64 lg:h-80 bg-gradient-to-br from-brand-500/20 to-brand-600/10 border-b border-border overflow-hidden">
+            {topic.image_url ? (
+              <img 
+                src={topic.image_url} 
+                alt={topic.name}
+                className="w-full h-full object-cover"
+              />
+            ) : (
+              <div 
+                className="w-full h-full opacity-20"
+                style={{ backgroundColor: topic.color || '#6C4EF6' }}
+              />
+            )}
+          </div>
 
-          {/* Left rail — Back to Explore */}
-          <Link
-            to="/explore"
-            className="flex-none w-9 flex items-center justify-center border-r border-border hover:bg-background-subtle transition-colors group"
-            title="Back to Explore"
-          >
-            <span
-              className="text-[10px] font-semibold tracking-[0.22em] uppercase select-none transition-colors group-hover:text-brand-500"
-              style={{
-                writingMode: 'vertical-rl',
-                transform: 'rotate(180deg)',
-                color: 'var(--color-foreground-muted, #9ca3af)',
-                letterSpacing: '0.22em',
-              }}
+          {/* Redesigned topic info section */}
+          <div className="flex border-b border-border" style={{ minHeight: '200px' }}>
+
+            {/* Left rail — Back to Explore */}
+            <Link
+              to="/explore"
+              className="flex-none w-9 flex items-center justify-center border-r border-border hover:bg-background-subtle transition-colors group"
+              title="Back to Explore"
             >
-              Back to Explore
-            </span>
-          </Link>
+              <span
+                className="text-[10px] font-semibold tracking-[0.22em] uppercase select-none transition-colors group-hover:text-brand-500"
+                style={{
+                  writingMode: 'vertical-rl',
+                  transform: 'rotate(180deg)',
+                  color: 'var(--color-foreground-muted, #9ca3af)',
+                  letterSpacing: '0.22em',
+                }}
+              >
+                Back to Explore
+              </span>
+            </Link>
 
-          {/* Centre — description, stats, CTA */}
-          <div className="flex-1 px-6 py-7 flex flex-col justify-between">
-            <div>
-              <p className="text-foreground text-sm leading-relaxed max-w-md mb-6" style={{ minHeight: '3.5rem' }}>
-                {topic.description
-                  ? topic.description
-                  : `A space for poems about ${topic.name.toLowerCase()} — where language meets feeling, and writers push each other toward clarity.`}
-              </p>
+            {/* Centre — description, stats, and plus button */}
+            <div className="flex-1 px-6 py-7 flex flex-col justify-between">
+              <div>
+                <p className="text-foreground text-sm leading-relaxed max-w-md mb-6" style={{ minHeight: '3.5rem' }}>
+                  {topic.description
+                    ? topic.description
+                    : `A space for poems about ${topic.name.toLowerCase()} — where language meets feeling, and writers push each other toward clarity.`}
+                </p>
 
-              {/* Stat mini-cards */}
-              <div className="flex gap-3 mb-7">
-                <div className="flex flex-col items-center justify-center px-5 py-3 rounded-xl border border-border bg-background-subtle min-w-[90px]">
-                  <span className="font-serif font-bold text-2xl text-foreground leading-none">{poems.length}</span>
-                  <span className="text-[11px] text-foreground-muted mt-1 tracking-wide uppercase">Poems</span>
-                </div>
-                <div className="flex flex-col items-center justify-center px-5 py-3 rounded-xl border border-border bg-background-subtle min-w-[90px]">
-                  <span className="font-serif font-bold text-2xl text-foreground leading-none">{poets.length}</span>
-                  <span className="text-[11px] text-foreground-muted mt-1 tracking-wide uppercase">Poets</span>
+                {/* Stat mini-cards + Add button */}
+                <div className="flex gap-3">
+                  <div className="flex flex-col items-center justify-center px-5 py-3 rounded-xl border border-border bg-background-subtle min-w-[90px]">
+                    <span className="font-serif font-bold text-2xl text-foreground leading-none">{poems.length}</span>
+                    <span className="text-[11px] text-foreground-muted mt-1 tracking-wide uppercase">Poems</span>
+                  </div>
+                  <div className="flex flex-col items-center justify-center px-5 py-3 rounded-xl border border-border bg-background-subtle min-w-[90px]">
+                    <span className="font-serif font-bold text-2xl text-foreground leading-none">{poets.length}</span>
+                    <span className="text-[11px] text-foreground-muted mt-1 tracking-wide uppercase">Poets</span>
+                  </div>
+                  <Link
+                    to={`/write?topic=${topic.id}`}
+                    className="flex items-center justify-center px-5 py-3 rounded-xl border border-border bg-background-subtle hover:bg-background-hover transition-colors h-fit"
+                    title="Add a poem"
+                  >
+                    <Plus size={24} className="text-foreground" />
+                  </Link>
                 </div>
               </div>
             </div>
 
-            {/* Add your poem CTA */}
-            <Link
-              to={`/write?topic=${topic.id}`}
-              className="inline-flex items-center gap-2 bg-foreground text-background px-5 py-2.5 rounded-full text-sm font-semibold w-fit hover:opacity-85 transition-opacity"
+            {/* Right rail — Topic name in caps */}
+            <div
+              className="flex-none w-9 flex items-center justify-center border-l border-border"
             >
-              <PenLine size={13} />
-              Add your Poem
-            </Link>
+              <span
+                className="text-[10px] font-bold tracking-[0.22em] uppercase select-none"
+                style={{
+                  writingMode: 'vertical-rl',
+                  color: topic.color || '#6C4EF6',
+                  letterSpacing: '0.22em',
+                }}
+              >
+                {topic.name}
+              </span>
+            </div>
           </div>
-
-          {/* Right rail — Topic name in caps */}
-          <div
-            className="flex-none w-9 flex items-center justify-center border-l border-border"
-          >
-            <span
-              className="text-[10px] font-bold tracking-[0.22em] uppercase select-none"
-              style={{
-                writingMode: 'vertical-rl',
-                color: topic.color || '#6C4EF6',
-                letterSpacing: '0.22em',
-              }}
-            >
-              {topic.name}
-            </span>
-          </div>
-        </div>
+        </>
       )}
 
       {/* Feed tabs + poems */}
