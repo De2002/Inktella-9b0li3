@@ -86,6 +86,20 @@ export interface PoemDraft {
   inspired_by?: UserProfile[];
 }
 
+export interface FeedbackReply {
+  id: string;
+  feedback_id: string;
+  user_id: string;
+  content: string;
+  created_at: string;
+  // Joined
+  author?: UserProfile;
+  like_count?: number;
+  is_liked?: boolean;
+}
+
+export type FeedbackSort = 'recent' | 'helpful' | 'highlighted';
+
 export interface Feedback {
   id: string;
   poem_id: string;
@@ -97,6 +111,15 @@ export interface Feedback {
   author?: UserProfile;
   helpful_count?: number;
   is_helpful?: boolean;
+  // New enriched fields
+  like_count?: number;
+  is_liked?: boolean;
+  highlight_count?: number;
+  is_highlighted_by_me?: boolean;
+  highlight_users?: { username: string; avatar_url?: string }[];
+  downrank_count?: number;
+  is_downranked?: boolean;
+  replies?: FeedbackReply[];
 }
 
 export interface CriticNote {

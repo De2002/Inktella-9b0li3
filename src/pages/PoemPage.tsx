@@ -116,13 +116,22 @@ function ClassicPoemPage({ id }: { id: string }) {
   async function handleLike() {
     if (!user) { navigate('/auth'); return; }
     if (!poem || likePending) return;
+    if (user.id === poem.user_id) { toast.error("You can't like your own poem"); return; }
     setLikePending(true);
     if (liked) {
       setLiked(false); setLikeCount(c => c - 1);
       await supabase.from('poem_likes').delete().match({ poem_id: poem.id, user_id: user.id });
     } else {
       setLiked(true); setLikeCount(c => c + 1);
-      await supabase.from('poem_likes').insert({ poem_id: poem.id, user_id: user.id });
+      await Promise.all([
+        supabase.from('poem_likes').insert({ poem_id: poem.id, user_id: user.id }),
+        // +1 Ink to poem owner
+        supabase.rpc ? null : null,
+        supabase.from('ink_transactions').insert({ user_id: poem.user_id, amount: 1, reason: 'Poem liked', related_id: poem.id }),
+        supabase.from('user_profiles').select('ink_balance').eq('id', poem.user_id).single().then(({ data }) => {
+          if (data) supabase.from('user_profiles').update({ ink_balance: (data.ink_balance || 0) + 1 }).eq('id', poem.user_id);
+        }),
+      ]);
     }
     setLikePending(false);
   }
@@ -348,12 +357,19 @@ function ModernPoemPage({ id }: { id: string }) {
   async function handleLike() {
     if (!user) { navigate('/auth'); return; }
     if (!poem) return;
+    if (user.id === poem.user_id) { toast.error("You can't like your own poem"); return; }
     if (liked) {
       setLiked(false); setLikeCount(c => c - 1);
       await supabase.from('poem_likes').delete().match({ poem_id: poem.id, user_id: user.id });
     } else {
       setLiked(true); setLikeCount(c => c + 1);
-      await supabase.from('poem_likes').insert({ poem_id: poem.id, user_id: user.id });
+      await Promise.all([
+        supabase.from('poem_likes').insert({ poem_id: poem.id, user_id: user.id }),
+        supabase.from('ink_transactions').insert({ user_id: poem.user_id, amount: 1, reason: 'Poem liked', related_id: poem.id }),
+        supabase.from('user_profiles').select('ink_balance').eq('id', poem.user_id).single().then(({ data }) => {
+          if (data) supabase.from('user_profiles').update({ ink_balance: (data.ink_balance || 0) + 1 }).eq('id', poem.user_id);
+        }),
+      ]);
     }
   }
 
