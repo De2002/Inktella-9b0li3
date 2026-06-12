@@ -1,7 +1,7 @@
 
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
-import { PenLine, BookOpen, Users, UserPlus, Settings } from 'lucide-react';
+import { PenLine, BookOpen, Users, UserPlus, Settings, Bookmark } from 'lucide-react';
 import { supabase } from '@/lib/supabase';
 import { useAuth } from '@/contexts/AuthContext';
 import type { UserProfile, Poem } from '@/types';
@@ -16,11 +16,12 @@ export default function ProfilePage() {
   const navigate = useNavigate();
   const [profile, setProfile] = useState<UserProfile | null>(null);
   const [poems, setPoems] = useState<Poem[]>([]);
+  const [savedPoems, setSavedPoems] = useState<Poem[]>([]);
   const [loading, setLoading] = useState(true);
   const [following, setFollowing] = useState(false);
   const [followerCount, setFollowerCount] = useState(0);
   const [followingCount, setFollowingCount] = useState(0);
-  const [activeTab, setActiveTab] = useState<'poems' | 'feedback'>('poems');
+  const [activeTab, setActiveTab] = useState<'poems' | 'saved'>('poems');
   const [activeFeedback, setActiveFeedback] = useState<Poem | null>(null);
 
   const isOwn = user?.username === username;
@@ -37,7 +38,7 @@ export default function ProfilePage() {
     const level = getLevel(data.tella_balance || 0);
     setProfile({ ...data, level });
 
-    const [poemsRes, followersRes, followingRes, isFollowingRes] = await Promise.all([
+    const [poemsRes, followersRes, followingRes, isFollowingRes, savedRes] = await Promise.all([
       supabase.from('poems').select(`
         *,
         author:user_profiles!poems_user_id_fkey(id, username, avatar_url, tella_balance),
@@ -47,10 +48,18 @@ export default function ProfilePage() {
       supabase.from('follows').select('*', { count: 'exact', head: true }).eq('following_id', data.id),
       supabase.from('follows').select('*', { count: 'exact', head: true }).eq('follower_id', data.id),
       user ? supabase.from('follows').select('follower_id').match({ follower_id: user.id, following_id: data.id }).single() : Promise.resolve({ data: null }),
+      user ? supabase.from('poem_bookmarks').select(`
+        poem:poems(
+          *,
+          author:user_profiles!poems_user_id_fkey(id, username, avatar_url, tella_balance),
+          topic:topics(id, name, slug, color),
+          poem_tags(tag:tags(id, name))
+        )
+      `).eq('user_id', user.id) : Promise.resolve({ data: [] }),
     ]);
 
     if (poemsRes.data) {
-      const enriched = await Promise.all(poemsRes.data.map(async (poem: any) => { // Explicitly define poem as any
+      const enriched = await Promise.all(poemsRes.data.map(async (poem: any) => {
         const [likesRes, feedbackRes] = await Promise.all([
           supabase.from('poem_likes').select('*', { count: 'exact', head: true }).eq('poem_id', poem.id),
           supabase.from('feedback').select('*', { count: 'exact', head: true }).eq('poem_id', poem.id),
@@ -63,6 +72,23 @@ export default function ProfilePage() {
         };
       }));
       setPoems(enriched);
+    }
+
+    if (savedRes.data && user) {
+      const enriched = await Promise.all(savedRes.data.map(async (bookmark: any) => {
+        const poem = bookmark.poem;
+        const [likesRes, feedbackRes] = await Promise.all([
+          supabase.from('poem_likes').select('*', { count: 'exact', head: true }).eq('poem_id', poem.id),
+          supabase.from('feedback').select('*', { count: 'exact', head: true }).eq('poem_id', poem.id),
+        ]);
+        return {
+          ...poem,
+          tags: poem.poem_tags?.map((pt: any) => pt.tag).filter(Boolean) || [],
+          like_count: likesRes.count || 0,
+          feedback_count: feedbackRes.count || 0,
+        };
+      }));
+      setSavedPoems(enriched);
     }
 
     setFollowerCount(followersRes.count || 0);
@@ -191,22 +217,38 @@ export default function ProfilePage() {
         </div>
 
         {/* Tab navigation */}
-        <div className="flex border-b border-border mb-2 -mx-4 px-4">
-          <button
-            onClick={() => setActiveTab('poems')}
-            className={cn('px-4 py-3 text-sm font-medium border-b-2 transition-all', activeTab === 'poems' ? 'text-brand-500 border-brand-500' : 'text-foreground-muted border-transparent hover:text-foreground')}
-          >
-            Poems ({poems.length})
-          </button>
-          {isOwn && (
+        {isOwn && (
+          <div className="flex items-center justify-between gap-4 mb-6">
+            {/* Poems tab - left */}
             <button
-              onClick={() => setActiveTab('feedback')}
-              className={cn('px-4 py-3 text-sm font-medium border-b-2 transition-all', activeTab === 'feedback' ? 'text-brand-500 border-brand-500' : 'text-foreground-muted border-transparent hover:text-foreground')}
+              onClick={() => setActiveTab('poems')}
+              className={cn(
+                'flex-1 px-4 py-3 rounded-lg text-sm font-medium transition-all border',
+                activeTab === 'poems'
+                  ? 'bg-brand-500 text-white border-brand-500'
+                  : 'bg-background-subtle text-foreground-muted border-border hover:border-brand-400 hover:text-foreground'
+              )}
             >
-              Activity
+              Poems ({poems.length})
             </button>
-          )}
-        </div>
+
+            {/* My Saved Poems tab - right */}
+            <button
+              onClick={() => setActiveTab('saved')}
+              className={cn(
+                'flex-1 px-4 py-3 rounded-lg text-sm font-medium transition-all border',
+                activeTab === 'saved'
+                  ? 'bg-brand-500 text-white border-brand-500'
+                  : 'bg-background-subtle text-foreground-muted border-border hover:border-brand-400 hover:text-foreground'
+              )}
+            >
+              <span className="flex items-center justify-center gap-1.5">
+                <Bookmark size={14} />
+                My Saved Poems ({savedPoems.length})
+              </span>
+            </button>
+          </div>
+        )}
 
         {/* Poems */}
         {activeTab === 'poems' && (
@@ -234,9 +276,27 @@ export default function ProfilePage() {
           </div>
         )}
 
-        {activeTab === 'feedback' && (
-          <div className="py-8 text-center">
-            <p className="text-foreground-muted text-sm italic">Activity coming soon.</p>
+        {/* My Saved Poems */}
+        {activeTab === 'saved' && (
+          <div>
+            {savedPoems.length === 0 ? (
+              <div className="py-16 text-center">
+                <p className="font-serif italic text-foreground-muted text-lg mb-3">
+                  No saved poems yet.
+                </p>
+                <Link to="/feed" className="inline-flex items-center gap-2 bg-brand-500 hover:bg-brand-600 text-white px-5 py-2.5 rounded-full text-sm font-medium transition-colors">
+                  <Bookmark size={14} /> Explore poems to save
+                </Link>
+              </div>
+            ) : (
+              savedPoems.map(poem => (
+                <PoemCard
+                  key={poem.id}
+                  poem={poem}
+                  onFeedbackClick={setActiveFeedback}
+                />
+              ))
+            )}
           </div>
         )}
       </div>
