@@ -58,13 +58,19 @@ export default function AuthPage() {
       return;
     }
     setLoading(true);
-    const { error } = await supabase.auth.verifyOtp({ email, token: otp, type: 'email' });
+    const { data, error } = await supabase.auth.verifyOtp({ email, token: otp, type: 'email' });
     if (error) {
       toast.error('Invalid or expired code');
       setLoading(false);
       return;
     }
-    setStep('register-details');
+    // Check if user has a password set; if not, require password setup
+    if (data.user && !data.user.user_metadata?.has_password) {
+      setStep('register-details');
+    } else {
+      // User already has password (shouldn't happen in signup flow, but handle it)
+      setStep('register-details');
+    }
     setLoading(false);
   }
 
@@ -159,6 +165,21 @@ export default function AuthPage() {
       return;
     }
     if (data.user) {
+      // Check if user is a new user without a password (created via sign-up email code)
+      // If they don't have a password, redirect to password setup instead of feed
+      const { data: profileData } = await supabase
+        .from('user_profiles')
+        .select('id')
+        .eq('id', data.user.id)
+        .maybeSingle();
+      
+      if (!profileData) {
+        // New user without profile - needs to set password
+        setStep('register-details');
+        setLoading(false);
+        return;
+      }
+      
       login(mapUser(data.user));
       navigate('/feed');
     }
