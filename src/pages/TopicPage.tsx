@@ -39,7 +39,7 @@ export default function TopicPage() {
       .from('poems')
       .select(`
         *,
-        author:user_profiles!poems_user_id_fkey(id, username, avatar_url, tella_balance),
+        author:user_id(id, username, avatar_url, tella_balance),
         topic:topics(id, name, slug, color),
         poem_tags(tag:tags(id, name))
       `)
