@@ -41,7 +41,7 @@ export default function ProfilePage() {
     const [poemsRes, followersRes, followingRes, isFollowingRes, savedRes] = await Promise.all([
       supabase.from('poems').select(`
         *,
-        author:user_profiles!poems_user_id_fkey(id, username, avatar_url, tella_balance),
+        author:user_id(id, username, avatar_url, tella_balance),
         topic:topics(id, name, slug, color),
         poem_tags(tag:tags(id, name))
       `).eq('user_id', data.id).eq('published', true).order('created_at', { ascending: false }).limit(20),
@@ -51,7 +51,7 @@ export default function ProfilePage() {
       user ? supabase.from('poem_bookmarks').select(`
         poem:poems(
           *,
-          author:user_profiles!poems_user_id_fkey(id, username, avatar_url, tella_balance),
+          author:user_id(id, username, avatar_url, tella_balance),
           topic:topics(id, name, slug, color),
           poem_tags(tag:tags(id, name))
         )

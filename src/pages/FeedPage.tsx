@@ -53,7 +53,7 @@ async function enrichPoems(rawPoems: any[], userId: string | undefined): Promise
 // ── Base poem select fragment ─────────────────────────────────────────────────
 const POEM_SELECT = `
   *,
-  author:user_profiles!poems_user_id_fkey(id, username, avatar_url, tella_balance, bio),
+  author:user_id(id, username, avatar_url, tella_balance, bio),
   topic:topics(id, name, slug, color),
   poem_tags(tag:tags(id, name))
 `;

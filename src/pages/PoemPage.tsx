@@ -57,7 +57,7 @@ function usePoemData(id: string | undefined, user: any) {
       .from('poems')
       .select(`
         *,
-        author:user_profiles!poems_user_id_fkey(id, username, avatar_url, tella_balance, bio),
+        author:user_id(id, username, avatar_url, tella_balance, bio),
         topic:topics(id, name, slug, color),
         poem_tags(tag:tags(id, name))
       `)
@@ -335,7 +335,7 @@ function ClassicPoemPage({ id }: { id: string }) {
   );
 }
 
-// ═══════════════════════════════════════════════════════════════════════════════
+// ═════════════════════════════════════════════════════��═════════════════════════
 // Modern Poem Page (original)
 // ═══════════════════════════════════════════════════════════════════════════════
 function ModernPoemPage({ id }: { id: string }) {
