@@ -107,7 +107,7 @@ export default function Navbar() {
               <div className="relative">
                 <button
                   onClick={() => setProfileOpen(!profileOpen)}
-                  className={`w-9 h-9 rounded-full overflow-hidden flex items-center justify-center text-sm font-semibold transition-all ${levelCfg.borderClass} cursor-pointer`}
+                  className={`w-9 h-9 rounded-full overflow-hidden flex items-center justify-center text-sm font-semibold transition-all ${levelCfg.borderClass} cursor-pointer relative z-50`}
                   style={{ background: levelCfg.color + '20', color: levelCfg.color }}
                 >
                   {profile?.avatar_url ? (
@@ -148,7 +148,17 @@ export default function Navbar() {
 
                 {/* Mobile icon menu */}
                 {profileOpen && (
-                  <div className="absolute right-0 top-12 bg-surface border border-border rounded-xl shadow-lg md:hidden flex flex-col gap-1 p-2 z-50">
+                  <div 
+                    className="absolute top-10 bg-surface border border-border shadow-lg md:hidden flex flex-col gap-1 p-2 z-40"
+                    style={{
+                      right: 0,
+                      clipPath: 'polygon(0 20px, calc(100% - 20px) 0, 100% 0, 100% 100%, 0 100%)',
+                      borderTopLeftRadius: '12px',
+                      borderTopRightRadius: '0',
+                      borderBottomRightRadius: '12px',
+                      borderBottomLeftRadius: '12px',
+                    }}
+                  >
                     <Link
                       to={`/profile/${user.username}`}
                       onClick={() => setProfileOpen(false)}
