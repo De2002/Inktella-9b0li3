@@ -146,12 +146,13 @@ export default function Navbar() {
                   </div>
                 )}
 
-                {/* Mobile icon menu */}
+                {/* Mobile icon menu - circular badges */}
                 {profileOpen && (
                   <div 
-                    className="absolute top-10 bg-surface border border-border shadow-lg md:hidden flex flex-col gap-1 p-2 z-40"
+                    className="absolute top-10 bg-surface border border-border shadow-lg md:hidden flex flex-wrap gap-3 p-4 z-40"
                     style={{
                       right: 0,
+                      width: '180px',
                       clipPath: 'polygon(0 20px, calc(100% - 20px) 0, 100% 0, 100% 100%, 0 100%)',
                       borderTopLeftRadius: '12px',
                       borderTopRightRadius: '0',
@@ -162,42 +163,41 @@ export default function Navbar() {
                     <Link
                       to={`/profile/${user.username}`}
                       onClick={() => setProfileOpen(false)}
-                      className="p-2 text-foreground-secondary hover:text-foreground hover:bg-background-subtle rounded-lg transition-colors"
+                      className="w-12 h-12 rounded-full flex items-center justify-center bg-blue-100 dark:bg-blue-900/30 text-blue-600 hover:bg-blue-200 dark:hover:bg-blue-900/50 transition-colors"
                       title="Profile"
                     >
-                      <User size={18} />
+                      <User size={20} />
                     </Link>
                     <Link
                       to="/ink"
                       onClick={() => setProfileOpen(false)}
-                      className="p-2 text-foreground-secondary hover:text-foreground hover:bg-background-subtle rounded-lg transition-colors"
+                      className="w-12 h-12 rounded-full flex items-center justify-center bg-cyan-100 dark:bg-cyan-900/30 text-cyan-600 hover:bg-cyan-200 dark:hover:bg-cyan-900/50 transition-colors"
                       title="Ink"
                     >
-                      <Droplet size={18} />
+                      <Droplet size={20} />
                     </Link>
                     <Link
                       to="/write"
                       onClick={() => setProfileOpen(false)}
-                      className="p-2 text-foreground-secondary hover:text-foreground hover:bg-background-subtle rounded-lg transition-colors"
+                      className="w-12 h-12 rounded-full flex items-center justify-center bg-purple-100 dark:bg-purple-900/30 text-purple-600 hover:bg-purple-200 dark:hover:bg-purple-900/50 transition-colors"
                       title="Write Poem"
                     >
-                      <PenLine size={18} />
+                      <PenLine size={20} />
                     </Link>
                     <Link
                       to="/settings"
                       onClick={() => setProfileOpen(false)}
-                      className="p-2 text-foreground-secondary hover:text-foreground hover:bg-background-subtle rounded-lg transition-colors"
+                      className="w-12 h-12 rounded-full flex items-center justify-center bg-amber-100 dark:bg-amber-900/30 text-amber-600 hover:bg-amber-200 dark:hover:bg-amber-900/50 transition-colors"
                       title="Settings"
                     >
-                      <Settings size={18} />
+                      <Settings size={20} />
                     </Link>
-                    <div className="border-t border-border my-1" />
                     <button 
                       onClick={() => { logout(); setProfileOpen(false); }} 
-                      className="p-2 text-red-500 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-colors text-left"
+                      className="w-12 h-12 rounded-full flex items-center justify-center bg-red-100 dark:bg-red-900/30 text-red-600 hover:bg-red-200 dark:hover:bg-red-900/50 transition-colors ml-auto"
                       title="Sign out"
                     >
-                      <svg size={18} className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
                       </svg>
                     </button>
