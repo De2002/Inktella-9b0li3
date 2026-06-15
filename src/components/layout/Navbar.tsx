@@ -148,7 +148,7 @@ export default function Navbar() {
 
                 {/* Mobile icon menu */}
                 {profileOpen && (
-                  <div className="absolute right-0 top-12 bg-surface border border-border rounded-xl shadow-lg md:hidden flex items-center gap-1 p-2 z-50">
+                  <div className="absolute right-0 top-12 bg-surface border border-border rounded-xl shadow-lg md:hidden flex flex-col gap-1 p-2 z-50">
                     <Link
                       to={`/profile/${user.username}`}
                       onClick={() => setProfileOpen(false)}
@@ -181,6 +181,16 @@ export default function Navbar() {
                     >
                       <Settings size={18} />
                     </Link>
+                    <div className="border-t border-border my-1" />
+                    <button 
+                      onClick={() => { logout(); setProfileOpen(false); }} 
+                      className="p-2 text-red-500 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-colors text-left"
+                      title="Sign out"
+                    >
+                      <svg size={18} className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+                      </svg>
+                    </button>
                   </div>
                 )}
               </div>
