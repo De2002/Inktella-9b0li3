@@ -146,24 +146,19 @@ export default function Navbar() {
                   </div>
                 )}
 
-                {/* Mobile icon menu - circular badges */}
+                {/* Mobile icon menu - vertical FAB stack */}
                 {profileOpen && (
                   <div 
-                    className="absolute top-10 bg-surface border border-border shadow-lg md:hidden flex flex-wrap gap-3 p-4 z-40"
+                    className="absolute md:hidden flex flex-col gap-3 z-40"
                     style={{
-                      right: 0,
-                      width: '180px',
-                      clipPath: 'polygon(0 20px, calc(100% - 20px) 0, 100% 0, 100% 100%, 0 100%)',
-                      borderTopLeftRadius: '12px',
-                      borderTopRightRadius: '0',
-                      borderBottomRightRadius: '12px',
-                      borderBottomLeftRadius: '12px',
+                      right: '1rem',
+                      top: '4rem',
                     }}
                   >
                     <Link
                       to={`/profile/${user.username}`}
                       onClick={() => setProfileOpen(false)}
-                      className="w-12 h-12 rounded-full flex items-center justify-center bg-blue-100 dark:bg-blue-900/30 text-blue-600 hover:bg-blue-200 dark:hover:bg-blue-900/50 transition-colors"
+                      className="w-12 h-12 rounded-full flex items-center justify-center bg-blue-500 hover:bg-blue-600 text-white shadow-lg transition-all transform hover:scale-110"
                       title="Profile"
                     >
                       <User size={20} />
@@ -171,7 +166,7 @@ export default function Navbar() {
                     <Link
                       to="/ink"
                       onClick={() => setProfileOpen(false)}
-                      className="w-12 h-12 rounded-full flex items-center justify-center bg-cyan-100 dark:bg-cyan-900/30 text-cyan-600 hover:bg-cyan-200 dark:hover:bg-cyan-900/50 transition-colors"
+                      className="w-12 h-12 rounded-full flex items-center justify-center bg-cyan-500 hover:bg-cyan-600 text-white shadow-lg transition-all transform hover:scale-110"
                       title="Ink"
                     >
                       <Droplet size={20} />
@@ -179,7 +174,7 @@ export default function Navbar() {
                     <Link
                       to="/write"
                       onClick={() => setProfileOpen(false)}
-                      className="w-12 h-12 rounded-full flex items-center justify-center bg-purple-100 dark:bg-purple-900/30 text-purple-600 hover:bg-purple-200 dark:hover:bg-purple-900/50 transition-colors"
+                      className="w-12 h-12 rounded-full flex items-center justify-center bg-purple-500 hover:bg-purple-600 text-white shadow-lg transition-all transform hover:scale-110"
                       title="Write Poem"
                     >
                       <PenLine size={20} />
@@ -187,14 +182,14 @@ export default function Navbar() {
                     <Link
                       to="/settings"
                       onClick={() => setProfileOpen(false)}
-                      className="w-12 h-12 rounded-full flex items-center justify-center bg-amber-100 dark:bg-amber-900/30 text-amber-600 hover:bg-amber-200 dark:hover:bg-amber-900/50 transition-colors"
+                      className="w-12 h-12 rounded-full flex items-center justify-center bg-amber-500 hover:bg-amber-600 text-white shadow-lg transition-all transform hover:scale-110"
                       title="Settings"
                     >
                       <Settings size={20} />
                     </Link>
                     <button 
                       onClick={() => { logout(); setProfileOpen(false); }} 
-                      className="w-12 h-12 rounded-full flex items-center justify-center bg-red-100 dark:bg-red-900/30 text-red-600 hover:bg-red-200 dark:hover:bg-red-900/50 transition-colors ml-auto"
+                      className="w-12 h-12 rounded-full flex items-center justify-center bg-red-500 hover:bg-red-600 text-white shadow-lg transition-all transform hover:scale-110"
                       title="Sign out"
                     >
                       <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
