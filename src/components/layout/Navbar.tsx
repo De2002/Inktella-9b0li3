@@ -149,10 +149,10 @@ export default function Navbar() {
                 {/* Mobile icon menu - vertical FAB stack */}
                 {profileOpen && (
                   <div 
-                    className="absolute md:hidden flex flex-col gap-0 z-40"
+                    className="fixed md:hidden flex flex-col gap-0 z-40 pointer-events-auto"
                     style={{
-                      right: '0.5rem',
-                      top: '1.5rem',
+                      right: '1rem',
+                      top: '5.5rem',
                     }}
                   >
                     <Link
@@ -209,7 +209,7 @@ export default function Navbar() {
       </div>
 
       {/* Click-outside handler */}
-      {profileOpen && <div className="fixed inset-0 z-40" onClick={() => setProfileOpen(false)} />}
+      {profileOpen && <div className="fixed inset-0 z-30 md:hidden" onClick={() => setProfileOpen(false)} />}
     </header>
   );
 }
