@@ -11,6 +11,7 @@ import TopicPage from '@/pages/TopicPage';
 import PoemPage from '@/pages/PoemPage';
 import WritePage from '@/pages/WritePage';
 import ProfilePage from '@/pages/ProfilePage';
+import DashboardPage from '@/pages/DashboardPage';
 import InkPage from '@/pages/InkPage';
 import NotificationsPage from '@/pages/NotificationsPage';
 import CriticNotesPage from '@/pages/CriticNotesPage';
@@ -30,6 +31,7 @@ export default function App() {
             <Route element={<AppLayout />}>
               <Route path="/" element={<LandingPage />} />
               <Route path="/feed" element={<FeedPage />} />
+              <Route path="/dashboard" element={<DashboardPage />} />
               <Route path="/explore" element={<ExplorePage />} />
               <Route path="/topic/:slug" element={<TopicPage />} />
               <Route path="/poem/:id" element={<PoemPage />} />
