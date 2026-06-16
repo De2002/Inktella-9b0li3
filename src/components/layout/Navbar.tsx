@@ -149,50 +149,50 @@ export default function Navbar() {
                 {/* Mobile icon menu - vertical FAB stack */}
                 {profileOpen && (
                   <div 
-                    className="absolute md:hidden flex flex-col gap-3 z-40"
+                    className="absolute md:hidden flex flex-col gap-0 z-40"
                     style={{
-                      right: '1rem',
-                      top: '4rem',
+                      right: '0.5rem',
+                      top: '1.5rem',
                     }}
                   >
                     <Link
                       to={`/profile/${user.username}`}
                       onClick={() => setProfileOpen(false)}
-                      className="w-12 h-12 rounded-full flex items-center justify-center bg-blue-500 hover:bg-blue-600 text-white shadow-lg transition-all transform hover:scale-110"
+                      className="w-9 h-9 rounded-full flex items-center justify-center bg-blue-500 hover:bg-blue-600 text-white shadow-lg transition-all transform hover:scale-110"
                       title="Profile"
                     >
-                      <User size={20} />
+                      <User size={18} />
                     </Link>
                     <Link
                       to="/ink"
                       onClick={() => setProfileOpen(false)}
-                      className="w-12 h-12 rounded-full flex items-center justify-center bg-cyan-500 hover:bg-cyan-600 text-white shadow-lg transition-all transform hover:scale-110"
+                      className="w-9 h-9 rounded-full flex items-center justify-center bg-cyan-500 hover:bg-cyan-600 text-white shadow-lg transition-all transform hover:scale-110"
                       title="Ink"
                     >
-                      <Droplet size={20} />
+                      <Droplet size={18} />
                     </Link>
                     <Link
                       to="/write"
                       onClick={() => setProfileOpen(false)}
-                      className="w-12 h-12 rounded-full flex items-center justify-center bg-purple-500 hover:bg-purple-600 text-white shadow-lg transition-all transform hover:scale-110"
+                      className="w-9 h-9 rounded-full flex items-center justify-center bg-purple-500 hover:bg-purple-600 text-white shadow-lg transition-all transform hover:scale-110"
                       title="Write Poem"
                     >
-                      <PenLine size={20} />
+                      <PenLine size={18} />
                     </Link>
                     <Link
                       to="/settings"
                       onClick={() => setProfileOpen(false)}
-                      className="w-12 h-12 rounded-full flex items-center justify-center bg-amber-500 hover:bg-amber-600 text-white shadow-lg transition-all transform hover:scale-110"
+                      className="w-9 h-9 rounded-full flex items-center justify-center bg-amber-500 hover:bg-amber-600 text-white shadow-lg transition-all transform hover:scale-110"
                       title="Settings"
                     >
-                      <Settings size={20} />
+                      <Settings size={18} />
                     </Link>
                     <button 
                       onClick={() => { logout(); setProfileOpen(false); }} 
-                      className="w-12 h-12 rounded-full flex items-center justify-center bg-red-500 hover:bg-red-600 text-white shadow-lg transition-all transform hover:scale-110"
+                      className="w-9 h-9 rounded-full flex items-center justify-center bg-red-500 hover:bg-red-600 text-white shadow-lg transition-all transform hover:scale-110"
                       title="Sign out"
                     >
-                      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
                       </svg>
                     </button>
