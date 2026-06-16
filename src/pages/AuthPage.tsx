@@ -28,7 +28,7 @@ export default function AuthPage() {
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    if (user) navigate('/feed', { replace: true });
+    if (user) navigate('/dashboard', { replace: true });
   }, [user]);
 
   // REGISTER FLOW
