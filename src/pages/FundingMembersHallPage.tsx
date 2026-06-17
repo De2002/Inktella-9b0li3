@@ -302,7 +302,7 @@ export default function FundingMembersHallPage() {
               <p className="text-foreground-secondary text-sm leading-relaxed mb-4">
                 Inktella exists because of people who believe in the power of poetry and community. Your support fuels every word, every feature, and every dream.
               </p>
-              <p className="text-purple-600 dark:text-purple-400 font-cursive text-lg">Thank you!</p>
+              <p className="text-purple-600 dark:text-purple-400 font-handwriting">Thank you!</p>
             </div>
 
             {/* Latest Supporters */}

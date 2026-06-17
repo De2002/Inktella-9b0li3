@@ -1,3 +1,5 @@
+@import url('https://fonts.googleapis.com/css2?family=Caveat:wght@400;700&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -269,5 +271,12 @@
 
   .settings-input:focus {
     border-color: hsl(var(--brand) / 0.6);
+  }
+
+  /* Handwriting font */
+  .font-handwriting {
+    font-family: 'Caveat', cursive;
+    font-size: 1.5rem;
+    font-weight: 700;
   }
 }
