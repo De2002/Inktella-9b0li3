@@ -10,19 +10,26 @@ const data = [
 ];
 
 export default function EngagementChart() {
+  // Get theme colors from CSS variables
+  const isDark = document.documentElement.classList.contains('dark');
+  const borderColor = isDark ? '#3f3f46' : '#e5e7eb';
+  const textColor = isDark ? '#a1a1aa' : '#9ca3af';
+  const tooltipBg = isDark ? '#27272a' : '#f9fafb';
+  const tooltipBorder = isDark ? '#52525b' : '#e5e7eb';
+
   return (
-    <div className="bg-white p-6 rounded-lg border border-gray-200 shadow-sm">
+    <div className="bg-surface p-6 rounded-lg border border-border shadow-sm">
       <div className="flex items-center justify-between mb-4">
-        <h3 className="font-bold text-lg text-gray-900">Engagement Trend</h3>
-        <button className="text-gray-600 text-sm font-medium hover:text-gray-900">Last 30 Days ↓</button>
+        <h3 className="font-bold text-lg text-foreground">Engagement Trend</h3>
+        <button className="text-foreground-secondary text-sm font-medium hover:text-foreground">Last 30 Days ↓</button>
       </div>
       <ResponsiveContainer width="100%" height={300}>
         <LineChart data={data} margin={{ top: 5, right: 30, left: 0, bottom: 5 }}>
-          <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
-          <XAxis dataKey="date" stroke="#9ca3af" style={{ fontSize: '12px' }} />
-          <YAxis stroke="#9ca3af" style={{ fontSize: '12px' }} />
+          <CartesianGrid strokeDasharray="3 3" stroke={borderColor} />
+          <XAxis dataKey="date" stroke={textColor} style={{ fontSize: '12px' }} />
+          <YAxis stroke={textColor} style={{ fontSize: '12px' }} />
           <Tooltip 
-            contentStyle={{ backgroundColor: '#f9fafb', border: '1px solid #e5e7eb', borderRadius: '8px' }}
+            contentStyle={{ backgroundColor: tooltipBg, border: `1px solid ${tooltipBorder}`, borderRadius: '8px' }}
             formatter={(value) => value.toLocaleString()}
           />
           <Legend />

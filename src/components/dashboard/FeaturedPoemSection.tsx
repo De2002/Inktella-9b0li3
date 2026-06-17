@@ -25,12 +25,12 @@ export default function FeaturedPoemSection({
   bookmarks,
 }: FeaturedPoemSectionProps) {
   return (
-    <div className="bg-white rounded-lg border border-gray-200 shadow-sm overflow-hidden">
+    <div className="bg-surface rounded-lg border border-border shadow-sm overflow-hidden">
       <div className="grid md:grid-cols-2 gap-6 p-6">
         {/* Image */}
         <div className="relative">
           {sponsored && (
-            <div className="absolute top-4 left-4 bg-purple-100 text-purple-800 px-3 py-1 rounded-full text-xs font-semibold z-10">
+            <div className="absolute top-4 left-4 bg-purple-100 dark:bg-purple-900 text-purple-800 dark:text-purple-200 px-3 py-1 rounded-full text-xs font-semibold z-10">
               Sponsored
             </div>
           )}
@@ -40,15 +40,15 @@ export default function FeaturedPoemSection({
         {/* Content */}
         <div className="flex flex-col justify-between">
           <div>
-            <h2 className="text-2xl font-bold text-gray-900 mb-2">{title}</h2>
-            <p className="text-gray-600 text-sm mb-3">by {author}</p>
-            <p className="text-gray-700 leading-relaxed mb-4">{excerpt}</p>
-            <p className="text-gray-600 text-sm leading-relaxed">{fullText}</p>
+            <h2 className="text-2xl font-bold text-foreground mb-2">{title}</h2>
+            <p className="text-foreground-secondary text-sm mb-3">by {author}</p>
+            <p className="text-foreground-secondary leading-relaxed mb-4">{excerpt}</p>
+            <p className="text-foreground-secondary text-sm leading-relaxed">{fullText}</p>
           </div>
 
           {/* Actions */}
-          <div className="flex items-center justify-between mt-6 pt-6 border-t border-gray-200">
-            <div className="flex items-center gap-4 text-gray-600 text-sm">
+          <div className="flex items-center justify-between mt-6 pt-6 border-t border-border">
+            <div className="flex items-center gap-4 text-foreground-secondary text-sm">
               <div className="flex items-center gap-1">
                 <Heart size={16} />
                 <span>{likes}</span>
@@ -62,7 +62,7 @@ export default function FeaturedPoemSection({
                 <span>{bookmarks}</span>
               </div>
             </div>
-            <Button className="bg-purple-600 hover:bg-purple-700 text-white">Read Poem</Button>
+            <Button className="bg-purple-600 hover:bg-purple-700 dark:bg-purple-700 dark:hover:bg-purple-600 text-white">Read Poem</Button>
           </div>
         </div>
       </div>
