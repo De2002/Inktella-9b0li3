@@ -1,5 +1,6 @@
 import { Button } from '@/components/ui/button';
-import { Check } from 'lucide-react';
+import { Check, ChevronDown } from 'lucide-react';
+import { useState } from 'react';
 
 interface FundingTier {
   id: string;
@@ -63,7 +64,81 @@ const impacts = [
   'Create new ways for poets to share their work',
 ];
 
+const faqs = [
+  {
+    id: 'why-support',
+    question: 'Why does Inktella need support?',
+    answer: 'Inktella is built to be a free and open home for poets and readers. Support from the community helps us maintain the platform, build new features, improve the experience, and continue creating a space where poetry can thrive.',
+  },
+  {
+    id: 'paid-platform',
+    question: 'Is Inktella becoming a paid platform?',
+    answer: 'No. Inktella will remain free and open for poets and readers. Supporting Inktella is completely optional. It is a way for people who believe in the mission to help keep it alive and growing.',
+  },
+  {
+    id: 'what-benefits',
+    question: 'What do funding members receive?',
+    answer: 'Funding members receive recognition as people who help support Inktella\'s journey. This is not a premium account or a way to unlock better features. Everyone on Inktella has access to the same creative community.',
+  },
+  {
+    id: 'poem-visibility',
+    question: 'Will supporters get more visibility for their poems?',
+    answer: 'No. Support does not influence how poems are discovered, reviewed, or recommended. Poetry should be valued based on creativity, engagement, and community response — not financial support.',
+  },
+  {
+    id: 'ads',
+    question: 'Will Inktella have advertisements?',
+    answer: 'Inktella\'s goal is to keep the poetry experience clean and enjoyable. We may explore carefully selected advertising or partnerships in the future to help sustain the platform, but we will avoid intrusive ads that interrupt reading, writing, or discovery.',
+  },
+  {
+    id: 'money-used',
+    question: 'How will support money be used?',
+    answer: 'Support helps fund: Platform hosting and maintenance, Development of new features, Improving tools for poets and readers, Community improvements, and Keeping Inktella accessible worldwide.',
+  },
+  {
+    id: 'other-support',
+    question: 'Can I support Inktella without becoming a funding member?',
+    answer: 'Yes. You can support Inktella by sharing poems, giving meaningful feedback, inviting poets, participating in the community, and spreading the word. Every contribution matters.',
+  },
+  {
+    id: 'cancel-support',
+    question: 'Can I change or cancel my support?',
+    answer: 'Yes. You can manage or cancel your support at any time.',
+  },
+  {
+    id: 'one-time',
+    question: 'Can I make a one-time contribution?',
+    answer: 'Yes. Some people prefer to support once instead of joining monthly. A one-time contribution option can be available for those who want to help without a recurring commitment.',
+  },
+  {
+    id: 'member-decisions',
+    question: 'Are funding members involved in decisions about Inktella?',
+    answer: 'Funding members may have opportunities to share feedback and ideas about the future of Inktella. However, decisions will always be guided by the mission of creating the best possible experience for poets and readers.',
+  },
+  {
+    id: 'public-names',
+    question: 'Why are the supporter names displayed publicly?',
+    answer: 'The Funding Members Hall is a way to recognize the people who choose to stand behind Inktella. Public display is optional. Supporters can choose whether their name appears.',
+  },
+  {
+    id: 'organizations',
+    question: 'Can businesses or organizations support Inktella?',
+    answer: 'Yes. Organizations, writing groups, schools, and creative communities can support Inktella and help promote a culture of poetry and creativity.',
+  },
+  {
+    id: 'cannot-afford',
+    question: 'What if I cannot afford to support?',
+    answer: 'That is completely okay. Inktella exists for everyone. Reading poems, sharing your work, and being part of the community are valuable forms of support too.',
+  },
+  {
+    id: 'pay-success',
+    question: 'Will paying make my poems more successful?',
+    answer: 'No. Supporting Inktella does not give anyone an advantage in publishing, feedback, discovery, or recognition. Every poet deserves an equal opportunity to be heard.',
+  },
+];
+
 export default function LoveInktella() {
+  const [expandedFAQ, setExpandedFAQ] = useState<string | null>(null);
   return (
     <div className="min-h-screen bg-background">
       {/* Hero Section */}
@@ -180,6 +255,35 @@ export default function LoveInktella() {
                 </div>
               ))}
             </div>
+          </div>
+        </div>
+
+        {/* FAQ Section */}
+        <div className="mb-12 sm:mb-16">
+          <h2 className="text-2xl sm:text-3xl font-bold text-foreground text-center mb-8 sm:mb-10">
+            Frequently Asked Questions
+          </h2>
+          <div className="space-y-4 max-w-3xl mx-auto">
+            {faqs.map((faq) => (
+              <div key={faq.id} className="bg-surface border border-border rounded-lg overflow-hidden">
+                <button
+                  onClick={() => setExpandedFAQ(expandedFAQ === faq.id ? null : faq.id)}
+                  className="w-full px-6 py-4 flex items-center justify-between hover:bg-background-subtle transition-colors text-left"
+                >
+                  <h3 className="font-semibold text-foreground text-sm sm:text-base pr-4">{faq.question}</h3>
+                  <ChevronDown
+                    className={`w-5 h-5 text-purple-600 dark:text-purple-400 flex-shrink-0 transition-transform ${
+                      expandedFAQ === faq.id ? 'transform rotate-180' : ''
+                    }`}
+                  />
+                </button>
+                {expandedFAQ === faq.id && (
+                  <div className="px-6 py-4 border-t border-border bg-background-subtle">
+                    <p className="text-foreground-secondary text-sm sm:text-base leading-relaxed">{faq.answer}</p>
+                  </div>
+                )}
+              </div>
+            ))}
           </div>
         </div>
 
