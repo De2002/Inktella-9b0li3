@@ -1,6 +1,3 @@
-import { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { useAuth } from '@/contexts/AuthContext';
 import { Heart, MessageCircle, Bookmark, Users, UserCheck, BookOpen, PenTool } from 'lucide-react';
 import StatsCard from '@/components/dashboard/StatsCard';
 import UserProfileCard from '@/components/dashboard/UserProfileCard';
@@ -59,34 +56,7 @@ const mockPrivileges = [
   { id: '5', name: 'Access Analytics', icon: '📊' },
 ];
 
-export default function DashboardPage() {
-  const { user, profile, isAuthenticated } = useAuth();
-  const navigate = useNavigate();
-  const [isLoading, setIsLoading] = useState(true);
-
-  useEffect(() => {
-    if (!isAuthenticated) {
-      navigate('/auth');
-      return;
-    }
-    setIsLoading(false);
-  }, [isAuthenticated, navigate]);
-
-  if (isLoading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50">
-        <div className="text-center">
-          <div className="w-12 h-12 border-4 border-gray-200 border-t-purple-600 rounded-full animate-spin mx-auto mb-4" />
-          <p className="text-gray-600">Loading your dashboard...</p>
-        </div>
-      </div>
-    );
-  }
-
-  if (!user || !profile) {
-    return null;
-  }
-
+export default function DashboardDemoPage() {
   return (
     <div className="min-h-screen bg-gray-50">
       <div className="max-w-7xl mx-auto px-4 py-8">
@@ -116,10 +86,10 @@ export default function DashboardPage() {
           {/* Left Column - Profile & Pulse */}
           <div className="lg:col-span-1 space-y-6">
             <UserProfileCard 
-              username={profile.username}
-              displayName={profile.username}
+              username="aria_moon"
+              displayName="Aria Moon"
               tag="Post"
-              avatar={profile.avatar_url || 'https://i.pravatar.cc/150?img=0'}
+              avatar="https://i.pravatar.cc/150?img=0"
               level="Poet"
               xp={2450}
               maxXp={3500}
