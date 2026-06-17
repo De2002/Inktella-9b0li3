@@ -187,50 +187,50 @@ export default function FundingMembersHallPage() {
 
   return (
     <div className="min-h-screen bg-background">
-      <div className="max-w-7xl mx-auto px-4 py-8">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
         {/* Header Section */}
         <div className="mb-8">
-          <div className="flex items-start justify-between gap-8 mb-6">
-            <div className="flex-1">
-              <div className="flex items-center gap-3 mb-4">
-                <span className="text-4xl">🙏</span>
-                <h1 className="text-4xl font-bold text-foreground">Funding Members Hall</h1>
+          <div className="flex flex-col lg:flex-row lg:items-start lg:justify-between lg:gap-8 mb-6">
+            <div className="flex-1 mb-6 lg:mb-0">
+              <div className="flex items-center gap-2 sm:gap-3 mb-4">
+                <span className="text-3xl sm:text-4xl">🙏</span>
+                <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-foreground">Funding Members Hall</h1>
               </div>
-              <p className="text-foreground-secondary max-w-2xl">
+              <p className="text-foreground-secondary text-sm sm:text-base max-w-2xl">
                 These incredible members help keep Inktella alive — empowering poets, inspiring words, and building a home for creativity. We're deeply grateful.{' '}
                 <span className="text-purple-600">💜</span>
               </p>
             </div>
             {/* Hall of Gratitude Stats */}
-            <div className="bg-surface border border-border rounded-lg p-6 min-w-max">
-              <h3 className="font-bold text-lg text-foreground mb-6">Hall of Gratitude</h3>
-              <div className="grid grid-cols-2 gap-6">
+            <div className="bg-surface border border-border rounded-lg p-4 sm:p-6 w-full lg:w-auto lg:min-w-max">
+              <h3 className="font-bold text-lg text-foreground mb-4 sm:mb-6">Hall of Gratitude</h3>
+              <div className="grid grid-cols-2 lg:grid-cols-2 gap-4 sm:gap-6">
                 <div>
                   <div className="flex items-center gap-2 mb-2">
-                    <span className="text-2xl">👥</span>
+                    <span className="text-xl sm:text-2xl">👥</span>
                   </div>
-                  <p className="font-bold text-2xl text-foreground">248</p>
+                  <p className="font-bold text-xl sm:text-2xl text-foreground">248</p>
                   <p className="text-foreground-secondary text-xs">Funding Members</p>
                 </div>
                 <div>
                   <div className="flex items-center gap-2 mb-2">
-                    <span className="text-2xl">💜</span>
+                    <span className="text-xl sm:text-2xl">💜</span>
                   </div>
-                  <p className="font-bold text-2xl text-foreground">15,870</p>
+                  <p className="font-bold text-xl sm:text-2xl text-foreground">15,870</p>
                   <p className="text-foreground-secondary text-xs">Total Support</p>
                 </div>
                 <div>
                   <div className="flex items-center gap-2 mb-2">
-                    <span className="text-2xl">✨</span>
+                    <span className="text-xl sm:text-2xl">✨</span>
                   </div>
-                  <p className="font-bold text-2xl text-foreground">35</p>
+                  <p className="font-bold text-xl sm:text-2xl text-foreground">35</p>
                   <p className="text-foreground-secondary text-xs">Visionaries</p>
                 </div>
                 <div>
                   <div className="flex items-center gap-2 mb-2">
-                    <span className="text-2xl">📅</span>
+                    <span className="text-xl sm:text-2xl">📅</span>
                   </div>
-                  <p className="font-bold text-2xl text-foreground">2023</p>
+                  <p className="font-bold text-xl sm:text-2xl text-foreground">2023</p>
                   <p className="text-foreground-secondary text-xs">Since Inception</p>
                 </div>
               </div>
@@ -238,7 +238,7 @@ export default function FundingMembersHallPage() {
           </div>
 
           {/* Filters */}
-          <div className="flex gap-2 flex-wrap mb-8">
+          <div className="flex gap-2 flex-wrap sm:flex-nowrap overflow-x-auto pb-2 mb-8">
             {[
               { id: 'all', label: 'All Members' },
               { id: 'top', label: 'Top Supporters' },
@@ -249,7 +249,7 @@ export default function FundingMembersHallPage() {
               <button
                 key={filter.id}
                 onClick={() => setSelectedFilter(filter.id)}
-                className={`px-4 py-2 rounded-full font-semibold transition-colors ${
+                className={`px-3 sm:px-4 py-2 rounded-full font-semibold text-sm sm:text-base transition-colors whitespace-nowrap ${
                   selectedFilter === filter.id
                     ? 'bg-purple-600 text-white'
                     : 'bg-surface border border-border text-foreground hover:border-purple-400'
@@ -262,23 +262,23 @@ export default function FundingMembersHallPage() {
         </div>
 
         {/* Main Content */}
-        <div className="grid grid-cols-3 gap-8 mb-12">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 sm:gap-8 mb-12">
           {/* Members Grid */}
-          <div className="col-span-2">
-            <div className="grid grid-cols-2 gap-6 mb-8">
+          <div className="lg:col-span-2">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6 mb-8">
               {paginatedMembers.map((member) => (
                 <MemberCard key={member.id} member={member} />
               ))}
             </div>
 
             {/* Pagination */}
-            <div className="flex items-center justify-center gap-2">
-              <button className="px-3 py-2 rounded border border-border text-foreground hover:bg-background-subtle">← Prev</button>
+            <div className="flex items-center justify-center gap-1 sm:gap-2 overflow-x-auto pb-2">
+              <button className="px-2 sm:px-3 py-2 rounded border border-border text-foreground text-sm sm:text-base hover:bg-background-subtle whitespace-nowrap">← Prev</button>
               {Array.from({ length: Math.min(5, totalPages) }, (_, i) => i + 1).map((page) => (
                 <button
                   key={page}
                   onClick={() => setCurrentPage(page)}
-                  className={`w-10 h-10 rounded font-semibold transition-colors ${
+                  className={`w-8 h-8 sm:w-10 sm:h-10 rounded font-semibold text-sm sm:text-base transition-colors ${
                     currentPage === page
                       ? 'bg-purple-600 text-white'
                       : 'bg-surface border border-border text-foreground hover:bg-background-subtle'
@@ -287,17 +287,17 @@ export default function FundingMembersHallPage() {
                   {page}
                 </button>
               ))}
-              {totalPages > 5 && <span className="text-foreground-secondary">...</span>}
-              <button className="px-3 py-2 rounded border border-border text-foreground hover:bg-background-subtle">Next →</button>
+              {totalPages > 5 && <span className="text-foreground-secondary text-sm">...</span>}
+              <button className="px-2 sm:px-3 py-2 rounded border border-border text-foreground text-sm sm:text-base hover:bg-background-subtle whitespace-nowrap">Next →</button>
             </div>
           </div>
 
           {/* Right Sidebar */}
-          <div className="space-y-6">
+          <div className="space-y-4 sm:space-y-6">
             {/* Thank You Note */}
-            <div className="bg-surface border border-border rounded-lg p-6">
-              <h3 className="font-bold text-lg text-foreground mb-3 flex items-center gap-2">
-                <span className="text-2xl">✒️</span> Thank You Note
+            <div className="bg-surface border border-border rounded-lg p-4 sm:p-6">
+              <h3 className="font-bold text-base sm:text-lg text-foreground mb-3 flex items-center gap-2">
+                <span className="text-xl sm:text-2xl">✒️</span> Thank You Note
               </h3>
               <p className="text-foreground-secondary text-sm leading-relaxed mb-4">
                 Inktella exists because of people who believe in the power of poetry and community. Your support fuels every word, every feature, and every dream.
@@ -306,14 +306,14 @@ export default function FundingMembersHallPage() {
             </div>
 
             {/* Latest Supporters */}
-            <div className="bg-surface border border-border rounded-lg p-6">
-              <h3 className="font-bold text-lg text-foreground mb-4 flex items-center gap-2">
-                <span className="text-2xl">🌟</span> Latest Supporters
+            <div className="bg-surface border border-border rounded-lg p-4 sm:p-6">
+              <h3 className="font-bold text-base sm:text-lg text-foreground mb-4 flex items-center gap-2">
+                <span className="text-xl sm:text-2xl">🌟</span> Latest Supporters
               </h3>
               <div className="space-y-3">
                 {recentSupporters.map((supporter) => (
                   <div key={supporter.id} className="flex items-center gap-3 pb-3 border-b border-border-subtle last:border-0">
-                    <img src={supporter.avatar} alt={supporter.name} className="w-10 h-10 rounded-full object-cover" />
+                    <img src={supporter.avatar} alt={supporter.name} className="w-8 h-8 sm:w-10 sm:h-10 rounded-full object-cover shrink-0" />
                     <div className="flex-1 min-w-0">
                       <p className="font-semibold text-foreground text-sm truncate">{supporter.name}</p>
                       <p className="text-foreground-secondary text-xs">{supporter.timeAgo}</p>
@@ -321,14 +321,14 @@ export default function FundingMembersHallPage() {
                   </div>
                 ))}
               </div>
-              <button className="mt-4 text-purple-600 dark:text-purple-400 text-sm font-medium hover:underline">View all recent supporters →</button>
+              <button className="mt-4 text-purple-600 dark:text-purple-400 text-xs sm:text-sm font-medium hover:underline">View all recent supporters →</button>
             </div>
 
             {/* CTA Section */}
-            <div className="bg-gradient-to-br from-purple-50 dark:from-purple-900 to-indigo-50 dark:to-indigo-900 border border-purple-200 dark:border-purple-700 rounded-lg p-6">
-              <h3 className="font-bold text-lg text-foreground mb-2">Want to support Inktella?</h3>
-              <p className="text-foreground-secondary text-sm mb-4">Join our mission and help keep this poetic home alive for everyone.</p>
-              <Button className="w-full bg-purple-600 hover:bg-purple-700 dark:bg-purple-700 dark:hover:bg-purple-600 text-white font-semibold">
+            <div className="bg-gradient-to-br from-purple-50 dark:from-purple-900 to-indigo-50 dark:to-indigo-900 border border-purple-200 dark:border-purple-700 rounded-lg p-4 sm:p-6">
+              <h3 className="font-bold text-base sm:text-lg text-foreground mb-2">Want to support Inktella?</h3>
+              <p className="text-foreground-secondary text-xs sm:text-sm mb-4">Join our mission and help keep this poetic home alive for everyone.</p>
+              <Button className="w-full bg-purple-600 hover:bg-purple-700 dark:bg-purple-700 dark:hover:bg-purple-600 text-white font-semibold text-sm sm:text-base">
                 💜 Become a Funding Member
               </Button>
             </div>
