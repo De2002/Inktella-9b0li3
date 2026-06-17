@@ -10,7 +10,7 @@ export default function RefundPolicyPage() {
             ← Back to Inktella
           </Link>
           <h1 className="text-4xl sm:text-5xl font-bold text-foreground mb-3">Refund Policy</h1>
-          <p className="text-foreground-secondary text-sm">Effective Date: [Insert Date]</p>
+          <p className="text-foreground-secondary text-sm">Effective Date: June 17, 2026</p>
         </div>
 
         {/* Content */}
