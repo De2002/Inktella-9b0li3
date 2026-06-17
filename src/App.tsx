@@ -30,7 +30,7 @@ export default function App() {
   return (
     <ThemeProvider>
       <AuthProvider>
-        <BrowserRouter future={{ v7_startTransition: true }}>
+        <BrowserRouter future={{ v7_startTransition: true }} scrollRestoration="manual">
           <Routes>
             <Route path="/auth" element={<AuthPage />} />
             <Route element={<AppLayout />}>
