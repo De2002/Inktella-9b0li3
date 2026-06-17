@@ -6,7 +6,7 @@ export default function RefundPolicyPage() {
       <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-16">
         {/* Header */}
         <div className="mb-12">
-          <Link to="/" className="text-purple-600 dark:text-purple-400 hover:text-purple-700 dark:hover:text-purple-300 font-medium text-sm mb-6 inline-block">
+          <Link to="/" className="text-brand-600 dark:text-brand-400 hover:text-brand-700 dark:hover:text-brand-300 font-medium text-sm mb-6 inline-block">
             ← Back to Inktella
           </Link>
           <h1 className="text-4xl sm:text-5xl font-bold text-foreground mb-3">Refund Policy</h1>
@@ -162,7 +162,7 @@ export default function RefundPolicyPage() {
           <p className="text-foreground-secondary text-sm mb-4">Have questions about supporting Inktella?</p>
           <Link
             to="/love-inktella"
-            className="inline-block px-6 py-3 bg-purple-600 hover:bg-purple-700 dark:bg-purple-700 dark:hover:bg-purple-600 text-white font-semibold rounded-lg transition-colors"
+            className="inline-block px-6 py-3 bg-brand-600 hover:bg-brand-700 dark:bg-brand-700 dark:hover:bg-brand-600 text-white font-semibold rounded-lg transition-colors"
           >
             View Funding Options
           </Link>

@@ -165,12 +165,12 @@ export default function LoveInktella() {
             {fundingTiers.map((tier, idx) => (
               <div
                 key={tier.id}
-                className={`relative bg-surface border rounded-lg p-6 sm:p-5 flex flex-col h-full transition-all hover:border-purple-400 ${
-                  idx === 3 ? 'lg:scale-105 border-purple-600 dark:border-purple-500' : 'border-border'
+                className={`relative bg-surface border rounded-lg p-6 sm:p-5 flex flex-col h-full transition-all hover:border-brand-400 ${
+                  idx === 3 ? 'lg:scale-105 border-brand-600 dark:border-brand-500' : 'border-border'
                 }`}
               >
                 {idx === 3 && (
-                  <div className="absolute -top-3 left-1/2 transform -translate-x-1/2 bg-purple-600 text-white px-3 py-1 rounded-full text-xs font-bold">
+                  <div className="absolute -top-3 left-1/2 transform -translate-x-1/2 bg-brand-600 text-white px-3 py-1 rounded-full text-xs font-bold">
                     Most Popular
                   </div>
                 )}
@@ -193,7 +193,7 @@ export default function LoveInktella() {
                 <Button
                   className={`w-full font-semibold ${
                     idx === 3
-                      ? 'bg-purple-600 hover:bg-purple-700 dark:bg-purple-700 dark:hover:bg-purple-600 text-white'
+                      ? 'bg-brand-600 hover:bg-brand-700 dark:bg-brand-700 dark:hover:bg-brand-600 text-white'
                       : 'bg-surface-secondary hover:bg-background-subtle border border-border text-foreground'
                   }`}
                 >
@@ -216,7 +216,7 @@ export default function LoveInktella() {
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6 max-w-2xl mx-auto">
               {impacts.map((impact, idx) => (
                 <div key={idx} className="flex items-start gap-3 sm:gap-4">
-                  <Check className="w-5 h-5 sm:w-6 sm:h-6 text-purple-600 dark:text-purple-400 flex-shrink-0 mt-0.5" />
+                  <Check className="w-5 h-5 sm:w-6 sm:h-6 text-brand-600 dark:text-brand-400 flex-shrink-0 mt-0.5" />
                   <span className="text-foreground text-sm sm:text-base">{impact}</span>
                 </div>
               ))}
@@ -238,7 +238,7 @@ export default function LoveInktella() {
                 >
                   <h3 className="font-semibold text-foreground text-sm sm:text-base pr-4">{faq.question}</h3>
                   <ChevronDown
-                    className={`w-5 h-5 text-purple-600 dark:text-purple-400 flex-shrink-0 transition-transform ${
+                    className={`w-5 h-5 text-brand-600 dark:text-brand-400 flex-shrink-0 transition-transform ${
                       expandedFAQ === faq.id ? 'transform rotate-180' : ''
                     }`}
                   />
@@ -250,27 +250,6 @@ export default function LoveInktella() {
                 )}
               </div>
             ))}
-          </div>
-        </div>
-
-        {/* CTA Section */}
-        <div className="bg-gradient-to-br from-purple-50 dark:from-purple-900 to-indigo-50 dark:to-indigo-900 border border-purple-200 dark:border-purple-700 rounded-lg p-8 sm:p-10 text-center">
-          <h3 className="text-xl sm:text-2xl font-bold text-foreground mb-3 sm:mb-4">
-            Ready to support the future of poetry?
-          </h3>
-          <p className="text-foreground-secondary mb-6 sm:mb-8 max-w-2xl mx-auto text-sm sm:text-base">
-            Choose your level of support and help us build a lasting home for poets worldwide. No locked features, no premium access – just a way to support a creative movement you believe in.
-          </p>
-          <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center">
-            <Button className="bg-purple-600 hover:bg-purple-700 dark:bg-purple-700 dark:hover:bg-purple-600 text-white font-semibold px-6 sm:px-8 py-2 sm:py-3">
-              Explore Tiers Above
-            </Button>
-            <Button
-              variant="outline"
-              className="border-purple-600 dark:border-purple-400 text-purple-600 dark:text-purple-400 hover:bg-purple-50 dark:hover:bg-purple-950 font-semibold px-6 sm:px-8 py-2 sm:py-3"
-            >
-              Learn More
-            </Button>
           </div>
         </div>
       </div>
