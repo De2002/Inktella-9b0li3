@@ -3,7 +3,6 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import { Heart, MessageCircle, Bookmark, Users, UserCheck, BookOpen, PenTool } from 'lucide-react';
 import StatsCard from '@/components/dashboard/StatsCard';
-import UserProfileCard from '@/components/dashboard/UserProfileCard';
 import PoetPulseCard from '@/components/dashboard/PoetPulseCard';
 import EngagementChart from '@/components/dashboard/EngagementChart';
 import TopPoemsTable from '@/components/dashboard/TopPoemsTable';
@@ -111,28 +110,9 @@ export default function DashboardPage() {
           <StatsCard label="Drafts" value="17" icon={<PenTool size={24} className="text-blue-600" />} />
         </div>
 
-        {/* Main Content Grid */}
-        <div className="grid grid-cols-1 lg:grid-cols-4 gap-8 mb-8">
-          {/* Left Column - Profile & Pulse */}
-          <div className="lg:col-span-1 space-y-6">
-            <UserProfileCard 
-              username={profile.username}
-              displayName={profile.username}
-              tag="Post"
-              avatar={profile.avatar_url || 'https://i.pravatar.cc/150?img=0'}
-              level="Poet"
-              xp={2450}
-              maxXp={3500}
-            />
-            <PoetPulseCard items={[
-              { id: '1', icon: 'heart', text: 'Your poem "Rain at Dawn" gained 14 likes this week.' },
-              { id: '2', icon: 'message', text: 'Two critics left new feedback on your poem "Fragments".' },
-              { id: '3', icon: 'bookmark', text: 'Bookmarks increased by 32% compared to last week.' },
-              { id: '4', icon: 'zap', text: 'Consider publishing one of your drafts to keep the momentum.' },
-            ]} />
-          </div>
-
-          {/* Middle Column - Charts & Data */}
+        {/* Main Content Grid - Full Width without sidebar */}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-8">
+          {/* Top Row - Charts & Data */}
           <div className="lg:col-span-2 space-y-6">
             <EngagementChart />
             <div className="grid grid-cols-2 gap-4">
@@ -146,6 +126,16 @@ export default function DashboardPage() {
             <TopPoemsTable poems={mockTopPoems.slice(0, 3)} />
             <CriticPushesCard pushes={mockCriticPushes.slice(0, 2)} />
           </div>
+        </div>
+
+        {/* Poet Pulse Section */}
+        <div className="mb-8">
+          <PoetPulseCard items={[
+            { id: '1', icon: 'heart', text: 'Your poem "Rain at Dawn" gained 14 likes this week.' },
+            { id: '2', icon: 'message', text: 'Two critics left new feedback on your poem "Fragments".' },
+            { id: '3', icon: 'bookmark', text: 'Bookmarks increased by 32% compared to last week.' },
+            { id: '4', icon: 'zap', text: 'Consider publishing one of your drafts to keep the momentum.' },
+          ]} />
         </div>
 
         {/* Secondary Content Grid */}
