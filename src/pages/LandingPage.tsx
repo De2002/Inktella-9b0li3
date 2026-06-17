@@ -55,22 +55,7 @@ const POET_TYPES = [
   },
 ];
 
-const SAMPLE_POEMS = [
-  {
-    title: 'after the rain',
-    content: `the city smells like something new\nroads still wet, but I'm not.\nsomething inside me\nfinally learned how to breathe.`,
-    author: 'maya.writes',
-    likes: 234,
-    feedback: 28,
-  },
-  {
-    title: 'between the thoughts',
-    content: `there is a space\nbetween what I feel\nand what I know—\nthat's where I live most days.`,
-    author: 'wordwanderer',
-    likes: 178,
-    feedback: 63,
-  },
-];
+
 
 export default function LandingPage() {
   const { user } = useAuth();
@@ -235,26 +220,12 @@ export default function LandingPage() {
             <h2 className="font-serif font-bold text-3xl text-foreground mb-2">Words that breathe.</h2>
             <p className="text-foreground-secondary">Lines that stay with you.</p>
           </div>
-          <div className="space-y-0">
-            {SAMPLE_POEMS.map((poem, i) => (
-              <article key={i} className="poem-entry">
-                <div className="flex items-center gap-2.5 mb-3">
-                  <div className="w-8 h-8 rounded-full bg-brand-100 dark:bg-brand-900/30 flex items-center justify-center text-xs font-bold text-brand-600" style={{ border: '2px dotted #6C4EF6' }}>
-                    {poem.author[0].toUpperCase()}
-                  </div>
-                  <span className="text-sm font-medium text-foreground">@{poem.author}</span>
-                </div>
-                <h3 className="poem-title text-xl text-foreground mb-2">{poem.title}</h3>
-                <div className="poem-text text-foreground-secondary text-base whitespace-pre-line">{poem.content}</div>
-                <div className="flex items-center gap-4 mt-4 text-sm text-foreground-muted">
-                  <span>❤️ {poem.likes}</span>
-                  <span className="flex items-center gap-1">
-                    <MessageSquare size={13} />
-                    {poem.feedback} feedback
-                  </span>
-                </div>
-              </article>
-            ))}
+          <div className="flex justify-center">
+            <img
+              src="/images/inktella-mockup.png"
+              alt="Inktella shown on a tablet and phone, displaying a poem in the app"
+              className="w-full max-w-md h-auto object-contain"
+            />
           </div>
           <div className="mt-8 text-center">
             <Link to="/auth" className="inline-flex items-center gap-2 text-brand-500 hover:text-brand-600 font-semibold transition-colors">
