@@ -186,24 +186,47 @@ export default function LandingPage() {
             </p>
           </div>
 
-          <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-5">
-            {HOW_IT_WORKS.map(({ step, icon: Icon, title, desc, earn }) => (
-              <div key={step} className="relative p-6 rounded-2xl border border-border hover:border-brand-300 dark:hover:border-brand-700 bg-surface transition-all group">
-                {/* Step number */}
-                <span className="text-[11px] font-bold font-mono text-foreground-muted tracking-widest mb-4 block">{step}</span>
-                {/* Icon */}
-                <div className="w-10 h-10 bg-brand-50 dark:bg-brand-900/20 rounded-xl flex items-center justify-center mb-4 group-hover:bg-brand-100 dark:group-hover:bg-brand-900/30 transition-colors">
-                  <Icon size={18} className="text-brand-500" />
-                </div>
-                <h3 className="font-serif font-semibold text-lg text-foreground mb-2">{title}</h3>
-                <p className="text-foreground-secondary text-sm leading-relaxed mb-3">{desc}</p>
-                {earn && (
-                  <span className="text-xs font-semibold text-brand-600 dark:text-brand-400 bg-brand-50 dark:bg-brand-900/20 border border-brand-100 dark:border-brand-800 px-2.5 py-1 rounded-full">
-                    {earn}
-                  </span>
-                )}
-              </div>
-            ))}
+          <div className="relative max-w-2xl mx-auto">
+            {/* Central connecting spine */}
+            <div
+              className="absolute left-[52px] sm:left-1/2 sm:-translate-x-1/2 top-8 bottom-8 w-1 rounded-full bg-gradient-to-b from-brand-200 via-brand-400 to-brand-200 dark:from-brand-900 dark:via-brand-600 dark:to-brand-900"
+              aria-hidden="true"
+            />
+
+            <ol className="space-y-6 sm:space-y-7">
+              {HOW_IT_WORKS.map(({ step, icon: Icon, title, desc, earn }) => (
+                <li key={step} className="relative flex items-center gap-3 sm:gap-4">
+                  {/* Icon pill (left) */}
+                  <div className="shrink-0 w-[72px] h-14 sm:w-20 sm:h-16 rounded-full bg-surface border border-border shadow-md flex items-center justify-center">
+                    <span className="w-9 h-9 rounded-full bg-brand-50 dark:bg-brand-900/30 flex items-center justify-center">
+                      <Icon size={18} className="text-brand-500" />
+                    </span>
+                  </div>
+
+                  {/* Numbered badge (center) */}
+                  <div className="shrink-0 z-10 w-12 h-12 sm:w-14 sm:h-14 rounded-full bg-gradient-to-br from-brand-400 to-brand-600 p-[3px] shadow-lg">
+                    <div className="w-full h-full rounded-full bg-surface flex items-center justify-center">
+                      <span className="font-mono font-bold text-base sm:text-lg text-brand-600 dark:text-brand-400">
+                        {step}
+                      </span>
+                    </div>
+                  </div>
+
+                  {/* Text card (right) */}
+                  <div className="flex-1 min-w-0 px-5 py-3.5 sm:px-6 sm:py-4 rounded-3xl bg-surface border border-border shadow-md hover:border-brand-300 dark:hover:border-brand-700 transition-colors">
+                    <div className="flex items-center justify-between gap-3 flex-wrap">
+                      <h3 className="font-serif font-semibold text-base sm:text-lg text-foreground">{title}</h3>
+                      {earn && (
+                        <span className="text-[11px] sm:text-xs font-semibold text-brand-600 dark:text-brand-400 bg-brand-50 dark:bg-brand-900/20 border border-brand-100 dark:border-brand-800 px-2.5 py-1 rounded-full whitespace-nowrap">
+                          {earn}
+                        </span>
+                      )}
+                    </div>
+                    <p className="text-foreground-secondary text-xs sm:text-sm leading-relaxed mt-1.5">{desc}</p>
+                  </div>
+                </li>
+              ))}
+            </ol>
           </div>
 
           <p className="text-center text-foreground-muted font-serif italic mt-10 text-base">
