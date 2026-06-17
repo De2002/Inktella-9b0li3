@@ -73,10 +73,10 @@ export default function DashboardPage() {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50">
+      <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">
-          <div className="w-12 h-12 border-4 border-gray-200 border-t-purple-600 rounded-full animate-spin mx-auto mb-4" />
-          <p className="text-gray-600">Loading your dashboard...</p>
+          <div className="w-12 h-12 border-4 border-muted border-t-primary rounded-full animate-spin mx-auto mb-4" />
+          <p className="text-muted-foreground">Loading your dashboard...</p>
         </div>
       </div>
     );
@@ -87,38 +87,52 @@ export default function DashboardPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <div className="max-w-7xl mx-auto px-4 py-8">
+    <div className="min-h-screen bg-background">
+      <div className="max-w-7xl mx-auto px-6 py-8">
         {/* Header */}
         <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900 mb-1">Dashboard</h1>
-          <p className="text-gray-600">Overview</p>
+          <h1 className="text-4xl font-bold text-foreground mb-1">Dashboard</h1>
+          <p className="text-muted-foreground">Overview</p>
         </div>
 
-        {/* Stats Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
-          <StatsCard label="Total Likes" value="12.4K" icon={<Heart size={24} className="text-red-500" />} trend={{ percentage: 18.65, isPositive: true }} />
-          <StatsCard label="Feedback Received" value="2,368" icon={<MessageCircle size={24} className="text-blue-500" />} trend={{ percentage: 22.4, isPositive: true }} />
-          <StatsCard label="Total Bookmarks" value="3,107" icon={<Bookmark size={24} className="text-purple-500" />} trend={{ percentage: 15.3, isPositive: true }} />
-          <StatsCard label="Followers" value="4,892" icon={<Users size={24} className="text-green-500" />} trend={{ percentage: 21.7, isPositive: true }} />
+        {/* Stats Grid - Row 1 */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+          <StatsCard label="Total Likes" value="4,892" icon={<Heart size={24} className="text-red-500" />} trend={{ percentage: 18.65, isPositive: true }} />
+          <StatsCard label="Feedback Received" value="1,267" icon={<MessageCircle size={24} className="text-blue-500" />} trend={{ percentage: 22.4, isPositive: true }} />
+          <StatsCard label="Total Bookmarks" value="2,103" icon={<Bookmark size={24} className="text-purple-500" />} trend={{ percentage: 15.3, isPositive: true }} />
+          <StatsCard label="Followers" value="3,145" icon={<Users size={24} className="text-green-500" />} trend={{ percentage: 21.7, isPositive: true }} />
         </div>
 
-        {/* Additional Stats Row */}
+        {/* Stats Grid - Row 2 */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
-          <StatsCard label="Following" value="312" icon={<UserCheck size={24} className="text-yellow-500" />} />
-          <StatsCard label="Published Poems" value="58" icon={<BookOpen size={24} className="text-orange-500" />} />
-          <StatsCard label="Drafts" value="17" icon={<PenTool size={24} className="text-blue-600" />} />
+          <StatsCard label="Following" value="287" icon={<UserCheck size={24} className="text-yellow-500" />} />
+          <StatsCard label="Published Poems" value="36" icon={<BookOpen size={24} className="text-orange-500" />} />
+          <StatsCard label="Draft Poems" value="14" icon={<PenTool size={24} className="text-blue-600" />} />
         </div>
 
-        {/* Main Content Grid - Full Width without sidebar */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-8">
-          {/* Top Row - Charts & Data */}
+        {/* Main Grid - Following Mockup Layout */}
+        <div className="grid grid-cols-1 lg:grid-cols-4 gap-6 mb-8">
+          {/* Left Column - Poet Pulse & Engagement */}
+          <div className="lg:col-span-1 space-y-6">
+            <PoetPulseCard items={[
+              { id: '1', icon: 'heart', text: 'Your poem "Rain at Dawn" gained 14 likes this week.' },
+              { id: '2', icon: 'message', text: 'Two critics left new feedback on your poem "Fragments".' },
+              { id: '3', icon: 'bookmark', text: 'Bookmarks increased by 32% compared to last week.' },
+              { id: '4', icon: 'zap', text: 'Consider publishing one of your drafts to keep the momentum.' },
+            ]} />
+          </div>
+
+          {/* Center Column - Level & Activity */}
           <div className="lg:col-span-2 space-y-6">
-            <EngagementChart />
             <div className="grid grid-cols-2 gap-4">
               <LevelBadgeCard level="Poet" currentXp={2450} maxXp={3500} nextUnlock="Wordsmith (1,050 XP to go)" />
               <PrivilegesSection privileges={mockPrivileges.slice(0, 3)} />
             </div>
+            <CriticalActivityCard 
+              activities={mockActivities} 
+              reviewsCount={96} 
+              avgRating={4.7}
+            />
           </div>
 
           {/* Right Column - Top Poems & Critic Pushes */}
@@ -128,27 +142,13 @@ export default function DashboardPage() {
           </div>
         </div>
 
-        {/* Poet Pulse Section */}
-        <div className="mb-8">
-          <PoetPulseCard items={[
-            { id: '1', icon: 'heart', text: 'Your poem "Rain at Dawn" gained 14 likes this week.' },
-            { id: '2', icon: 'message', text: 'Two critics left new feedback on your poem "Fragments".' },
-            { id: '3', icon: 'bookmark', text: 'Bookmarks increased by 32% compared to last week.' },
-            { id: '4', icon: 'zap', text: 'Consider publishing one of your drafts to keep the momentum.' },
-          ]} />
-        </div>
-
-        {/* Secondary Content Grid */}
-        <div className="grid grid-cols-1 lg:grid-cols-4 gap-8 mb-8">
-          {/* Larger tables/sections */}
+        {/* Engagement Trend Row */}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
           <div className="lg:col-span-1">
-            <CriticalActivityCard 
-              activities={mockActivities} 
-              reviewsCount={96} 
-              avgRating={4.7}
-            />
+            <EngagementChart />
           </div>
-          <div className="lg:col-span-3">
+          
+          <div className="lg:col-span-2">
             <WritingWorkspaceCard 
               drafts={mockDrafts} 
               published={[]} 
