@@ -190,57 +190,37 @@ export default function FundingMembersHallPage() {
   return (
     <div className="min-h-screen bg-background">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
-        {/* Header Section */}
-        <div className="mb-8">
-          <div className="flex flex-col lg:flex-row lg:items-start lg:justify-between lg:gap-8 mb-6">
-            <div className="flex-1 mb-6 lg:mb-0">
-              <div className="flex items-center gap-2 sm:gap-3 mb-4">
-                <span className="text-3xl sm:text-4xl">🙏</span>
-                <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-foreground">Funding Members Hall</h1>
+        {/* Header Section with Vertical Title and Image */}
+        <div className="mb-12 flex flex-col lg:flex-row gap-6 lg:gap-8 items-start">
+          {/* Vertical Title and Image Section */}
+          <div className="flex gap-6 lg:gap-8 flex-1">
+            {/* Vertical Title */}
+            <div className="flex items-center">
+              <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-foreground writing-mode-vertical" style={{ writingMode: 'vertical-rl', transform: 'rotate(180deg)' }}>
+                Funding Members Hall
+              </h1>
+            </div>
+
+            {/* Image and Text Section */}
+            <div className="flex-1">
+              <div className="bg-surface border border-border rounded-lg overflow-hidden mb-4 h-64 sm:h-72">
+                <img 
+                  src="https://images.unsplash.com/photo-1507842931343-583f06ff4ee8?w=600&h=300&fit=crop" 
+                  alt="Funding Members Hall" 
+                  className="w-full h-full object-cover"
+                />
               </div>
               <p className="text-foreground-secondary text-sm sm:text-base max-w-2xl">
-                These incredible members help keep Inktella alive — empowering poets, inspiring words, and building a home for creativity. We're deeply grateful.{' '}
+                These incredible members help keep Inktella alive — empowering poets, inspiring words, and building a home for creativity. We're deeply grateful for your support.{' '}
                 <span className="text-brand-600">💜</span>
               </p>
             </div>
-            {/* Hall of Gratitude Stats */}
-            <div className="bg-surface border border-border rounded-lg p-4 sm:p-6 w-full lg:w-auto lg:min-w-max">
-              <h3 className="font-bold text-lg text-foreground mb-4 sm:mb-6">Hall of Gratitude</h3>
-              <div className="grid grid-cols-2 lg:grid-cols-2 gap-4 sm:gap-6">
-                <div>
-                  <div className="flex items-center gap-2 mb-2">
-                    <span className="text-xl sm:text-2xl">👥</span>
-                  </div>
-                  <p className="font-bold text-xl sm:text-2xl text-foreground">248</p>
-                  <p className="text-foreground-secondary text-xs">Funding Members</p>
-                </div>
-                <div>
-                  <div className="flex items-center gap-2 mb-2">
-                    <span className="text-xl sm:text-2xl">💜</span>
-                  </div>
-                  <p className="font-bold text-xl sm:text-2xl text-foreground">15,870</p>
-                  <p className="text-foreground-secondary text-xs">Total Support</p>
-                </div>
-                <div>
-                  <div className="flex items-center gap-2 mb-2">
-                    <span className="text-xl sm:text-2xl">✨</span>
-                  </div>
-                  <p className="font-bold text-xl sm:text-2xl text-foreground">35</p>
-                  <p className="text-foreground-secondary text-xs">Visionaries</p>
-                </div>
-                <div>
-                  <div className="flex items-center gap-2 mb-2">
-                    <span className="text-xl sm:text-2xl">📅</span>
-                  </div>
-                  <p className="font-bold text-xl sm:text-2xl text-foreground">2023</p>
-                  <p className="text-foreground-secondary text-xs">Since Inception</p>
-                </div>
-              </div>
-            </div>
           </div>
+        </div>
 
-          {/* Filters */}
-          <div className="flex gap-2 flex-wrap sm:flex-nowrap overflow-x-auto pb-2 mb-8">
+        {/* Filters Section */}
+        <div className="mb-8">
+          <div className="flex gap-2 flex-wrap sm:flex-nowrap overflow-x-auto pb-2">
             {[
               { id: 'all', label: 'All Members' },
               { id: 'top', label: 'Top Supporters' },
