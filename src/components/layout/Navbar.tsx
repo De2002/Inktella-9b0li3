@@ -1,5 +1,5 @@
 import { Link, useNavigate } from 'react-router-dom';
-import { Bell, Sun, Moon, Search, PenLine, Settings, User, Droplet } from 'lucide-react';
+import { Bell, Sun, Moon, Search, PenLine, Settings, User, Droplet, Home } from 'lucide-react';
 import logoSrc from '@/assets/logo.png';
 import { useAuth } from '@/contexts/AuthContext';
 import { useTheme } from '@/contexts/ThemeContext';
@@ -118,7 +118,7 @@ export default function Navbar() {
                 </button>
 
                 {profileOpen && (
-                  <div className="absolute right-0 top-12 w-52 bg-surface border border-border rounded-xl shadow-lg py-1.5 z-50 md:block hidden">
+                  <div className="absolute right-0 top-12 w-56 bg-surface border border-border rounded-xl shadow-lg py-1.5 z-50 md:block hidden">
                     <div className="px-3 py-2.5 border-b border-border">
                       <p className="font-medium text-sm text-foreground">{user.username}</p>
                       <p className="text-xs text-foreground-muted">{user.email}</p>
@@ -126,18 +126,49 @@ export default function Navbar() {
                         <span className={`text-xs font-medium ${levelCfg.textClass}`}>{levelCfg.badgeText}</span>
                       </div>
                     </div>
-                    <Link to={`/profile/${user.username}`} onClick={() => setProfileOpen(false)} className="flex items-center gap-2 px-3 py-2 text-sm text-foreground hover:bg-background-subtle transition-colors">
-                      Profile
-                    </Link>
-                    <Link to="/ink" onClick={() => setProfileOpen(false)} className="flex items-center gap-2 px-3 py-2 text-sm text-foreground hover:bg-background-subtle transition-colors">
+
+                    {/* Icon row for Profile, Ink, Write, Settings */}
+                    <div className="px-3 py-3 flex items-center justify-center gap-4 border-b border-border">
+                      <Link 
+                        to={`/profile/${user.username}`} 
+                        onClick={() => setProfileOpen(false)} 
+                        className="flex items-center justify-center w-8 h-8 rounded-lg text-foreground-secondary hover:text-foreground hover:bg-background-subtle transition-colors"
+                        title="Profile"
+                      >
+                        <User size={18} />
+                      </Link>
+                      <Link 
+                        to="/ink" 
+                        onClick={() => setProfileOpen(false)} 
+                        className="flex items-center justify-center w-8 h-8 rounded-lg text-foreground-secondary hover:text-foreground hover:bg-background-subtle transition-colors"
+                        title="Ink"
+                      >
+                        <Droplet size={18} />
+                      </Link>
+                      <Link 
+                        to="/write" 
+                        onClick={() => setProfileOpen(false)} 
+                        className="flex items-center justify-center w-8 h-8 rounded-lg text-foreground-secondary hover:text-foreground hover:bg-background-subtle transition-colors"
+                        title="Write Poem"
+                      >
+                        <PenLine size={18} />
+                      </Link>
+                      <Link 
+                        to="/settings" 
+                        onClick={() => setProfileOpen(false)} 
+                        className="flex items-center justify-center w-8 h-8 rounded-lg text-foreground-secondary hover:text-foreground hover:bg-background-subtle transition-colors"
+                        title="Settings"
+                      >
+                        <Settings size={18} />
+                      </Link>
+                    </div>
+
+                    {/* Ink balance display */}
+                    <div className="px-3 py-2 text-sm text-foreground-secondary">
                       <span className="text-ink-500">💧</span> {profile?.ink_balance || 0} Ink
-                    </Link>
-                    <Link to="/write" onClick={() => setProfileOpen(false)} className="flex items-center gap-2 px-3 py-2 text-sm text-foreground hover:bg-background-subtle transition-colors">
-                      Write Poem
-                    </Link>
-                    <Link to="/settings" onClick={() => setProfileOpen(false)} className="flex items-center gap-2 px-3 py-2 text-sm text-foreground hover:bg-background-subtle transition-colors">
-                      <Settings size={14} className="text-foreground-muted" /> Settings
-                    </Link>
+                    </div>
+
+                    {/* Sign out button */}
                     <div className="border-t border-border mt-1 pt-1">
                       <button onClick={() => { logout(); setProfileOpen(false); }} className="w-full text-left px-3 py-2 text-sm text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors">
                         Sign out
