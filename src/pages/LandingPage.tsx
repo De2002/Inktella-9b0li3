@@ -57,18 +57,11 @@ const POET_TYPES = [
 
 const SAMPLE_POEMS = [
   {
-    title: 'after the rain',
-    content: `the city smells like something new\nroads still wet, but I'm not.\nsomething inside me\nfinally learned how to breathe.`,
-    author: 'maya.writes',
+    title: 'where the magic starts',
+    content: `A verse is just a waiting hand,\nA message tucked in silent sand.\nBut here on Inktella, we dig it out,\nWith cheers and chatter, laugh and shout.\nSo drop a line, then drop a heart,\nThat's how the magic gets its start.`,
+    author: 'inktella',
     likes: 234,
     feedback: 28,
-  },
-  {
-    title: 'between the thoughts',
-    content: `there is a space\nbetween what I feel\nand what I know—\nthat's where I live most days.`,
-    author: 'wordwanderer',
-    likes: 178,
-    feedback: 63,
   },
 ];
 
