@@ -9,9 +9,9 @@ export default function AppLayout() {
   const location = useLocation();
 
   useEffect(() => {
-    // Scroll to top when route changes
+    // Load at top when route changes
     window.scrollTo(0, 0);
-  }, [location.pathname]);
+  }, [location.key]);
 
   return (
     <div className="min-h-screen bg-background flex flex-col">
