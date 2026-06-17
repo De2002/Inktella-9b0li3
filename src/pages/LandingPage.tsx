@@ -366,22 +366,154 @@ export default function LandingPage() {
       </section>
 
       {/* ── FOOTER ─────────────────────────────────────────────────────────────── */}
-      <footer className="border-t border-border py-8 px-4 text-center bg-background-subtle">
-        <div className="flex items-center justify-center gap-2 mb-1">
-          <img src={logoSrc} alt="Inktella" className="w-6 h-6 object-contain opacity-80" />
-          <p className="font-serif font-bold text-lg text-foreground">Inktella</p>
-        </div>
-        <p className="text-foreground-muted text-sm">Poetry grows through feedback.</p>
-        <div className="flex items-center justify-center gap-4 mt-4 text-sm text-foreground-muted flex-wrap">
-          <Link to="/explore" className="hover:text-foreground transition-colors">Explore</Link>
-          <Link to="/auth" className="hover:text-foreground transition-colors">Join free</Link>
-          <Link to="/critic-notes" className="hover:text-foreground transition-colors">Critic Notes</Link>
-          <span className="text-border">•</span>
-          <Link to="/love-inktella" className="hover:text-foreground transition-colors">Support us</Link>
-          <Link to="/terms" className="hover:text-foreground transition-colors">Terms</Link>
-          <Link to="/privacy" className="hover:text-foreground transition-colors">Privacy</Link>
-          <Link to="/refund-policy" className="hover:text-foreground transition-colors">Refund Policy</Link>
-          <Link to="/contact" className="hover:text-foreground transition-colors">Contact</Link>
+      <footer className="border-t border-border bg-background-subtle">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-16">
+          {/* Main Footer Grid */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-8 mb-12">
+            {/* Brand Column */}
+            <div className="lg:col-span-1">
+              <Link to="/" className="inline-flex items-center gap-2 mb-4 hover:opacity-80 transition-opacity">
+                <img src={logoSrc} alt="Inktella" className="w-6 h-6 object-contain" />
+                <span className="font-serif font-bold text-lg text-foreground">Inktella</span>
+              </Link>
+              <p className="text-foreground-secondary text-sm leading-relaxed">
+                A contribution platform for poets. Free, open, and community-powered.
+              </p>
+            </div>
+
+            {/* Product Column */}
+            <div>
+              <h4 className="font-semibold text-foreground text-sm uppercase tracking-wide mb-4">Product</h4>
+              <ul className="space-y-3">
+                <li>
+                  <Link to="/explore" className="text-foreground-secondary hover:text-foreground text-sm transition-colors">
+                    Explore Poems
+                  </Link>
+                </li>
+                <li>
+                  <Link to="/auth" className="text-foreground-secondary hover:text-foreground text-sm transition-colors">
+                    Join Free
+                  </Link>
+                </li>
+                <li>
+                  <Link to="/critic-notes" className="text-foreground-secondary hover:text-foreground text-sm transition-colors">
+                    Critic Notes
+                  </Link>
+                </li>
+              </ul>
+            </div>
+
+            {/* Support Column */}
+            <div>
+              <h4 className="font-semibold text-foreground text-sm uppercase tracking-wide mb-4">Support</h4>
+              <ul className="space-y-3">
+                <li>
+                  <Link to="/love-inktella" className="text-foreground-secondary hover:text-foreground text-sm transition-colors">
+                    Become a Supporter
+                  </Link>
+                </li>
+                <li>
+                  <Link to="/funding-members" className="text-foreground-secondary hover:text-foreground text-sm transition-colors">
+                    Funding Members
+                  </Link>
+                </li>
+                <li>
+                  <Link to="/contact" className="text-foreground-secondary hover:text-foreground text-sm transition-colors">
+                    Contact Support
+                  </Link>
+                </li>
+              </ul>
+            </div>
+
+            {/* Legal Column */}
+            <div>
+              <h4 className="font-semibold text-foreground text-sm uppercase tracking-wide mb-4">Legal</h4>
+              <ul className="space-y-3">
+                <li>
+                  <Link to="/terms" className="text-foreground-secondary hover:text-foreground text-sm transition-colors">
+                    Terms of Use
+                  </Link>
+                </li>
+                <li>
+                  <Link to="/privacy" className="text-foreground-secondary hover:text-foreground text-sm transition-colors">
+                    Privacy Policy
+                  </Link>
+                </li>
+                <li>
+                  <Link to="/supporter-terms" className="text-foreground-secondary hover:text-foreground text-sm transition-colors">
+                    Supporter Terms
+                  </Link>
+                </li>
+                <li>
+                  <Link to="/refund-policy" className="text-foreground-secondary hover:text-foreground text-sm transition-colors">
+                    Refund Policy
+                  </Link>
+                </li>
+              </ul>
+            </div>
+
+            {/* Resources Column */}
+            <div>
+              <h4 className="font-semibold text-foreground text-sm uppercase tracking-wide mb-4">Resources</h4>
+              <ul className="space-y-3">
+                <li>
+                  <a 
+                    href="mailto:poetry@inktella.cyou" 
+                    className="text-foreground-secondary hover:text-foreground text-sm transition-colors"
+                  >
+                    Email Support
+                  </a>
+                </li>
+                <li>
+                  <Link to="/dashboard" className="text-foreground-secondary hover:text-foreground text-sm transition-colors">
+                    Dashboard
+                  </Link>
+                </li>
+                <li>
+                  <Link to="/settings" className="text-foreground-secondary hover:text-foreground text-sm transition-colors">
+                    Account Settings
+                  </Link>
+                </li>
+              </ul>
+            </div>
+          </div>
+
+          {/* Divider */}
+          <div className="border-t border-border my-8"></div>
+
+          {/* Bottom Footer */}
+          <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
+            <p className="text-foreground-secondary text-sm text-center sm:text-left">
+              © {new Date().getFullYear()} Inktella. All rights reserved. Poetry grows through feedback.
+            </p>
+            <div className="flex items-center gap-6">
+              <a 
+                href="https://twitter.com/inktella" 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="text-foreground-secondary hover:text-foreground transition-colors"
+                aria-label="Twitter"
+              >
+                <span className="text-sm font-medium">Twitter</span>
+              </a>
+              <a 
+                href="https://instagram.com/inktella" 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="text-foreground-secondary hover:text-foreground transition-colors"
+                aria-label="Instagram"
+              >
+                <span className="text-sm font-medium">Instagram</span>
+              </a>
+              <a 
+                href="mailto:poetry@inktella.cyou"
+                className="text-foreground-secondary hover:text-foreground transition-colors"
+                aria-label="Email"
+              >
+                <span className="text-sm font-medium">Contact</span>
+              </a>
+            </div>
+          </div>
         </div>
       </footer>
     </div>
