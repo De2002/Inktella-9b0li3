@@ -208,7 +208,7 @@ export default function FundingMembersHallPage() {
                 <div className="flex-1">
                   <div className="bg-surface border-2 border-neutral-900 dark:border-neutral-100 rounded-lg overflow-hidden mb-4 h-64 sm:h-72">
                     <img 
-                      src="https://images.unsplash.com/photo-1507842931343-583f06ff4ee8?w=600&h=300&fit=crop" 
+                      src="/images/funding-members-hall.jpg" 
                       alt="Funding Members Hall" 
                       className="w-full h-full object-cover"
                     />
