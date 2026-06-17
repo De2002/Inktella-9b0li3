@@ -147,7 +147,6 @@ export default function LoveInktella() {
           <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-foreground mb-4 sm:mb-6">
             The People Behind Inktella
           </h1>
-          <p className="text-foreground-secondary text-xs sm:text-sm mb-4">Funding Members 2026</p>
           <p className="text-base sm:text-lg text-foreground-secondary max-w-3xl mx-auto mb-4 sm:mb-6">
             Every creative movement is built by people who believe in it.
           </p>

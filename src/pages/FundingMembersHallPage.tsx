@@ -134,10 +134,10 @@ const recentSupporters = [
 ];
 
 const tierColors = {
-  visionary: { bg: 'bg-purple-100 dark:bg-purple-900', text: 'text-purple-700 dark:text-purple-300', icon: '✨' },
-  patron: { bg: 'bg-blue-100 dark:bg-blue-900', text: 'text-blue-700 dark:text-blue-300', icon: '✒️' },
-  believer: { bg: 'bg-indigo-100 dark:bg-indigo-900', text: 'text-indigo-700 dark:text-indigo-300', icon: '🌱' },
-  supporter: { bg: 'bg-slate-100 dark:bg-slate-700', text: 'text-slate-700 dark:text-slate-300', icon: '💙' },
+  visionary: { bg: 'bg-brand-100 dark:bg-brand-900', text: 'text-brand-700 dark:text-brand-300', icon: '✨' },
+  patron: { bg: 'bg-brand-100 dark:bg-brand-900', text: 'text-brand-700 dark:text-brand-300', icon: '✒️' },
+  believer: { bg: 'bg-brand-100 dark:bg-brand-900', text: 'text-brand-700 dark:text-brand-300', icon: '🌱' },
+  supporter: { bg: 'bg-brand-100 dark:bg-brand-900', text: 'text-brand-700 dark:text-brand-300', icon: '💙' },
 };
 
 const tierLabels = {
@@ -200,7 +200,7 @@ export default function FundingMembersHallPage() {
               </div>
               <p className="text-foreground-secondary text-sm sm:text-base max-w-2xl">
                 These incredible members help keep Inktella alive — empowering poets, inspiring words, and building a home for creativity. We're deeply grateful.{' '}
-                <span className="text-purple-600">💜</span>
+                <span className="text-brand-600">💜</span>
               </p>
             </div>
             {/* Hall of Gratitude Stats */}
@@ -253,8 +253,8 @@ export default function FundingMembersHallPage() {
                 onClick={() => setSelectedFilter(filter.id)}
                 className={`px-3 sm:px-4 py-2 rounded-full font-semibold text-sm sm:text-base transition-colors whitespace-nowrap ${
                   selectedFilter === filter.id
-                    ? 'bg-purple-600 text-white'
-                    : 'bg-surface border border-border text-foreground hover:border-purple-400'
+                    ? 'bg-brand-600 text-white'
+                    : 'bg-surface border border-border text-foreground hover:border-brand-400'
                 }`}
               >
                 {filter.label}
@@ -282,7 +282,7 @@ export default function FundingMembersHallPage() {
                   onClick={() => setCurrentPage(page)}
                   className={`w-8 h-8 sm:w-10 sm:h-10 rounded font-semibold text-sm sm:text-base transition-colors ${
                     currentPage === page
-                      ? 'bg-purple-600 text-white'
+                      ? 'bg-brand-600 text-white'
                       : 'bg-surface border border-border text-foreground hover:bg-background-subtle'
                   }`}
                 >
@@ -304,7 +304,7 @@ export default function FundingMembersHallPage() {
               <p className="text-foreground-secondary text-sm leading-relaxed mb-4">
                 Inktella exists because of people who believe in the power of poetry and community. Your support fuels every word, every feature, and every dream.
               </p>
-              <p className="text-purple-600 dark:text-purple-400 font-handwriting">Thank you!</p>
+              <p className="text-brand-600 dark:text-brand-400 font-handwriting">Thank you!</p>
             </div>
 
             {/* Latest Supporters */}
@@ -323,16 +323,16 @@ export default function FundingMembersHallPage() {
                   </div>
                 ))}
               </div>
-              <button className="mt-4 text-purple-600 dark:text-purple-400 text-xs sm:text-sm font-medium hover:underline">View all recent supporters →</button>
+              <button className="mt-4 text-brand-600 dark:text-brand-400 text-xs sm:text-sm font-medium hover:underline">View all recent supporters →</button>
             </div>
 
             {/* CTA Section */}
-            <div className="bg-gradient-to-br from-purple-50 dark:from-purple-900 to-indigo-50 dark:to-indigo-900 border border-purple-200 dark:border-purple-700 rounded-lg p-4 sm:p-6">
+            <div className="bg-gradient-to-br from-brand-50 dark:from-brand-900 to-brand-50 dark:to-brand-900 border border-brand-200 dark:border-brand-700 rounded-lg p-4 sm:p-6">
               <h3 className="font-bold text-base sm:text-lg text-foreground mb-2">Want to support Inktella?</h3>
               <p className="text-foreground-secondary text-xs sm:text-sm mb-4">Join our mission and help keep this poetic home alive for everyone.</p>
               <Button 
                 onClick={() => navigate('/love-inktella')}
-                className="w-full bg-purple-600 hover:bg-purple-700 dark:bg-purple-700 dark:hover:bg-purple-600 text-white font-semibold text-sm sm:text-base"
+                className="w-full bg-brand-600 hover:bg-brand-700 dark:bg-brand-700 dark:hover:bg-brand-600 text-white font-semibold text-sm sm:text-base"
               >
                 💜 Become a Funding Member
               </Button>
