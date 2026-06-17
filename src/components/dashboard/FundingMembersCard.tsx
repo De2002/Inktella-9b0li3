@@ -1,4 +1,5 @@
 import { Button } from '@/components/ui/button';
+import { useNavigate } from 'react-router-dom';
 
 interface Member {
   id: string;
@@ -14,6 +15,8 @@ interface FundingMembersCardProps {
 }
 
 export default function FundingMembersCard({ members, quote, quoteAuthor }: FundingMembersCardProps) {
+  const navigate = useNavigate();
+
   return (
     <div className="bg-surface p-6 rounded-lg border border-border shadow-sm">
       <div className="flex items-start gap-6">
@@ -31,7 +34,11 @@ export default function FundingMembersCard({ members, quote, quoteAuthor }: Fund
               />
             ))}
           </div>
-          <Button variant="ghost" className="text-purple-600 dark:text-purple-400 text-sm font-medium p-0 h-auto">
+          <Button 
+            variant="ghost" 
+            onClick={() => navigate('/funding-members')}
+            className="text-purple-600 dark:text-purple-400 text-sm font-medium p-0 h-auto"
+          >
             View all members →
           </Button>
         </div>
