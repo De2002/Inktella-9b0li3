@@ -191,10 +191,10 @@ export default function FundingMembersHallPage() {
     <div className="min-h-screen bg-background">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
         {/* Hero Section with Border Grid */}
-        <div className="mb-12 border-2 border-brand-600 dark:border-brand-500 rounded-lg overflow-hidden">
+        <div className="mb-12 border-2 border-neutral-900 dark:border-neutral-100 rounded-lg overflow-hidden">
           <div className="p-6 sm:p-8 lg:p-10">
             {/* Header Section with Vertical Title and Image */}
-            <div className="mb-8 flex flex-col lg:flex-row gap-6 lg:gap-8 items-start pb-8 border-b-2 border-brand-600 dark:border-brand-500">
+            <div className="mb-8 flex flex-col lg:flex-row gap-6 lg:gap-8 items-start pb-8 border-b-2 border-neutral-900 dark:border-neutral-100">
               {/* Vertical Title and Image Section */}
               <div className="flex gap-6 lg:gap-8 flex-1">
                 {/* Vertical Title */}
@@ -206,7 +206,7 @@ export default function FundingMembersHallPage() {
 
                 {/* Image and Text Section */}
                 <div className="flex-1">
-                  <div className="bg-surface border-2 border-brand-600 dark:border-brand-500 rounded-lg overflow-hidden mb-4 h-64 sm:h-72">
+                  <div className="bg-surface border-2 border-neutral-900 dark:border-neutral-100 rounded-lg overflow-hidden mb-4 h-64 sm:h-72">
                     <img 
                       src="https://images.unsplash.com/photo-1507842931343-583f06ff4ee8?w=600&h=300&fit=crop" 
                       alt="Funding Members Hall" 
@@ -236,8 +236,8 @@ export default function FundingMembersHallPage() {
                     onClick={() => setSelectedFilter(filter.id)}
                     className={`px-3 sm:px-4 py-2 rounded-full font-semibold text-sm sm:text-base transition-colors whitespace-nowrap border-2 ${
                       selectedFilter === filter.id
-                        ? 'bg-brand-600 text-white border-brand-600 dark:border-brand-500'
-                        : 'bg-background border-brand-600 dark:border-brand-500 text-foreground hover:bg-surface'
+                        ? 'bg-brand-600 text-white border-neutral-900 dark:border-neutral-100'
+                        : 'bg-background border-neutral-900 dark:border-neutral-100 text-foreground hover:bg-surface'
                     }`}
                   >
                     {filter.label}
