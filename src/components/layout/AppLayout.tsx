@@ -1,5 +1,5 @@
 import { Outlet, useLocation } from 'react-router-dom';
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 import Navbar from './Navbar';
 import MobileNav from './MobileNav';
 import { useAuth } from '@/contexts/AuthContext';
@@ -7,10 +7,15 @@ import { useAuth } from '@/contexts/AuthContext';
 export default function AppLayout() {
   const { user } = useAuth();
   const location = useLocation();
+  const mainRef = useRef<HTMLElement>(null);
 
   useEffect(() => {
-    // Load at top when route changes
-    window.scrollTo(0, 0);
+    // Reset scroll position to top on route change
+    if (mainRef.current) {
+      mainRef.current.scrollTop = 0;
+    }
+    document.documentElement.scrollTop = 0;
+    document.body.scrollTop = 0;
   }, [location.key]);
 
   return (
@@ -18,7 +23,7 @@ export default function AppLayout() {
       <Navbar />
       <div className="flex flex-1">
         {/* Main content - full width */}
-        <main className="flex-1 min-w-0">
+        <main ref={mainRef} className="flex-1 min-w-0">
           <Outlet />
         </main>
       </div>
