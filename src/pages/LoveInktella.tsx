@@ -141,12 +141,13 @@ export default function LoveInktella() {
   const [expandedFAQ, setExpandedFAQ] = useState<string | null>(null);
   return (
     <div className="min-h-screen bg-background">
-      {/* Hero Section */}
+        {/* Hero Section */}
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-16 lg:py-20">
         <div className="text-center mb-12 sm:mb-16">
           <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-foreground mb-4 sm:mb-6">
             The People Behind Inktella
           </h1>
+          <p className="text-foreground-secondary text-xs sm:text-sm mb-4">Funding Members 2026</p>
           <p className="text-base sm:text-lg text-foreground-secondary max-w-3xl mx-auto mb-4 sm:mb-6">
             Every creative movement is built by people who believe in it.
           </p>

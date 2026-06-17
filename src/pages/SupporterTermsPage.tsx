@@ -3,7 +3,7 @@ export default function SupporterTermsPage() {
     <div className="min-h-screen bg-background">
       <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-16">
         <h1 className="text-3xl sm:text-4xl font-bold text-foreground mb-4">Supporter Terms</h1>
-        <p className="text-foreground-secondary text-sm mb-10">Last updated: June 2025</p>
+        <p className="text-foreground-secondary text-sm mb-10">Last updated: June 17, 2026</p>
 
         <div className="space-y-8 text-foreground-secondary leading-relaxed">
           <section>
