@@ -377,8 +377,10 @@ export default function LandingPage() {
           <Link to="/auth" className="hover:text-foreground transition-colors">Join free</Link>
           <Link to="/critic-notes" className="hover:text-foreground transition-colors">Critic Notes</Link>
           <span className="text-border">•</span>
+          <Link to="/love-inktella" className="hover:text-foreground transition-colors">Support us</Link>
           <Link to="/terms" className="hover:text-foreground transition-colors">Terms</Link>
           <Link to="/privacy" className="hover:text-foreground transition-colors">Privacy</Link>
+          <Link to="/refund-policy" className="hover:text-foreground transition-colors">Refund Policy</Link>
           <Link to="/contact" className="hover:text-foreground transition-colors">Contact</Link>
         </div>
       </footer>
