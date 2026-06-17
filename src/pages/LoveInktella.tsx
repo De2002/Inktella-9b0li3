@@ -18,7 +18,7 @@ const fundingTiers: FundingTier[] = [
     id: 'supporter',
     icon: '🤍',
     title: 'Supporter',
-    price: 2,
+    price: 1.99,
     tagline: 'I like this.',
     description: 'For those who enjoy Inktella and want to show their support.',
     quote: 'You are helping this creative space continue to exist.',
@@ -28,7 +28,7 @@ const fundingTiers: FundingTier[] = [
     id: 'believer',
     icon: '🌱',
     title: 'Believer',
-    price: 5,
+    price: 2.99,
     tagline: 'I believe in this.',
     description: 'For those who believe poetry deserves a dedicated home beyond traditional social media.',
     quote: 'You are helping us build the future of poetry sharing.',
@@ -38,7 +38,7 @@ const fundingTiers: FundingTier[] = [
     id: 'patron',
     icon: '✒️',
     title: 'Patron',
-    price: 15,
+    price: 3.99,
     tagline: 'I support this.',
     description: 'For those who want to play a bigger role in supporting the growth of Inktella.',
     quote: 'Your support helps nurture a community where poets can create and connect.',
@@ -48,7 +48,7 @@ const fundingTiers: FundingTier[] = [
     id: 'visionary',
     icon: '✨',
     title: 'Visionary',
-    price: 50,
+    price: 4.99,
     tagline: 'I see the future of this.',
     description: 'For those who believe Inktella can become a lasting home for poets worldwide.',
     quote: 'You are helping shape what this platform can become.',
@@ -178,7 +178,7 @@ export default function LoveInktella() {
                   <div className="text-4xl sm:text-3xl mb-2">{tier.icon}</div>
                   <h3 className="text-lg sm:text-xl font-bold text-foreground">{tier.title}</h3>
                   <div className="mt-3 flex items-baseline justify-center gap-1">
-                    <span className="text-2xl sm:text-3xl font-bold text-foreground">${tier.price}</span>
+                    <span className="text-2xl sm:text-3xl font-bold text-foreground">${tier.price.toFixed(2)}</span>
                     <span className="text-foreground-secondary text-sm">/month</span>
                   </div>
                   <p className="text-foreground-secondary text-sm mt-2 italic">{tier.tagline}</p>
