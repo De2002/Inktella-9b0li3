@@ -70,7 +70,7 @@ export default function SupporterTermsPage() {
             <h2 className="text-xl font-semibold text-foreground mb-3">8. Contact</h2>
             <p>
               For questions about supporter terms, please contact us at{' '}
-              <a href="mailto:contact@inktella.com" className="text-brand hover:underline">contact@inktella.com</a>.
+              <a href="mailto:contact@inktella.cyou" className="text-brand hover:underline">contact@inktella.cyou</a>.
             </p>
           </section>
         </div>
