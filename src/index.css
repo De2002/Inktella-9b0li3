@@ -126,7 +126,7 @@
 
   /* Smooth scroll */
   html {
-    scroll-behavior: smooth;
+    scroll-behavior: auto;
   }
 
   /* Feed poem entry - no card, editorial spacing */
