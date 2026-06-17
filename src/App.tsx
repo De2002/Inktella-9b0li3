@@ -30,7 +30,7 @@ export default function App() {
   return (
     <ThemeProvider>
       <AuthProvider>
-        <BrowserRouter>
+        <BrowserRouter future={{ v7_startTransition: true }}>
           <Routes>
             <Route path="/auth" element={<AuthPage />} />
             <Route element={<AppLayout />}>
