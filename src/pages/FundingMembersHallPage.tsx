@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Heart, Search } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
@@ -179,6 +180,7 @@ const MemberCard = ({ member }: { member: Member }) => {
 };
 
 export default function FundingMembersHallPage() {
+  const navigate = useNavigate();
   const [currentPage, setCurrentPage] = useState(1);
   const [selectedFilter, setSelectedFilter] = useState('all');
   const itemsPerPage = 8;
@@ -328,7 +330,10 @@ export default function FundingMembersHallPage() {
             <div className="bg-gradient-to-br from-purple-50 dark:from-purple-900 to-indigo-50 dark:to-indigo-900 border border-purple-200 dark:border-purple-700 rounded-lg p-4 sm:p-6">
               <h3 className="font-bold text-base sm:text-lg text-foreground mb-2">Want to support Inktella?</h3>
               <p className="text-foreground-secondary text-xs sm:text-sm mb-4">Join our mission and help keep this poetic home alive for everyone.</p>
-              <Button className="w-full bg-purple-600 hover:bg-purple-700 dark:bg-purple-700 dark:hover:bg-purple-600 text-white font-semibold text-sm sm:text-base">
+              <Button 
+                onClick={() => navigate('/love-inktella')}
+                className="w-full bg-purple-600 hover:bg-purple-700 dark:bg-purple-700 dark:hover:bg-purple-600 text-white font-semibold text-sm sm:text-base"
+              >
                 💜 Become a Funding Member
               </Button>
             </div>

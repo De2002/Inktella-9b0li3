@@ -14,6 +14,7 @@ import ProfilePage from '@/pages/ProfilePage';
 import DashboardPage from '@/pages/DashboardPage';
 import DashboardDemoPage from '@/pages/DashboardDemoPage';
 import FundingMembersHallPage from '@/pages/FundingMembersHallPage';
+import LoveInktella from '@/pages/LoveInktella';
 import InkPage from '@/pages/InkPage';
 import NotificationsPage from '@/pages/NotificationsPage';
 import CriticNotesPage from '@/pages/CriticNotesPage';
@@ -36,6 +37,7 @@ export default function App() {
               <Route path="/dashboard" element={<DashboardPage />} />
               <Route path="/dashboard-demo" element={<DashboardDemoPage />} />
               <Route path="/funding-members" element={<FundingMembersHallPage />} />
+              <Route path="/love-inktella" element={<LoveInktella />} />
               <Route path="/explore" element={<ExplorePage />} />
               <Route path="/topic/:slug" element={<TopicPage />} />
               <Route path="/poem/:id" element={<PoemPage />} />
