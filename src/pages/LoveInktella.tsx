@@ -158,40 +158,6 @@ export default function LoveInktella() {
           </p>
         </div>
 
-        {/* Support Journey */}
-        <div className="mb-16 sm:mb-20">
-          <div className="bg-surface border border-border rounded-lg p-6 sm:p-8">
-            <h2 className="text-xl sm:text-2xl font-bold text-foreground text-center mb-8">Support Journey</h2>
-            <div className="grid grid-cols-1 sm:grid-cols-4 gap-4 sm:gap-2">
-              {[
-                { icon: '🤍', title: 'Supporter' },
-                { icon: '🌱', title: 'Believer' },
-                { icon: '✒️', title: 'Patron' },
-                { icon: '✨', title: 'Visionary' },
-              ].map((tier, idx) => (
-                <div key={tier.title} className="flex flex-col items-center">
-                  <div className="text-3xl sm:text-4xl mb-2">{tier.icon}</div>
-                  <p className="font-semibold text-foreground text-sm sm:text-base text-center">{tier.title}</p>
-                  {idx < 3 && <div className="hidden sm:block text-purple-600 dark:text-purple-400 text-xl mt-2">↓</div>}
-                  {idx < 3 && <div className="sm:hidden text-purple-600 dark:text-purple-400 text-lg mt-2">↓</div>}
-                </div>
-              ))}
-            </div>
-            <div className="mt-8 grid grid-cols-1 sm:grid-cols-4 gap-4">
-              {[
-                '"I like this"',
-                '"I believe in this"',
-                '"I support this"',
-                '"I see the future of this."',
-              ].map((text, idx) => (
-                <p key={idx} className="text-center text-sm sm:text-base text-foreground-secondary italic">
-                  {text}
-                </p>
-              ))}
-            </div>
-          </div>
-        </div>
-
         {/* Pricing Cards */}
         <div className="mb-16 sm:mb-20">
           <h2 className="text-2xl sm:text-3xl font-bold text-foreground text-center mb-8 sm:mb-12">Funding Levels</h2>
