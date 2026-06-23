@@ -20,7 +20,7 @@ export default function RefundPolicyPage() {
               At Inktella, we appreciate everyone who chooses to support our mission of building a free and open home for poets.
             </p>
             <p className="text-foreground-secondary leading-relaxed mt-4">
-              This Refund Policy explains how refunds for Inktella Supporter contributions are handled.
+              This Refund Policy explains how refunds for Inktella Premium subscriptions are handled.
             </p>
           </div>
 
@@ -28,7 +28,7 @@ export default function RefundPolicyPage() {
           <div>
             <h2 className="text-2xl font-bold text-foreground mb-4">1. Payment Processing</h2>
             <p className="text-foreground-secondary leading-relaxed mb-3">
-              Payments for Inktella Supporter contributions are processed by Paddle, which acts as our Merchant of Record.
+              Payments for Inktella Premium subscriptions are processed by Paddle, which acts as our Merchant of Record.
             </p>
             <p className="text-foreground-secondary leading-relaxed mb-3">
               As Merchant of Record, Paddle is responsible for processing payments, handling applicable taxes, issuing receipts, and managing payment-related services.
@@ -40,12 +40,12 @@ export default function RefundPolicyPage() {
 
           {/* Section 2 */}
           <div>
-            <h2 className="text-2xl font-bold text-foreground mb-4">2. About Inktella Support Contributions</h2>
+            <h2 className="text-2xl font-bold text-foreground mb-4">2. About Inktella Premium Subscription</h2>
             <p className="text-foreground-secondary leading-relaxed mb-3">
-              Inktella Supporter contributions help fund the continued development, maintenance, and improvement of the Inktella platform.
+              Inktella Premium subscriptions help fund the continued development, maintenance, and improvement of the Inktella platform.
             </p>
             <p className="text-foreground-secondary leading-relaxed">
-              Support is voluntary and does not provide access to paid-only features, premium content, or advantages within the Inktella community.
+              Premium is optional and provides access to enhanced features. A free version of Inktella remains available to all users.
             </p>
           </div>
 
@@ -158,15 +158,15 @@ export default function RefundPolicyPage() {
         </div>
 
         {/* CTA */}
-        <div className="mt-12 pt-8 border-t border-border">
-          <p className="text-foreground-secondary text-sm mb-4">Have questions about supporting Inktella?</p>
-          <Link
-            to="/love-inktella"
-            className="inline-block px-6 py-3 bg-brand-600 hover:bg-brand-700 dark:bg-brand-700 dark:hover:bg-brand-600 text-white font-semibold rounded-lg transition-colors"
-          >
-            View Funding Options
-          </Link>
-        </div>
+          <div className="mt-12 pt-8 border-t border-border">
+            <p className="text-foreground-secondary text-sm mb-4">Interested in going Premium?</p>
+            <Link
+              to="/premium"
+              className="inline-block px-6 py-3 bg-brand-600 hover:bg-brand-700 dark:bg-brand-700 dark:hover:bg-brand-600 text-white font-semibold rounded-lg transition-colors"
+            >
+              View Premium
+            </Link>
+          </div>
       </div>
     </div>
   );

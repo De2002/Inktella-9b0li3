@@ -402,13 +402,8 @@ export default function LandingPage() {
               <h4 className="font-semibold text-foreground text-sm uppercase tracking-wide mb-4">Support</h4>
               <ul className="space-y-3">
                 <li>
-                  <Link to="/love-inktella" className="text-foreground-secondary hover:text-foreground text-sm transition-colors">
-                    Become a Supporter
-                  </Link>
-                </li>
-                <li>
-                  <Link to="/funding-members" className="text-foreground-secondary hover:text-foreground text-sm transition-colors">
-                    Funding Members
+                  <Link to="/premium" className="text-foreground-secondary hover:text-foreground text-sm transition-colors">
+                    Go Premium
                   </Link>
                 </li>
                 <li>
@@ -431,11 +426,6 @@ export default function LandingPage() {
                 <li>
                   <Link to="/privacy" className="text-foreground-secondary hover:text-foreground text-sm transition-colors">
                     Privacy Policy
-                  </Link>
-                </li>
-                <li>
-                  <Link to="/supporter-terms" className="text-foreground-secondary hover:text-foreground text-sm transition-colors">
-                    Supporter Terms
                   </Link>
                 </li>
                 <li>

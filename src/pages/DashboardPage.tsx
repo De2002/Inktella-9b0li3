@@ -172,7 +172,7 @@ export default function DashboardPage() {
           />
         </div>
 
-        {/* Funding Members & Quote */}
+        {/* Premium Members & Quote */}
         <FundingMembersCard 
           members={mockMembers}
           quote="Every poem is a drop of ink that can change an ocean."
