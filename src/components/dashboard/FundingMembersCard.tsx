@@ -18,12 +18,13 @@ export default function FundingMembersCard({ members, quote, quoteAuthor }: Prem
   const navigate = useNavigate();
 
   return (
-    <div className="bg-surface p-6 rounded-lg border border-border shadow-sm">
-      <div className="flex items-start gap-6">
-        <div className="flex-1">
+    <div className="bg-surface rounded-lg border border-border shadow-sm">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-0">
+        {/* Members Section */}
+        <div className="p-6">
           <h3 className="font-bold text-lg text-foreground mb-2">Inktella Premium Members</h3>
           <p className="text-foreground-secondary text-sm mb-4">These amazing members support Inktella&apos;s mission.</p>
-          <div className="flex items-center gap-2 mb-4">
+          <div className="flex items-center gap-2 mb-4 flex-wrap">
             {members.map((member) => (
               <img
                 key={member.id}
@@ -45,9 +46,9 @@ export default function FundingMembersCard({ members, quote, quoteAuthor }: Prem
 
         {/* Quote Section */}
         {quote && (
-          <div className="bg-gradient-to-br from-purple-50 dark:from-purple-900 to-blue-50 dark:to-blue-900 p-6 rounded-lg border border-purple-200 dark:border-purple-700 flex-1">
-            <div className="text-4xl text-purple-600 dark:text-purple-400 mb-2">❝</div>
-            <p className="text-foreground font-serif italic text-sm leading-relaxed mb-2">{quote}</p>
+          <div className="bg-gradient-to-br from-purple-50 dark:from-purple-900 to-blue-50 dark:to-blue-900 p-6 rounded-lg border-t md:border-t-0 md:border-l border-purple-200 dark:border-purple-700 flex flex-col justify-center">
+            <div className="text-4xl text-purple-600 dark:text-purple-400 mb-3">❝</div>
+            <p className="text-foreground font-serif italic text-sm leading-relaxed mb-3">{quote}</p>
             <p className="text-foreground-secondary text-xs font-medium">- {quoteAuthor}</p>
           </div>
         )}
