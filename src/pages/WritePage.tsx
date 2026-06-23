@@ -7,6 +7,7 @@ import type { Topic } from '@/types';
 import { INK_PUBLISH_COST, getLevel, LEVEL_CONFIG } from '@/constants';
 import { cn, getInitials } from '@/lib/utils';
 import { toast } from 'sonner';
+import PoetAnalysisEditor from '@/components/features/PoetAnalysisEditor';
 
 interface CreditCandidate {
   id: string;
@@ -646,22 +647,20 @@ export default function WritePage() {
               <p className="text-xs text-foreground-muted mt-1">Paste an image URL hosted elsewhere (Unsplash, etc.)</p>
             </div>
 
-            {/* Poet's note */}
+            {/* Poet's analysis editor */}
             <div>
               <label className="text-xs font-semibold text-foreground-muted uppercase tracking-wide mb-2 block">
-                {isEditMode ? "Poet's note for this revision (optional)" : "Poet's note (optional)"}
+                {isEditMode ? "Poem analysis for this revision (optional)" : "Poem analysis (optional)"}
               </label>
-              <textarea
+              <PoetAnalysisEditor
                 value={poetNote}
-                onChange={e => setPoetNote(e.target.value)}
+                onChange={setPoetNote}
+                isEditMode={isEditMode}
                 placeholder={
                   isEditMode
                     ? "What changed in your thinking? What drove this revision?"
                     : "What was happening when you wrote this? What do you want feedback on?"
                 }
-                rows={2}
-                maxLength={500}
-                className="w-full bg-background-subtle border border-border rounded-xl px-3 py-2.5 text-sm text-foreground placeholder:text-foreground-muted outline-none focus:border-brand-400 resize-none transition-colors"
               />
             </div>
 
