@@ -18,7 +18,7 @@ const navigationItems = [
   { id: 'following', label: 'Following', icon: UserCheck, path: '/following' },
   { id: 'activity', label: 'Critic Activity', icon: Activity, path: '/critic-activity' },
   { id: 'pushes', label: 'Critic Pushes', icon: Zap, path: '/critic-pushes' },
-  { id: 'members', label: 'Funding Members', icon: DollarSign, path: '/funding-members' },
+  { id: 'premium', label: 'Go Premium', icon: DollarSign, path: '/premium' },
   { id: 'settings', label: 'Settings', icon: Settings, path: '/settings' },
 ];
 

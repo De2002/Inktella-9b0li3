@@ -13,8 +13,7 @@ import WritePage from '@/pages/WritePage';
 import ProfilePage from '@/pages/ProfilePage';
 import DashboardPage from '@/pages/DashboardPage';
 import DashboardDemoPage from '@/pages/DashboardDemoPage';
-import FundingMembersHallPage from '@/pages/FundingMembersHallPage';
-import LoveInktella from '@/pages/LoveInktella';
+import PremiumPage from '@/pages/PremiumPage';
 import InkPage from '@/pages/InkPage';
 import NotificationsPage from '@/pages/NotificationsPage';
 import CriticNotesPage from '@/pages/CriticNotesPage';
@@ -22,7 +21,6 @@ import SettingsPage from '@/pages/SettingsPage';
 import TermsOfUsePage from '@/pages/TermsOfUsePage';
 import PrivacyPolicyPage from '@/pages/PrivacyPolicyPage';
 import RefundPolicyPage from '@/pages/RefundPolicyPage';
-import SupporterTermsPage from '@/pages/SupporterTermsPage';
 import ContactPage from '@/pages/ContactPage';
 import NotFoundPage from '@/pages/NotFoundPage';
 
@@ -38,8 +36,8 @@ export default function App() {
               <Route path="/feed" element={<FeedPage />} />
               <Route path="/dashboard" element={<DashboardPage />} />
               <Route path="/dashboard-demo" element={<DashboardDemoPage />} />
-              <Route path="/funding-members" element={<FundingMembersHallPage />} />
-              <Route path="/love-inktella" element={<LoveInktella />} />
+              <Route path="/premium" element={<PremiumPage />} />
+              <Route path="/love-inktella" element={<PremiumPage />} />
               <Route path="/explore" element={<ExplorePage />} />
               <Route path="/topic/:slug" element={<TopicPage />} />
               <Route path="/poem/:id" element={<PoemPage />} />
@@ -52,7 +50,6 @@ export default function App() {
               <Route path="/terms" element={<TermsOfUsePage />} />
               <Route path="/privacy" element={<PrivacyPolicyPage />} />
               <Route path="/refund-policy" element={<RefundPolicyPage />} />
-              <Route path="/supporter-terms" element={<SupporterTermsPage />} />
               <Route path="/contact" element={<ContactPage />} />
               <Route path="*" element={<NotFoundPage />} />
             </Route>

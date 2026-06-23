@@ -8,21 +8,21 @@ interface Member {
   since: string;
 }
 
-interface FundingMembersCardProps {
+interface PremiumMembersCardProps {
   members: Member[];
   quote?: string;
   quoteAuthor?: string;
 }
 
-export default function FundingMembersCard({ members, quote, quoteAuthor }: FundingMembersCardProps) {
+export default function FundingMembersCard({ members, quote, quoteAuthor }: PremiumMembersCardProps) {
   const navigate = useNavigate();
 
   return (
     <div className="bg-surface p-6 rounded-lg border border-border shadow-sm">
       <div className="flex items-start gap-6">
         <div className="flex-1">
-          <h3 className="font-bold text-lg text-foreground mb-2">Inktella Funding Members</h3>
-          <p className="text-foreground-secondary text-sm mb-4">These amazing members help keep Inktella alive.</p>
+          <h3 className="font-bold text-lg text-foreground mb-2">Inktella Premium Members</h3>
+          <p className="text-foreground-secondary text-sm mb-4">These amazing members support Inktella&apos;s mission.</p>
           <div className="flex items-center gap-2 mb-4">
             {members.map((member) => (
               <img
@@ -36,10 +36,10 @@ export default function FundingMembersCard({ members, quote, quoteAuthor }: Fund
           </div>
           <Button 
             variant="ghost" 
-            onClick={() => navigate('/funding-members')}
+            onClick={() => navigate('/premium')}
             className="text-purple-600 dark:text-purple-400 text-sm font-medium p-0 h-auto"
           >
-            View all members →
+            Go Premium →
           </Button>
         </div>
 
