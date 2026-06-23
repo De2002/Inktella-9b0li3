@@ -88,15 +88,15 @@ export default function DashboardPage() {
 
   return (
     <div className="min-h-screen bg-background">
-      <div className="max-w-7xl mx-auto px-6 py-8">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 py-6 sm:py-8">
         {/* Header */}
-        <div className="mb-8">
-          <h1 className="text-4xl font-bold text-foreground mb-1">Dashboard</h1>
-          <p className="text-muted-foreground">Overview</p>
+        <div className="mb-6 sm:mb-8">
+          <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-foreground mb-1">Dashboard</h1>
+          <p className="text-sm sm:text-base text-muted-foreground">Overview</p>
         </div>
 
         {/* Stats Grid - Row 1 */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+        <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-2 sm:gap-4 mb-4 sm:mb-6">
           <StatsCard label="Total Likes" value="4,892" icon={<Heart size={24} className="text-red-500" />} trend={{ percentage: 18.65, isPositive: true }} />
           <StatsCard label="Feedback Received" value="1,267" icon={<MessageCircle size={24} className="text-blue-500" />} trend={{ percentage: 22.4, isPositive: true }} />
           <StatsCard label="Total Bookmarks" value="2,103" icon={<Bookmark size={24} className="text-purple-500" />} trend={{ percentage: 15.3, isPositive: true }} />
@@ -104,16 +104,16 @@ export default function DashboardPage() {
         </div>
 
         {/* Stats Grid - Row 2 */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 sm:gap-4 mb-6 sm:mb-8">
           <StatsCard label="Following" value="287" icon={<UserCheck size={24} className="text-yellow-500" />} />
           <StatsCard label="Published Poems" value="36" icon={<BookOpen size={24} className="text-orange-500" />} />
           <StatsCard label="Draft Poems" value="14" icon={<PenTool size={24} className="text-blue-600" />} />
         </div>
 
-        {/* Main Grid - Following Mockup Layout */}
-        <div className="grid grid-cols-1 lg:grid-cols-4 gap-6 mb-8">
+        {/* Main Grid - Single Column on Mobile, Multi-column on Tablet+ */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 mb-6 sm:mb-8">
           {/* Left Column - Poet Pulse & Engagement */}
-          <div className="lg:col-span-1 space-y-6">
+          <div className="lg:col-span-1 space-y-4 sm:space-y-6">
             <PoetPulseCard items={[
               { id: '1', icon: 'heart', text: 'Your poem "Rain at Dawn" gained 14 likes this week.' },
               { id: '2', icon: 'message', text: 'Two critics left new feedback on your poem "Fragments".' },
@@ -123,8 +123,8 @@ export default function DashboardPage() {
           </div>
 
           {/* Center Column - Level & Activity */}
-          <div className="lg:col-span-2 space-y-6">
-            <div className="grid grid-cols-2 gap-4">
+          <div className="md:col-span-2 lg:col-span-2 space-y-4 sm:space-y-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <LevelBadgeCard level="Poet" currentXp={2450} maxXp={3500} nextUnlock="Wordsmith (1,050 XP to go)" />
               <PrivilegesSection privileges={mockPrivileges.slice(0, 3)} />
             </div>
@@ -136,14 +136,14 @@ export default function DashboardPage() {
           </div>
 
           {/* Right Column - Top Poems & Critic Pushes */}
-          <div className="lg:col-span-1 space-y-6">
+          <div className="lg:col-span-1 space-y-4 sm:space-y-6">
             <TopPoemsTable poems={mockTopPoems.slice(0, 3)} />
             <CriticPushesCard pushes={mockCriticPushes.slice(0, 2)} />
           </div>
         </div>
 
         {/* Engagement Trend Row */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6 mb-6 sm:mb-8">
           <div className="lg:col-span-1">
             <EngagementChart />
           </div>
@@ -158,7 +158,7 @@ export default function DashboardPage() {
         </div>
 
         {/* Featured Poem Section */}
-        <div className="mb-8">
+        <div className="mb-6 sm:mb-8">
           <FeaturedPoemSection
             title="Beneath a Silver Moon"
             author="Lyra Skye"
