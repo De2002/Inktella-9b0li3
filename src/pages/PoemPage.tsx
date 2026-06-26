@@ -419,10 +419,10 @@ function ModernPoemPage({ id }: { id: string }) {
         {isOwner ? (
           <Link
             to={`/write?edit=${poem?.id}`}
-            className="inline-flex items-center gap-2 px-4 py-2 rounded-lg border border-brand-200 dark:border-brand-800 bg-brand-50 dark:bg-brand-900/20 text-brand-600 dark:text-brand-400 hover:bg-brand-100 dark:hover:bg-brand-900/30 transition-colors font-medium text-sm"
+            className="inline-flex items-center justify-center w-10 h-10 rounded-lg border border-brand-200 dark:border-brand-800 text-brand-600 dark:text-brand-400 hover:bg-brand-100 dark:hover:bg-brand-900/30 transition-colors"
+            title="Edit poem"
           >
-            <PenLine size={16} />
-            Edit poem
+            <PenLine size={18} />
           </Link>
         ) : (
           <div className="relative">
