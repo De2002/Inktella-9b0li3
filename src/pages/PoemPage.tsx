@@ -336,7 +336,7 @@ function ClassicPoemPage({ id }: { id: string }) {
   );
 }
 
-// ═════════════════════════════════════════════════════��═════════════════════════
+// ═════════════════════════════════════���═══════════════��═════════════════════════
 // Modern Poem Page (original)
 // ═══════════════════════════════════════════════════════════════════════════════
 function ModernPoemPage({ id }: { id: string }) {
@@ -457,7 +457,7 @@ function ModernPoemPage({ id }: { id: string }) {
       </div>
 
       {/* Title and Author - above engagement bar with vertical labels */}
-      <div className="flex gap-6 mb-6">
+      <div className="flex gap-2 sm:gap-4 md:gap-6 mb-6">
         {/* Left side: Title and Author content */}
         <div className="flex-1 min-w-0">
           <h1 className="poem-title text-3xl sm:text-4xl text-foreground mb-4 leading-tight">{poem.title}</h1>
@@ -479,13 +479,15 @@ function ModernPoemPage({ id }: { id: string }) {
           </Link>
         </div>
 
-        {/* Right side: Vertical labels */}
-        <div className="hidden lg:flex flex-col gap-8 pl-2">
-          <div style={{ height: '120px' }} className="flex items-stretch">
-            <VerticalSectionLabel label="TITLE" isDotted={false} />
+        {/* Right side: Vertical labels - responsive */}
+        <div className="flex flex-col gap-4 sm:gap-6 md:gap-8 pl-1 sm:pl-2">
+          <div style={{ height: '80px' }} className="sm:h-[100px] md:h-[120px] flex items-stretch">
+            <VerticalSectionLabel label="TITLE" isDotted={false} isCompact={true} className="sm:hidden" />
+            <VerticalSectionLabel label="TITLE" isDotted={false} isCompact={false} className="hidden sm:flex" />
           </div>
-          <div style={{ height: '80px' }} className="flex items-stretch">
-            <VerticalSectionLabel label="POET" isDotted={false} />
+          <div style={{ height: '60px' }} className="sm:h-[70px] md:h-[80px] flex items-stretch">
+            <VerticalSectionLabel label="POET" isDotted={false} isCompact={true} className="sm:hidden" />
+            <VerticalSectionLabel label="POET" isDotted={false} isCompact={false} className="hidden sm:flex" />
           </div>
         </div>
       </div>
