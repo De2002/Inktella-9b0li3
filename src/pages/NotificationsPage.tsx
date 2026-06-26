@@ -291,18 +291,20 @@ export default function NotificationsPage() {
     <div className="max-w-2xl mx-auto px-4 pb-24 lg:pb-8">
       {/* Header with border around title */}
       <div className="border border-border rounded-lg px-4 py-3 mb-6">
-        <div className="flex items-center justify-between">
-          <h1 className="font-serif font-bold text-lg text-foreground flex items-center gap-2">
-            <Bell size={18} className="text-brand-500" />
+        <div className="text-center mb-3">
+          <h1 className="font-medium text-sm text-foreground">
             Notifications
             {unreadCount > 0 && (
-              <span className="text-xs font-bold bg-brand-500 text-white px-2 py-0.5 rounded-full leading-none">
+              <span className="ml-2 text-xs font-bold bg-brand-500 text-white px-2 py-0.5 rounded-full leading-none">
                 {unreadCount}
               </span>
             )}
           </h1>
+        </div>
 
-          {unreadCount > 0 && (
+        {unreadCount > 0 && (
+          <div className="flex items-center justify-between">
+            <p className="text-xs text-foreground-muted">{unreadCount} unread</p>
             <button
               onClick={markAllRead}
               disabled={markingAll}
@@ -314,10 +316,7 @@ export default function NotificationsPage() {
               }
               Mark all as read
             </button>
-          )}
-        </div>
-        {unreadCount > 0 && (
-          <p className="text-xs text-foreground-muted mt-2 ml-7">{unreadCount} unread</p>
+          </div>
         )}
       </div>
 
