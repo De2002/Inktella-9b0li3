@@ -455,11 +455,8 @@ function ModernPoemPage({ id }: { id: string }) {
         )}
       </div>
 
-      {/* Title Section - with left rail empty and right rail for "TITLE" */}
+      {/* Title Section - with right rail for "TITLE" */}
       <div className="flex border-b border-border mb-4">
-        {/* Left rail (empty for title section) */}
-        <div className="flex-none w-9 border-r border-border" />
-
         {/* Center - Title content (left-aligned) */}
         <div className="flex-1 px-6 py-4 flex items-center">
           <h1 className="poem-title text-3xl sm:text-4xl text-foreground leading-tight">{poem.title}</h1>
@@ -471,7 +468,7 @@ function ModernPoemPage({ id }: { id: string }) {
             className="text-[10px] font-bold tracking-[0.22em] uppercase select-none"
             style={{
               writingMode: 'vertical-rl',
-              color: '#22c55e',
+              color: '#3b82f6',
               letterSpacing: '0.22em',
             }}
           >
@@ -480,11 +477,8 @@ function ModernPoemPage({ id }: { id: string }) {
         </div>
       </div>
 
-      {/* Poet Section - with left rail empty and right rail for "POET" */}
+      {/* Poet Section - with right rail for "POET" */}
       <div className="flex border-b border-border">
-        {/* Left rail (empty for poet section) */}
-        <div className="flex-none w-9 border-r border-border" />
-
         {/* Center - Poet profile content (left-aligned) */}
         <div className="flex-1 px-6 py-4 flex items-center">
           <Link to={`/profile/${author?.username}`} className="flex items-center gap-3 group">
@@ -510,7 +504,7 @@ function ModernPoemPage({ id }: { id: string }) {
             className="text-[10px] font-bold tracking-[0.22em] uppercase select-none"
             style={{
               writingMode: 'vertical-rl',
-              color: '#22c55e',
+              color: '#ec4899',
               letterSpacing: '0.22em',
             }}
           >
@@ -519,11 +513,7 @@ function ModernPoemPage({ id }: { id: string }) {
         </div>
       </div>
 
-      {poem.topic && (
-        <Link to={`/topic/${poem.topic.slug}`} className="text-sm font-medium text-brand-500 hover:text-brand-600 transition-colors mb-4 block">
-          {poem.topic.name} · Published {formatTimeAgo(poem.created_at)}
-        </Link>
-      )}
+
 
       {poem.image_url && (
         <div className="rounded-2xl overflow-hidden mb-6 max-h-72">
