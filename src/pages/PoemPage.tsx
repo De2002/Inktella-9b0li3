@@ -455,61 +455,69 @@ function ModernPoemPage({ id }: { id: string }) {
         )}
       </div>
 
-      {/* Title Section - with right rail for "TITLE" */}
-      <div className="flex border-b border-border mb-4">
-        {/* Center - Title content (left-aligned) */}
-        <div className="flex-1 px-6 py-4 flex items-center">
-          <h1 className="poem-title text-3xl sm:text-4xl text-foreground leading-tight">{poem.title}</h1>
-        </div>
-
-        {/* Right rail - "TITLE" label */}
-        <div className="flex-none w-9 flex items-center justify-center border-l border-border">
-          <span
-            className="text-[10px] font-bold tracking-[0.22em] uppercase select-none"
-            style={{
-              writingMode: 'vertical-rl',
-              color: '#3b82f6',
-              letterSpacing: '0.22em',
-            }}
-          >
-            TITLE
-          </span>
-        </div>
-      </div>
-
-      {/* Poet Section - with right rail for "POET" */}
-      <div className="flex border-b border-border">
-        {/* Center - Poet profile content (left-aligned) */}
-        <div className="flex-1 px-6 py-4 flex items-center">
-          <Link to={`/profile/${author?.username}`} className="flex items-center gap-3 group">
-            <div
-              className={cn('w-10 h-10 rounded-full overflow-hidden flex items-center justify-center text-sm font-bold shrink-0', levelCfg.borderClass)}
-              style={{ background: levelCfg.color + '15', color: levelCfg.color }}
-            >
-              {author?.avatar_url
-                ? <img src={author.avatar_url} alt={author.username} className="w-full h-full object-cover" />
-                : getInitials(author?.username || '?')
-              }
+      {/* Title and Poet Sections - Connected frame */}
+      <div className="flex mb-6">
+        {/* Left content area */}
+        <div className="flex-1 min-w-0">
+          {/* Title Section */}
+          <div className="flex border-b border-border">
+            {/* Center - Title content (left-aligned, compact) */}
+            <div className="flex-1 px-3 sm:px-6 py-2 sm:py-3 flex items-center">
+              <h1 className="poem-title text-xl sm:text-2xl lg:text-3xl text-foreground leading-snug">{poem.title}</h1>
             </div>
-            <div>
-              <p className="font-semibold text-sm text-foreground group-hover:text-brand-500 transition-colors">{author?.username}</p>
-              <span className={cn('text-xs font-medium', levelCfg.textClass)}>{levelCfg.badgeText}</span>
-            </div>
-          </Link>
-        </div>
 
-        {/* Right rail - "POET" label */}
-        <div className="flex-none w-9 flex items-center justify-center border-l border-border">
-          <span
-            className="text-[10px] font-bold tracking-[0.22em] uppercase select-none"
-            style={{
-              writingMode: 'vertical-rl',
-              color: '#ec4899',
-              letterSpacing: '0.22em',
-            }}
-          >
-            POET
-          </span>
+            {/* Right rail - "TITLE" label */}
+            <div className="flex-none w-8 sm:w-9 flex items-center justify-center border-l border-border">
+              <span
+                className="text-[9px] sm:text-[10px] font-bold tracking-[0.22em] uppercase select-none"
+                style={{
+                  writingMode: 'vertical-rl',
+                  color: '#3b82f6',
+                  letterSpacing: '0.22em',
+                }}
+              >
+                TITLE
+              </span>
+            </div>
+          </div>
+
+          {/* Poet Section */}
+          <div className="flex border-b border-border">
+            {/* Center - Poet profile content (left-aligned, compact) */}
+            <div className="flex-1 px-3 sm:px-6 py-2 sm:py-3 flex items-center">
+              <Link to={`/profile/${author?.username}`} className="flex items-center gap-2 sm:gap-3 group">
+                <div
+                  className={cn('w-8 sm:w-10 h-8 sm:h-10 rounded-full overflow-hidden flex items-center justify-center text-xs sm:text-sm font-bold shrink-0', levelCfg.borderClass)}
+                  style={{ background: levelCfg.color + '15', color: levelCfg.color }}
+                >
+                  {author?.avatar_url
+                    ? <img src={author.avatar_url} alt={author.username} className="w-full h-full object-cover" />
+                    : getInitials(author?.username || '?')
+                  }
+                </div>
+                <div className="min-w-0">
+                  <p className="font-semibold text-xs sm:text-sm text-foreground group-hover:text-brand-500 transition-colors truncate">{author?.username}</p>
+                  <span className={cn('text-[11px] sm:text-xs font-medium', levelCfg.textClass)}>{levelCfg.badgeText}</span>
+                </div>
+              </Link>
+            </div>
+
+            {/* Right rail - "POET" label with connected line */}
+            <div className="flex-none w-8 sm:w-9 flex items-center justify-center border-l border-border relative">
+              {/* Connecting line to top */}
+              <div className="absolute top-0 bottom-0 left-1/2 transform -translate-x-1/2 w-px bg-border" />
+              <span
+                className="text-[9px] sm:text-[10px] font-bold tracking-[0.22em] uppercase select-none relative z-10"
+                style={{
+                  writingMode: 'vertical-rl',
+                  color: '#ec4899',
+                  letterSpacing: '0.22em',
+                }}
+              >
+                POET
+              </span>
+            </div>
+          </div>
         </div>
       </div>
 
