@@ -336,7 +336,7 @@ function ClassicPoemPage({ id }: { id: string }) {
   );
 }
 
-// ═════════════════════════════════════�����═══════════════��═════════════════════════
+// ═════════════════════════════════════�������═══════════════��═════════════════════════
 // Modern Poem Page (original)
 // ═══════════════════════════════════════════════════════════════════════════════
 function ModernPoemPage({ id }: { id: string }) {
@@ -456,13 +456,52 @@ function ModernPoemPage({ id }: { id: string }) {
         )}
       </div>
 
-      {/* Title and Author - above engagement bar with vertical labels */}
-      <div className="flex gap-2 sm:gap-4 md:gap-6 mb-6">
-        {/* Left side: Title and Author content */}
-        <div className="flex-1 min-w-0">
-          <h1 className="poem-title text-3xl sm:text-4xl text-foreground mb-4 leading-tight">{poem.title}</h1>
+      {/* Title and Author - with framing lines and vertical labels */}
+      <div className="mb-6">
+        {/* Top divider line */}
+        <div className="flex gap-2 sm:gap-4 md:gap-6 mb-3 sm:mb-4">
+          <div className="flex-1 h-0.5 bg-green-400/50" />
+          <div className="flex pl-1 sm:pl-2">
+            <div style={{ width: '80px' }} className="sm:w-[100px] md:w-[120px] h-0.5 bg-green-400/50" />
+            <div className="w-0.5 bg-green-400/50 mx-3 sm:mx-4" />
+            <div style={{ width: '60px' }} className="sm:w-[70px] md:w-[80px] h-0.5 bg-green-400/50" />
+          </div>
+        </div>
 
-          <Link to={`/profile/${author?.username}`} className="flex items-center gap-3 group">
+        {/* Title section with vertical labels */}
+        <div className="flex gap-2 sm:gap-4 md:gap-6 mb-3 sm:mb-4">
+          <div className="flex-1 min-w-0">
+            <h1 className="poem-title text-3xl sm:text-4xl text-foreground leading-tight">{poem.title}</h1>
+          </div>
+
+          <div className="flex pl-1 sm:pl-2">
+            <div style={{ height: '80px' }} className="sm:h-[100px] md:h-[120px] flex items-stretch">
+              <VerticalSectionLabel label="TITLE" isDotted={false} isCompact={true} className="sm:hidden" />
+              <VerticalSectionLabel label="TITLE" isDotted={false} isCompact={false} className="hidden sm:flex" />
+            </div>
+
+            <div className="w-0.5 bg-green-400/50 mx-3 sm:mx-4" />
+
+            <div style={{ height: '60px' }} className="sm:h-[70px] md:h-[80px] flex items-stretch">
+              <VerticalSectionLabel label="POET" isDotted={false} isCompact={true} className="sm:hidden" />
+              <VerticalSectionLabel label="POET" isDotted={false} isCompact={false} className="hidden sm:flex" />
+            </div>
+          </div>
+        </div>
+
+        {/* Middle divider line between title and poet */}
+        <div className="flex gap-2 sm:gap-4 md:gap-6 mb-3 sm:mb-4">
+          <div className="flex-1 h-0.5 bg-green-400/50" />
+          <div className="flex pl-1 sm:pl-2">
+            <div style={{ width: '80px' }} className="sm:w-[100px] md:w-[120px] h-0.5 bg-green-400/50" />
+            <div className="w-0.5 bg-green-400/50 mx-3 sm:mx-4" />
+            <div style={{ width: '60px' }} className="sm:w-[70px] md:w-[80px] h-0.5 bg-green-400/50" />
+          </div>
+        </div>
+
+        {/* Poet section */}
+        <div className="flex gap-2 sm:gap-4 md:gap-6 mb-3 sm:mb-4">
+          <Link to={`/profile/${author?.username}`} className="flex items-center gap-3 group flex-1">
             <div
               className={cn('w-10 h-10 rounded-full overflow-hidden flex items-center justify-center text-sm font-bold shrink-0', levelCfg.borderClass)}
               style={{ background: levelCfg.color + '15', color: levelCfg.color }}
@@ -477,23 +516,21 @@ function ModernPoemPage({ id }: { id: string }) {
               <span className={cn('text-xs font-medium', levelCfg.textClass)}>{levelCfg.badgeText}</span>
             </div>
           </Link>
+
+          <div className="flex pl-1 sm:pl-2 items-center">
+            <div style={{ width: '80px' }} className="sm:w-[100px] md:w-[120px]" />
+            <div className="w-0.5 bg-green-400/50 mx-3 sm:mx-4" />
+            <div style={{ width: '60px' }} className="sm:w-[70px] md:w-[80px]" />
+          </div>
         </div>
 
-        {/* Right side: Vertical labels with separator - responsive */}
-        <div className="flex pl-1 sm:pl-2">
-          {/* TITLE section */}
-          <div style={{ height: '80px' }} className="sm:h-[100px] md:h-[120px] flex items-stretch">
-            <VerticalSectionLabel label="TITLE" isDotted={false} isCompact={true} className="sm:hidden" />
-            <VerticalSectionLabel label="TITLE" isDotted={false} isCompact={false} className="hidden sm:flex" />
-          </div>
-
-          {/* Separator line between sections */}
-          <div className="w-px bg-border mx-3 sm:mx-4" />
-
-          {/* POET section */}
-          <div style={{ height: '60px' }} className="sm:h-[70px] md:h-[80px] flex items-stretch">
-            <VerticalSectionLabel label="POET" isDotted={false} isCompact={true} className="sm:hidden" />
-            <VerticalSectionLabel label="POET" isDotted={false} isCompact={false} className="hidden sm:flex" />
+        {/* Bottom divider line */}
+        <div className="flex gap-2 sm:gap-4 md:gap-6">
+          <div className="flex-1 h-0.5 bg-green-400/50" />
+          <div className="flex pl-1 sm:pl-2">
+            <div style={{ width: '80px' }} className="sm:w-[100px] md:w-[120px] h-0.5 bg-green-400/50" />
+            <div className="w-0.5 bg-green-400/50 mx-3 sm:mx-4" />
+            <div style={{ width: '60px' }} className="sm:w-[70px] md:w-[80px] h-0.5 bg-green-400/50" />
           </div>
         </div>
       </div>
