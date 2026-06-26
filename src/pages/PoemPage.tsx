@@ -336,7 +336,7 @@ function ClassicPoemPage({ id }: { id: string }) {
   );
 }
 
-// ═════════════════════════════════════���═══════════════��═════════════════════════
+// ═════════════════════════════════════�����═══════════════��═════════════════════════
 // Modern Poem Page (original)
 // ═══════════════════════════════════════════════════════════════════════════════
 function ModernPoemPage({ id }: { id: string }) {
@@ -479,12 +479,18 @@ function ModernPoemPage({ id }: { id: string }) {
           </Link>
         </div>
 
-        {/* Right side: Vertical labels - responsive */}
-        <div className="flex flex-col gap-4 sm:gap-6 md:gap-8 pl-1 sm:pl-2">
+        {/* Right side: Vertical labels with separator - responsive */}
+        <div className="flex pl-1 sm:pl-2">
+          {/* TITLE section */}
           <div style={{ height: '80px' }} className="sm:h-[100px] md:h-[120px] flex items-stretch">
             <VerticalSectionLabel label="TITLE" isDotted={false} isCompact={true} className="sm:hidden" />
             <VerticalSectionLabel label="TITLE" isDotted={false} isCompact={false} className="hidden sm:flex" />
           </div>
+
+          {/* Separator line between sections */}
+          <div className="w-px bg-border mx-3 sm:mx-4" />
+
+          {/* POET section */}
           <div style={{ height: '60px' }} className="sm:h-[70px] md:h-[80px] flex items-stretch">
             <VerticalSectionLabel label="POET" isDotted={false} isCompact={true} className="sm:hidden" />
             <VerticalSectionLabel label="POET" isDotted={false} isCompact={false} className="hidden sm:flex" />
