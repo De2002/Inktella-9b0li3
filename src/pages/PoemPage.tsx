@@ -10,7 +10,6 @@ import FeedbackPanel from '@/components/features/FeedbackPanel';
 import BehindThePoem from '@/components/features/BehindThePoem';
 import BoostButton from '@/components/features/BoostButton';
 import ClassicCommentSheet from '@/components/features/ClassicCommentSheet';
-import VerticalSectionLabel from '@/components/ui/VerticalSectionLabel';
 import { useAuth } from '@/contexts/AuthContext';
 import { formatTimeAgo, cn, getInitials } from '@/lib/utils';
 import { getLevel, LEVEL_CONFIG } from '@/constants';
@@ -336,7 +335,7 @@ function ClassicPoemPage({ id }: { id: string }) {
   );
 }
 
-// ═════════════════════════════════════════════════════��═════════════════════════
+// ═════════════════════════════════════���������═══════════════��═════════════════════════
 // Modern Poem Page (original)
 // ═══════════════════════════════════════════════════════════════════════════════
 function ModernPoemPage({ id }: { id: string }) {
@@ -456,12 +455,38 @@ function ModernPoemPage({ id }: { id: string }) {
         )}
       </div>
 
-      {/* Title and Author - above engagement bar with vertical labels */}
-      <div className="flex gap-6 mb-6">
-        {/* Left side: Title and Author content */}
-        <div className="flex-1 min-w-0">
-          <h1 className="poem-title text-3xl sm:text-4xl text-foreground mb-4 leading-tight">{poem.title}</h1>
+      {/* Title Section - with left rail empty and right rail for "TITLE" */}
+      <div className="flex border-b border-border mb-4">
+        {/* Left rail (empty for title section) */}
+        <div className="flex-none w-9 border-r border-border" />
 
+        {/* Center - Title content (left-aligned) */}
+        <div className="flex-1 px-6 py-4 flex items-center">
+          <h1 className="poem-title text-3xl sm:text-4xl text-foreground leading-tight">{poem.title}</h1>
+        </div>
+
+        {/* Right rail - "TITLE" label */}
+        <div className="flex-none w-9 flex items-center justify-center border-l border-border">
+          <span
+            className="text-[10px] font-bold tracking-[0.22em] uppercase select-none"
+            style={{
+              writingMode: 'vertical-rl',
+              color: '#22c55e',
+              letterSpacing: '0.22em',
+            }}
+          >
+            TITLE
+          </span>
+        </div>
+      </div>
+
+      {/* Poet Section - with left rail empty and right rail for "POET" */}
+      <div className="flex border-b border-border">
+        {/* Left rail (empty for poet section) */}
+        <div className="flex-none w-9 border-r border-border" />
+
+        {/* Center - Poet profile content (left-aligned) */}
+        <div className="flex-1 px-6 py-4 flex items-center">
           <Link to={`/profile/${author?.username}`} className="flex items-center gap-3 group">
             <div
               className={cn('w-10 h-10 rounded-full overflow-hidden flex items-center justify-center text-sm font-bold shrink-0', levelCfg.borderClass)}
@@ -479,14 +504,18 @@ function ModernPoemPage({ id }: { id: string }) {
           </Link>
         </div>
 
-        {/* Right side: Vertical labels */}
-        <div className="hidden lg:flex flex-col gap-8 pl-2">
-          <div style={{ height: '120px' }} className="flex items-stretch">
-            <VerticalSectionLabel label="TITLE" isDotted={false} />
-          </div>
-          <div style={{ height: '80px' }} className="flex items-stretch">
-            <VerticalSectionLabel label="POET" isDotted={false} />
-          </div>
+        {/* Right rail - "POET" label */}
+        <div className="flex-none w-9 flex items-center justify-center border-l border-border">
+          <span
+            className="text-[10px] font-bold tracking-[0.22em] uppercase select-none"
+            style={{
+              writingMode: 'vertical-rl',
+              color: '#22c55e',
+              letterSpacing: '0.22em',
+            }}
+          >
+            POET
+          </span>
         </div>
       </div>
 
@@ -619,7 +648,7 @@ function PoemNotFound() {
 
 // ═══════════════════════════════════════════════════════════════════════════════
 // Router — pick which page to render
-// ═══════════════════════════════════════════════════════════════════════════════
+// ══════════════════════════════════��════════════════════════════════════════════
 export default function PoemPage() {
   const { id } = useParams();
   const [searchParams] = useSearchParams();
