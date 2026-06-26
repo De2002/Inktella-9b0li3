@@ -59,7 +59,7 @@ const POEM_SELECT = `
 `;
 
 export default function FeedPage() {
-  const { user, profile } = useAuth();
+  const { user, profile, loading: authLoading } = useAuth();
   const navigate = useNavigate();
 
   const [mode, setMode] = useState<Mode>('modern');
@@ -103,13 +103,14 @@ export default function FeedPage() {
   }, []);
 
   useEffect(() => {
+    if (authLoading) return;
     if (!user) { navigate('/', { replace: true }); return; }
     if (activeTab === 'following') {
       loadFollowingTab();
     } else {
       fetchPoems(true);
     }
-  }, [user, activeTab, classicsTab, mode]);
+  }, [user, authLoading, activeTab, classicsTab, mode, navigate]);
 
   // ── Following tab ─────────────────────────────────────────────────────────
   async function loadFollowingTab() {

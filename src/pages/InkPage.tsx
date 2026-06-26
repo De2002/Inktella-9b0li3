@@ -8,7 +8,7 @@ import { getLevel, LEVEL_CONFIG, INK_PUBLISH_COST, INK_PER_FEEDBACK, TELLA_PER_F
 import { cn, formatTimeAgo, tellaToNextLevel } from '@/lib/utils';
 
 export default function InkPage() {
-  const { user, profile } = useAuth();
+  const { user, profile, loading: authLoading } = useAuth();
   const navigate = useNavigate();
   const [inkHistory, setInkHistory] = useState<InkTransaction[]>([]);
   const [tellaHistory, setTellaHistory] = useState<TellaTransaction[]>([]);
@@ -16,9 +16,10 @@ export default function InkPage() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    if (authLoading) return;
     if (!user) { navigate('/auth'); return; }
     fetchHistory();
-  }, [user]);
+  }, [user, authLoading, navigate]);
 
   async function fetchHistory() {
     setLoading(true);
