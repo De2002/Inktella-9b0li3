@@ -10,7 +10,6 @@ import FeedbackPanel from '@/components/features/FeedbackPanel';
 import BehindThePoem from '@/components/features/BehindThePoem';
 import BoostButton from '@/components/features/BoostButton';
 import ClassicCommentSheet from '@/components/features/ClassicCommentSheet';
-import VerticalSectionLabel from '@/components/ui/VerticalSectionLabel';
 import { useAuth } from '@/contexts/AuthContext';
 import { formatTimeAgo, cn, getInitials } from '@/lib/utils';
 import { getLevel, LEVEL_CONFIG } from '@/constants';
@@ -336,7 +335,7 @@ function ClassicPoemPage({ id }: { id: string }) {
   );
 }
 
-// ═════════════════════════════════════�������═══════════════��═════════════════════════
+// ═════════════════════════════════════���������═══════════════��═════════════════════════
 // Modern Poem Page (original)
 // ═══════════════════════════════════════════════════════════════════════════════
 function ModernPoemPage({ id }: { id: string }) {
@@ -456,52 +455,39 @@ function ModernPoemPage({ id }: { id: string }) {
         )}
       </div>
 
-      {/* Title and Author - with framing lines and vertical labels */}
-      <div className="mb-6">
-        {/* Top divider line */}
-        <div className="flex gap-2 sm:gap-4 md:gap-6 mb-3 sm:mb-4">
-          <div className="flex-1 h-0.5 bg-green-400/50" />
-          <div className="flex pl-1 sm:pl-2">
-            <div style={{ width: '80px' }} className="sm:w-[100px] md:w-[120px] h-0.5 bg-green-400/50" />
-            <div className="w-0.5 bg-green-400/50 mx-3 sm:mx-4" />
-            <div style={{ width: '60px' }} className="sm:w-[70px] md:w-[80px] h-0.5 bg-green-400/50" />
-          </div>
+      {/* Title Section - with left rail empty and right rail for "TITLE" */}
+      <div className="flex border-b border-border" style={{ minHeight: '100px' }}>
+        {/* Left rail (empty for title section) */}
+        <div className="flex-none w-9 flex items-center justify-center border-r border-border" />
+
+        {/* Center - Title content */}
+        <div className="flex-1 px-6 py-6 flex items-center justify-center">
+          <h1 className="poem-title text-3xl sm:text-4xl text-foreground leading-tight text-center">{poem.title}</h1>
         </div>
 
-        {/* Title section with vertical labels */}
-        <div className="flex gap-2 sm:gap-4 md:gap-6 mb-3 sm:mb-4">
-          <div className="flex-1 min-w-0">
-            <h1 className="poem-title text-3xl sm:text-4xl text-foreground leading-tight">{poem.title}</h1>
-          </div>
-
-          <div className="flex pl-1 sm:pl-2">
-            <div style={{ height: '80px' }} className="sm:h-[100px] md:h-[120px] flex items-stretch">
-              <VerticalSectionLabel label="TITLE" isDotted={false} isCompact={true} className="sm:hidden" />
-              <VerticalSectionLabel label="TITLE" isDotted={false} isCompact={false} className="hidden sm:flex" />
-            </div>
-
-            <div className="w-0.5 bg-green-400/50 mx-3 sm:mx-4" />
-
-            <div style={{ height: '60px' }} className="sm:h-[70px] md:h-[80px] flex items-stretch">
-              <VerticalSectionLabel label="POET" isDotted={false} isCompact={true} className="sm:hidden" />
-              <VerticalSectionLabel label="POET" isDotted={false} isCompact={false} className="hidden sm:flex" />
-            </div>
-          </div>
+        {/* Right rail - "TITLE" label */}
+        <div className="flex-none w-9 flex items-center justify-center border-l border-border">
+          <span
+            className="text-[10px] font-bold tracking-[0.22em] uppercase select-none"
+            style={{
+              writingMode: 'vertical-rl',
+              color: '#22c55e',
+              letterSpacing: '0.22em',
+            }}
+          >
+            TITLE
+          </span>
         </div>
+      </div>
 
-        {/* Middle divider line between title and poet */}
-        <div className="flex gap-2 sm:gap-4 md:gap-6 mb-3 sm:mb-4">
-          <div className="flex-1 h-0.5 bg-green-400/50" />
-          <div className="flex pl-1 sm:pl-2">
-            <div style={{ width: '80px' }} className="sm:w-[100px] md:w-[120px] h-0.5 bg-green-400/50" />
-            <div className="w-0.5 bg-green-400/50 mx-3 sm:mx-4" />
-            <div style={{ width: '60px' }} className="sm:w-[70px] md:w-[80px] h-0.5 bg-green-400/50" />
-          </div>
-        </div>
+      {/* Poet Section - with left rail empty and right rail for "POET" */}
+      <div className="flex border-b border-border" style={{ minHeight: '80px' }}>
+        {/* Left rail (empty for poet section) */}
+        <div className="flex-none w-9 flex items-center justify-center border-r border-border" />
 
-        {/* Poet section */}
-        <div className="flex gap-2 sm:gap-4 md:gap-6 mb-3 sm:mb-4">
-          <Link to={`/profile/${author?.username}`} className="flex items-center gap-3 group flex-1">
+        {/* Center - Poet profile content */}
+        <div className="flex-1 px-6 py-5 flex items-center">
+          <Link to={`/profile/${author?.username}`} className="flex items-center gap-3 group">
             <div
               className={cn('w-10 h-10 rounded-full overflow-hidden flex items-center justify-center text-sm font-bold shrink-0', levelCfg.borderClass)}
               style={{ background: levelCfg.color + '15', color: levelCfg.color }}
@@ -516,22 +502,20 @@ function ModernPoemPage({ id }: { id: string }) {
               <span className={cn('text-xs font-medium', levelCfg.textClass)}>{levelCfg.badgeText}</span>
             </div>
           </Link>
-
-          <div className="flex pl-1 sm:pl-2 items-center">
-            <div style={{ width: '80px' }} className="sm:w-[100px] md:w-[120px]" />
-            <div className="w-0.5 bg-green-400/50 mx-3 sm:mx-4" />
-            <div style={{ width: '60px' }} className="sm:w-[70px] md:w-[80px]" />
-          </div>
         </div>
 
-        {/* Bottom divider line */}
-        <div className="flex gap-2 sm:gap-4 md:gap-6">
-          <div className="flex-1 h-0.5 bg-green-400/50" />
-          <div className="flex pl-1 sm:pl-2">
-            <div style={{ width: '80px' }} className="sm:w-[100px] md:w-[120px] h-0.5 bg-green-400/50" />
-            <div className="w-0.5 bg-green-400/50 mx-3 sm:mx-4" />
-            <div style={{ width: '60px' }} className="sm:w-[70px] md:w-[80px] h-0.5 bg-green-400/50" />
-          </div>
+        {/* Right rail - "POET" label */}
+        <div className="flex-none w-9 flex items-center justify-center border-l border-border">
+          <span
+            className="text-[10px] font-bold tracking-[0.22em] uppercase select-none"
+            style={{
+              writingMode: 'vertical-rl',
+              color: '#22c55e',
+              letterSpacing: '0.22em',
+            }}
+          >
+            POET
+          </span>
         </div>
       </div>
 
@@ -664,7 +648,7 @@ function PoemNotFound() {
 
 // ═══════════════════════════════════════════════════════════════════════════════
 // Router — pick which page to render
-// ═══════════════════════════════════════════════════════════════════════════════
+// ══════════════════════════════════��════════════════════════════════════════════
 export default function PoemPage() {
   const { id } = useParams();
   const [searchParams] = useSearchParams();
