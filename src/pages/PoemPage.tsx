@@ -10,6 +10,7 @@ import FeedbackPanel from '@/components/features/FeedbackPanel';
 import BehindThePoem from '@/components/features/BehindThePoem';
 import BoostButton from '@/components/features/BoostButton';
 import ClassicCommentSheet from '@/components/features/ClassicCommentSheet';
+import VerticalSectionLabel from '@/components/ui/VerticalSectionLabel';
 import { useAuth } from '@/contexts/AuthContext';
 import { formatTimeAgo, cn, getInitials } from '@/lib/utils';
 import { getLevel, LEVEL_CONFIG } from '@/constants';
@@ -455,24 +456,39 @@ function ModernPoemPage({ id }: { id: string }) {
         )}
       </div>
 
-      {/* Title and Author - above engagement bar */}
-      <h1 className="poem-title text-3xl sm:text-4xl text-foreground mb-4 leading-tight">{poem.title}</h1>
+      {/* Title and Author - above engagement bar with vertical labels */}
+      <div className="flex gap-6 mb-6">
+        {/* Left side: Title and Author content */}
+        <div className="flex-1 min-w-0">
+          <h1 className="poem-title text-3xl sm:text-4xl text-foreground mb-4 leading-tight">{poem.title}</h1>
 
-      <Link to={`/profile/${author?.username}`} className="flex items-center gap-3 mb-6 group">
-        <div
-          className={cn('w-10 h-10 rounded-full overflow-hidden flex items-center justify-center text-sm font-bold shrink-0', levelCfg.borderClass)}
-          style={{ background: levelCfg.color + '15', color: levelCfg.color }}
-        >
-          {author?.avatar_url
-            ? <img src={author.avatar_url} alt={author.username} className="w-full h-full object-cover" />
-            : getInitials(author?.username || '?')
-          }
+          <Link to={`/profile/${author?.username}`} className="flex items-center gap-3 group">
+            <div
+              className={cn('w-10 h-10 rounded-full overflow-hidden flex items-center justify-center text-sm font-bold shrink-0', levelCfg.borderClass)}
+              style={{ background: levelCfg.color + '15', color: levelCfg.color }}
+            >
+              {author?.avatar_url
+                ? <img src={author.avatar_url} alt={author.username} className="w-full h-full object-cover" />
+                : getInitials(author?.username || '?')
+              }
+            </div>
+            <div>
+              <p className="font-semibold text-sm text-foreground group-hover:text-brand-500 transition-colors">{author?.username}</p>
+              <span className={cn('text-xs font-medium', levelCfg.textClass)}>{levelCfg.badgeText}</span>
+            </div>
+          </Link>
         </div>
-        <div>
-          <p className="font-semibold text-sm text-foreground group-hover:text-brand-500 transition-colors">{author?.username}</p>
-          <span className={cn('text-xs font-medium', levelCfg.textClass)}>{levelCfg.badgeText}</span>
+
+        {/* Right side: Vertical labels */}
+        <div className="hidden lg:flex flex-col gap-8 pl-2">
+          <div style={{ height: '120px' }} className="flex items-stretch">
+            <VerticalSectionLabel label="TITLE" isDotted={false} />
+          </div>
+          <div style={{ height: '80px' }} className="flex items-stretch">
+            <VerticalSectionLabel label="POET" isDotted={false} />
+          </div>
         </div>
-      </Link>
+      </div>
 
       {poem.topic && (
         <Link to={`/topic/${poem.topic.slug}`} className="text-sm font-medium text-brand-500 hover:text-brand-600 transition-colors mb-4 block">
