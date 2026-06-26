@@ -223,16 +223,17 @@ function NotifRow({
 
 // ─── Page ──────────────────────────────────────────────────────────────────────
 export default function NotificationsPage() {
-  const { user } = useAuth();
+  const { user, loading: authLoading } = useAuth();
   const navigate = useNavigate();
   const [notifications, setNotifications] = useState<(Notification & { actor?: any })[]>([]);
   const [loading, setLoading] = useState(true);
   const [markingAll, setMarkingAll] = useState(false);
 
   useEffect(() => {
+    if (authLoading) return;
     if (!user) { navigate('/auth'); return; }
     fetchNotifications();
-  }, [user]);
+  }, [user, authLoading, navigate]);
 
   async function fetchNotifications() {
     setLoading(true);
