@@ -28,8 +28,8 @@ export default function AuthPage() {
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    if (user) navigate('/dashboard', { replace: true });
-  }, [user]);
+    if (user) navigate('/feed', { replace: true });
+  }, [user, navigate]);
 
   // REGISTER FLOW
   async function sendOtp() {
