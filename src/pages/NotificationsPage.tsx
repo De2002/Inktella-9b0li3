@@ -288,12 +288,12 @@ export default function NotificationsPage() {
   });
 
   return (
-    <div className="max-w-2xl mx-auto px-4 py-6 pb-24 lg:pb-8">
-      {/* Header */}
-      <div className="flex items-center justify-between mb-6">
-        <div>
-          <h1 className="font-serif font-bold text-2xl text-foreground flex items-center gap-2.5">
-            <Bell size={22} className="text-brand-500" />
+    <div className="max-w-2xl mx-auto px-4 pb-24 lg:pb-8">
+      {/* Header with border around title */}
+      <div className="border border-border rounded-lg px-4 py-3 mb-6">
+        <div className="flex items-center justify-between">
+          <h1 className="font-serif font-bold text-lg text-foreground flex items-center gap-2">
+            <Bell size={18} className="text-brand-500" />
             Notifications
             {unreadCount > 0 && (
               <span className="text-xs font-bold bg-brand-500 text-white px-2 py-0.5 rounded-full leading-none">
@@ -301,29 +301,29 @@ export default function NotificationsPage() {
               </span>
             )}
           </h1>
+
           {unreadCount > 0 && (
-            <p className="text-xs text-foreground-muted mt-0.5">{unreadCount} unread</p>
+            <button
+              onClick={markAllRead}
+              disabled={markingAll}
+              className="flex items-center gap-1.5 text-xs font-medium text-foreground-muted hover:text-foreground border border-border hover:border-border-subtle px-3 py-1.5 rounded-full transition-all disabled:opacity-50"
+            >
+              {markingAll
+                ? <Loader2 size={12} className="animate-spin" />
+                : <CheckCheck size={13} />
+              }
+              Mark all as read
+            </button>
           )}
         </div>
-
         {unreadCount > 0 && (
-          <button
-            onClick={markAllRead}
-            disabled={markingAll}
-            className="flex items-center gap-1.5 text-xs font-medium text-foreground-muted hover:text-foreground border border-border hover:border-border-subtle px-3 py-1.5 rounded-full transition-all disabled:opacity-50"
-          >
-            {markingAll
-              ? <Loader2 size={12} className="animate-spin" />
-              : <CheckCheck size={13} />
-            }
-            Mark all as read
-          </button>
+          <p className="text-xs text-foreground-muted mt-2 ml-7">{unreadCount} unread</p>
         )}
       </div>
 
       {/* Content */}
       {loading ? (
-        <div className="space-y-3">
+        <div className="space-y-3 pt-4">
           {[1, 2, 3, 4, 5].map(i => (
             <div key={i} className="flex gap-3 py-4 border-b border-border-subtle">
               <div className="skeleton w-10 h-10 rounded-full shrink-0" />
