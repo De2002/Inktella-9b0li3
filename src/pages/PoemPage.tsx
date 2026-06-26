@@ -456,13 +456,13 @@ function ModernPoemPage({ id }: { id: string }) {
       </div>
 
       {/* Title Section - with left rail empty and right rail for "TITLE" */}
-      <div className="flex border-b border-border" style={{ minHeight: '100px' }}>
+      <div className="flex border-b border-border mb-4">
         {/* Left rail (empty for title section) */}
-        <div className="flex-none w-9 flex items-center justify-center border-r border-border" />
+        <div className="flex-none w-9 border-r border-border" />
 
-        {/* Center - Title content */}
-        <div className="flex-1 px-6 py-6 flex items-center justify-center">
-          <h1 className="poem-title text-3xl sm:text-4xl text-foreground leading-tight text-center">{poem.title}</h1>
+        {/* Center - Title content (left-aligned) */}
+        <div className="flex-1 px-6 py-4 flex items-center">
+          <h1 className="poem-title text-3xl sm:text-4xl text-foreground leading-tight">{poem.title}</h1>
         </div>
 
         {/* Right rail - "TITLE" label */}
@@ -481,12 +481,12 @@ function ModernPoemPage({ id }: { id: string }) {
       </div>
 
       {/* Poet Section - with left rail empty and right rail for "POET" */}
-      <div className="flex border-b border-border" style={{ minHeight: '80px' }}>
+      <div className="flex border-b border-border">
         {/* Left rail (empty for poet section) */}
-        <div className="flex-none w-9 flex items-center justify-center border-r border-border" />
+        <div className="flex-none w-9 border-r border-border" />
 
-        {/* Center - Poet profile content */}
-        <div className="flex-1 px-6 py-5 flex items-center">
+        {/* Center - Poet profile content (left-aligned) */}
+        <div className="flex-1 px-6 py-4 flex items-center">
           <Link to={`/profile/${author?.username}`} className="flex items-center gap-3 group">
             <div
               className={cn('w-10 h-10 rounded-full overflow-hidden flex items-center justify-center text-sm font-bold shrink-0', levelCfg.borderClass)}
