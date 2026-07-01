@@ -88,13 +88,15 @@ export default function DashboardPage() {
 
         {/* Quick Stats */}
         <div className="mb-8 sm:mb-12">
-          <div className="flex items-center justify-between mb-6">
-            <h2 className="text-xl sm:text-2xl font-bold text-foreground">Quick Stats</h2>
-            <a href="#" className="text-primary hover:text-primary/80 text-sm font-medium">View all →</a>
-          </div>
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 sm:gap-6">
-            {stats.map((stat) => (
-              <div key={stat.label} className="flex flex-col items-center">
+          <h2 className="text-xl sm:text-2xl font-bold text-foreground text-center sm:text-left mb-6">Quick Stats</h2>
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-0 sm:gap-6 bg-surface border border-border rounded-lg">
+            {stats.map((stat, index) => (
+              <div 
+                key={stat.label} 
+                className={`flex flex-col items-center py-6 sm:py-8 px-4 sm:px-6 
+                  ${index % 2 === 1 ? 'border-l border-border sm:border-l sm:border-border' : ''} 
+                  ${index < 2 ? 'border-b border-border sm:border-b-0' : ''}`}
+              >
                 <div className={`${stat.bgColor} w-16 h-16 sm:w-20 sm:h-20 rounded-full flex items-center justify-center mb-3 sm:mb-4`}>
                   <div className={stat.iconColor}>{stat.icon}</div>
                 </div>
