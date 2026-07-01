@@ -476,33 +476,6 @@ export default function LandingPage() {
             <p className="text-foreground-secondary text-sm text-center sm:text-left">
               © {new Date().getFullYear()} Inktella. All rights reserved. Poetry grows through feedback.
             </p>
-            <div className="flex items-center gap-6">
-              <a 
-                href="https://twitter.com/inktella" 
-                target="_blank" 
-                rel="noopener noreferrer"
-                className="text-foreground-secondary hover:text-foreground transition-colors"
-                aria-label="Twitter"
-              >
-                <span className="text-sm font-medium">Twitter</span>
-              </a>
-              <a 
-                href="https://instagram.com/inktella" 
-                target="_blank" 
-                rel="noopener noreferrer"
-                className="text-foreground-secondary hover:text-foreground transition-colors"
-                aria-label="Instagram"
-              >
-                <span className="text-sm font-medium">Instagram</span>
-              </a>
-              <a 
-                href="mailto:poetry@inktella.cyou"
-                className="text-foreground-secondary hover:text-foreground transition-colors"
-                aria-label="Email"
-              >
-                <span className="text-sm font-medium">Contact</span>
-              </a>
-            </div>
           </div>
         </div>
       </footer>
