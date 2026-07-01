@@ -12,10 +12,9 @@ import BoostButton from '@/components/features/BoostButton';
 import ClassicCommentSheet from '@/components/features/ClassicCommentSheet';
 import { useAuth } from '@/contexts/AuthContext';
 import { formatTimeAgo, cn, getInitials } from '@/lib/utils';
-import { getLevel, LEVEL_CONFIG } from '@/constants';
+import { getLevel, LEVEL_CONFIG, LEVEL_BADGE_IMAGES } from '@/constants';
 import { toast } from 'sonner';
 import { FunctionsHttpError } from '@supabase/supabase-js';
-import { LevelBadgeImage } from '@/components/features/LevelBadge';
 
 // ─── AI Analysis helpers ───────────────────────────────────────────────────────
 function RenderAnalysis({ text }: { text: string }) {
@@ -181,25 +180,32 @@ function ClassicPoemPage({ id }: { id: string }) {
         )}
         <h1 className="poem-title text-3xl sm:text-4xl text-foreground mb-5 leading-tight italic">{poem.title}</h1>
 
-        {/* Author with badge */}
-        <Link to={`/profile/${author?.username}`} className="inline-flex items-center gap-2.5 group">
-          <div
-            className={cn('w-9 h-9 rounded-full overflow-hidden flex items-center justify-center text-xs font-bold shrink-0', levelCfg.borderClass)}
-            style={{ background: levelCfg.color + '15', color: levelCfg.color }}
-          >
-            {author?.avatar_url
-              ? <img src={author.avatar_url} alt={author.username} className="w-full h-full object-cover" />
-              : getInitials(author?.username || '?')
-            }
-          </div>
-          <div className="text-left">
-            <div className="flex items-center gap-1.5">
-              <LevelBadgeImage level={authorLevel} size={16} />
-              <p className="text-sm font-semibold text-foreground group-hover:text-brand-500 transition-colors leading-none">{author?.username}</p>
+        {/* Author profile row */}
+        <div className="flex items-center justify-center gap-3 group">
+          {/* Profile picture on left */}
+          <Link to={`/profile/${author?.username}`}>
+            <div
+              className={cn('w-9 h-9 rounded-full overflow-hidden flex items-center justify-center text-xs font-bold shrink-0', levelCfg.borderClass)}
+              style={{ background: levelCfg.color + '15', color: levelCfg.color }}
+            >
+              {author?.avatar_url
+                ? <img src={author.avatar_url} alt={author.username} className="w-full h-full object-cover" />
+                : getInitials(author?.username || '?')
+              }
             </div>
+          </Link>
+          
+          {/* Centered username and time */}
+          <Link to={`/profile/${author?.username}`} className="flex flex-col items-center flex-1">
+            <p className="text-sm font-semibold text-foreground hover:text-brand-500 transition-colors leading-none">{author?.username}</p>
             <p className="text-xs text-foreground-muted mt-0.5">{formatTimeAgo(poem.created_at)}</p>
+          </Link>
+
+          {/* Badge on right */}
+          <div className="w-9 h-9 shrink-0">
+            <img src={LEVEL_BADGE_IMAGES[authorLevel]} alt={authorLevel} className="w-full h-full object-contain" />
           </div>
-        </Link>
+        </div>
       </div>
 
       {poem.image_url && (
@@ -329,7 +335,7 @@ function ClassicPoemPage({ id }: { id: string }) {
 
 // ═══════════════════════════════════════════════════════════════════════════════
 // Modern Poem Page
-// ═══════════════════════════════════════════════════════════════════════════════
+// ═════════════════════════════════════════════���═════════════════════════════════
 function ModernPoemPage({ id }: { id: string }) {
   const { user } = useAuth();
   const navigate = useNavigate();
