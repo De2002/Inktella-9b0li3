@@ -199,7 +199,7 @@ export default function ProfilePage() {
 
         {/* Bio */}
         {profile.bio && (
-          <p className="text-sm text-foreground-secondary leading-relaxed mt-2 mb-3 max-w-sm">{profile.bio}</p>
+          <p className="text-base text-foreground-secondary leading-relaxed mt-2 mb-3 max-w-sm" style={{ fontFamily: 'Caveat, cursive' }}>{profile.bio}</p>
         )}
 
         {/* Stats */}
