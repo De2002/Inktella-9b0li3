@@ -3,14 +3,8 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import { Heart, MessageCircle, Bookmark, Users, UserCheck, BookOpen, PenTool } from 'lucide-react';
 import StatsCard from '@/components/dashboard/StatsCard';
-import PoetPulseCard from '@/components/dashboard/PoetPulseCard';
-import EngagementChart from '@/components/dashboard/EngagementChart';
 import TopPoemsTable from '@/components/dashboard/TopPoemsTable';
 import CriticPushesCard from '@/components/dashboard/CriticPushesCard';
-import CriticalActivityCard from '@/components/dashboard/CriticalActivityCard';
-import WritingWorkspaceCard from '@/components/dashboard/WritingWorkspaceCard';
-import FeaturedPoemSection from '@/components/dashboard/FeaturedPoemSection';
-import FundingMembersCard from '@/components/dashboard/FundingMembersCard';
 import PrivilegesSection from '@/components/dashboard/PrivilegesSection';
 import LevelBadgeCard from '@/components/dashboard/LevelBadgeCard';
 
@@ -38,26 +32,7 @@ const mockCriticPushes = [
   ], description: 'Critic Pick' },
 ];
 
-const mockActivities = [
-  { id: '1', author: 'Luna W.', avatar: 'https://i.pravatar.cc/32?img=1', note: 'Beautiful imagery and depth.', timestamp: '2h ago' },
-  { id: '2', author: 'Kailos', avatar: 'https://i.pravatar.cc/32?img=2', note: 'The ending stays with me.', timestamp: '1d ago' },
-  { id: '3', author: 'Elenor Stone', avatar: 'https://i.pravatar.cc/32?img=3', note: 'Stunning word choices!', timestamp: '2d ago' },
-];
 
-const mockDrafts = [
-  { id: '1', title: 'Whispers of the Wind', lastEdited: '2h ago', status: 'draft' as const },
-  { id: '2', title: 'A Thousand Thoughts', lastEdited: '3h ago', status: 'draft' as const },
-  { id: '3', title: 'Beneath the Surface', lastEdited: '5d ago', status: 'draft' as const },
-  { id: '4', title: 'When the Night Speaks', lastEdited: '5d ago', status: 'draft' as const },
-];
-
-const mockMembers = [
-  { id: '1', name: 'Nova Verse', avatar: 'https://i.pravatar.cc/32?img=4', since: 'Jan 2024' },
-  { id: '2', name: 'Inkbound', avatar: 'https://i.pravatar.cc/32?img=5', since: 'Dec 2023' },
-  { id: '3', name: 'Poetree', avatar: 'https://i.pravatar.cc/32?img=6', since: 'Oct 2023' },
-  { id: '4', name: 'Wordsmith.', avatar: 'https://i.pravatar.cc/32?img=7', since: 'Oct 2023' },
-  { id: '5', name: 'Orpheus', avatar: 'https://i.pravatar.cc/32?img=8', since: 'Sep 2023' },
-];
 
 
 
@@ -115,27 +90,14 @@ export default function DashboardPage() {
 
         {/* Main Grid - Single Column on Mobile, Multi-column on Tablet+ */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 mb-6 sm:mb-8">
-          {/* Left Column - Poet Pulse & Engagement */}
+          {/* Left Column - Level & Privileges */}
           <div className="lg:col-span-1 space-y-4 sm:space-y-6">
-            <PoetPulseCard items={[
-              { id: '1', icon: 'heart', text: 'Your poem "Rain at Dawn" gained 14 likes this week.' },
-              { id: '2', icon: 'message', text: 'Two critics left new feedback on your poem "Fragments".' },
-              { id: '3', icon: 'bookmark', text: 'Bookmarks increased by 32% compared to last week.' },
-              { id: '4', icon: 'zap', text: 'Consider publishing one of your drafts to keep the momentum.' },
-            ]} />
+            <LevelBadgeCard level={profile.level} nextLevel={profile.level === 'observer' ? 'guide' : profile.level === 'guide' ? 'critic' : undefined} />
           </div>
 
-          {/* Center Column - Level & Activity */}
+          {/* Center Column - Level & Privileges */}
           <div className="md:col-span-2 lg:col-span-2 space-y-4 sm:space-y-6">
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <LevelBadgeCard level={profile.level} nextLevel={profile.level === 'observer' ? 'guide' : profile.level === 'guide' ? 'critic' : undefined} />
-              <PrivilegesSection level={profile.level} />
-            </div>
-            <CriticalActivityCard 
-              activities={mockActivities} 
-              reviewsCount={96} 
-              avgRating={4.7}
-            />
+            <PrivilegesSection level={profile.level} />
           </div>
 
           {/* Right Column - Top Poems & Critic Pushes */}
@@ -144,43 +106,6 @@ export default function DashboardPage() {
             <CriticPushesCard pushes={mockCriticPushes.slice(0, 2)} />
           </div>
         </div>
-
-        {/* Engagement Trend Row */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6 mb-6 sm:mb-8">
-          <div className="lg:col-span-1">
-            <EngagementChart />
-          </div>
-          
-          <div className="lg:col-span-2">
-            <WritingWorkspaceCard 
-              drafts={mockDrafts} 
-              published={[]} 
-              totalDrafts={17}
-            />
-          </div>
-        </div>
-
-        {/* Featured Poem Section */}
-        <div className="mb-6 sm:mb-8">
-          <FeaturedPoemSection
-            title="Beneath a Silver Moon"
-            author="Lyra Skye"
-            excerpt="Beneath a silver moon so bright, I wrote your name in thread of light."
-            fullText="The stars, they listened, soft and still, And held it close against the night."
-            image="https://images.unsplash.com/photo-1532274040911-5f82f1fbb457?w=600"
-            sponsored={true}
-            likes={1892}
-            comments={241}
-            bookmarks={632}
-          />
-        </div>
-
-        {/* Premium Members & Quote */}
-        <FundingMembersCard 
-          members={mockMembers}
-          quote="Every poem is a drop of ink that can change an ocean."
-          quoteAuthor="Inktella"
-        />
       </div>
     </div>
   );
