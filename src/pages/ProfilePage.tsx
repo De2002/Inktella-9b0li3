@@ -157,10 +157,7 @@ export default function ProfilePage() {
                 : getInitials(profile.username)
               }
             </div>
-            {/* Badge medallion overlaid on avatar */}
-            <div className="absolute -bottom-2 -right-2">
-              <LevelBadgeImage level={profile.level} size={30} showTooltip />
-            </div>
+
           </div>
 
           <div className="flex items-center gap-2">
@@ -186,15 +183,9 @@ export default function ProfilePage() {
           </div>
         </div>
 
-        {/* Name + level with badge image */}
+        {/* Name */}
         <div className="mb-1">
           <h1 className="font-serif font-bold text-2xl text-foreground leading-tight">@{profile.username}</h1>
-          <div className="flex items-center gap-2 mt-1.5">
-            <LevelBadgeImage level={profile.level} size={24} />
-            <span className={cn('inline-flex items-center text-xs font-medium px-2 py-0.5 rounded-full', levelCfg.bgClass, levelCfg.textClass)}>
-              {levelCfg.label} · {profile.tella_balance} Tella
-            </span>
-          </div>
         </div>
 
         {/* Bio */}
