@@ -24,9 +24,18 @@ const mockTopPoems = [
 ];
 
 const mockCriticPushes = [
-  { id: '1', title: 'Midnight Rain', badge: 'featured' as const, critics: ['Luna W.', 'Kailos'], description: 'Featured by 3 Critics' },
-  { id: '2', title: 'The Empty Station', badge: 'pick' as const, critics: ['Nova Verse', 'Editor'], description: 'Critic Pick' },
-  { id: '3', title: 'Letters Unsent', badge: 'pick' as const, critics: ['Poet Circle'], description: 'Critic Pick' },
+  { id: '1', title: 'Midnight Rain', badge: 'featured' as const, critics: [
+    { name: 'Luna W.', avatar: 'https://i.pravatar.cc/32?img=1' },
+    { name: 'Kailos', avatar: 'https://i.pravatar.cc/32?img=2' },
+    { name: 'Elenor Stone', avatar: 'https://i.pravatar.cc/32?img=3' }
+  ], description: 'Featured by 3 Critics' },
+  { id: '2', title: 'The Empty Station', badge: 'pick' as const, critics: [
+    { name: 'Nova Verse', avatar: 'https://i.pravatar.cc/32?img=4' },
+    { name: 'Editor', avatar: 'https://i.pravatar.cc/32?img=5' }
+  ], description: 'Critic Pick' },
+  { id: '3', title: 'Letters Unsent', badge: 'pick' as const, critics: [
+    { name: 'Poet Circle', avatar: 'https://i.pravatar.cc/32?img=6' }
+  ], description: 'Critic Pick' },
 ];
 
 const mockActivities = [
@@ -50,13 +59,7 @@ const mockMembers = [
   { id: '5', name: 'Orpheus', avatar: 'https://i.pravatar.cc/32?img=8', since: 'Sep 2023' },
 ];
 
-const mockPrivileges = [
-  { id: '1', name: 'Publish Unlimited Poems', icon: '📝' },
-  { id: '2', name: 'Receive Critic Notes', icon: '💬' },
-  { id: '3', name: 'Join Writing Circles', icon: '👥' },
-  { id: '4', name: 'Bookmark Unlimited', icon: '🔖' },
-  { id: '5', name: 'Access Analytics', icon: '📊' },
-];
+
 
 export default function DashboardPage() {
   const { user, profile, isAuthenticated } = useAuth();
@@ -125,8 +128,8 @@ export default function DashboardPage() {
           {/* Center Column - Level & Activity */}
           <div className="md:col-span-2 lg:col-span-2 space-y-4 sm:space-y-6">
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <LevelBadgeCard level="Poet" currentXp={2450} maxXp={3500} nextUnlock="Wordsmith (1,050 XP to go)" />
-              <PrivilegesSection privileges={mockPrivileges.slice(0, 3)} />
+              <LevelBadgeCard level={profile.level} nextLevel={profile.level === 'observer' ? 'guide' : profile.level === 'guide' ? 'critic' : undefined} />
+              <PrivilegesSection level={profile.level} />
             </div>
             <CriticalActivityCard 
               activities={mockActivities} 
