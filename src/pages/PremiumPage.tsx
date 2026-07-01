@@ -15,11 +15,13 @@ const premiumFeatures = [
 ];
 
 const benefits = [
-  'Keep Inktella free for poets and readers',
+  'Keep Inktella free for everyone',
   'Build better writing and feedback tools',
-  'Improve the community experience',
-  'Support platform maintenance',
-  'Create new ways for poets to share their work',
+  'Create professional audio poem adaptations',
+  'Help more poets discover an audience',
+  'Develop new features faster',
+  'Maintain a safe, welcoming community',
+  'Improve the speed, reliability, and accessibility of the platform',
 ];
 
 const faqs = [
