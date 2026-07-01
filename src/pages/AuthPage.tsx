@@ -28,7 +28,7 @@ export default function AuthPage() {
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    if (user) navigate('/feed', { replace: true });
+    if (user) navigate('/dashboard', { replace: true });
   }, [user, navigate]);
 
   // REGISTER FLOW
@@ -128,7 +128,7 @@ export default function AuthPage() {
     }
     if (data.user) {
       login(mapUser(data.user));
-      navigate('/feed');
+      navigate('/dashboard');
     }
   }
 
@@ -181,7 +181,7 @@ export default function AuthPage() {
       }
       
       login(mapUser(data.user));
-      navigate('/feed');
+      navigate('/dashboard');
     }
   }
 
