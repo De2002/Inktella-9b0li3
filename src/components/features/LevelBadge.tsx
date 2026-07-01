@@ -11,7 +11,15 @@ interface LevelBadgeProps {
 }
 
 export default function LevelBadge({ tella, level, size = 'sm', showLabel = true, className }: LevelBadgeProps) {
-  const cfg = level ? LEVEL_CONFIG[level] : getLevelConfig(tella);
+  let cfg;
+  
+  // If level is provided and it's a valid UserLevel, use it directly
+  if (level && (level === 'observer' || level === 'guide' || level === 'critic')) {
+    cfg = LEVEL_CONFIG[level];
+  } else {
+    // Otherwise, calculate level from tella value
+    cfg = getLevelConfig(tella);
+  }
 
   const sizeClasses = {
     xs: 'text-[10px] px-1.5 py-0.5',
