@@ -1,8 +1,8 @@
 import { useState, useEffect } from 'react';
 import { useParams, Link, useSearchParams, useNavigate } from 'react-router-dom';
 import {
-  ArrowLeft, Heart, MessageSquare, BookOpen, Share2,
-  Bookmark, Feather, Sparkles, X, Loader2, PenLine, DoorOpen, MoreHorizontal,
+  ArrowLeft, Heart, MessageSquare, Share2,
+  Bookmark, Sparkles, X, Loader2, PenLine, DoorOpen, MoreHorizontal,
 } from 'lucide-react';
 import { supabase } from '@/lib/supabase';
 import type { Poem } from '@/types';
@@ -15,8 +15,9 @@ import { formatTimeAgo, cn, getInitials } from '@/lib/utils';
 import { getLevel, LEVEL_CONFIG } from '@/constants';
 import { toast } from 'sonner';
 import { FunctionsHttpError } from '@supabase/supabase-js';
+import { LevelBadgeImage } from '@/components/features/LevelBadge';
 
-// ─── AI Analysis helpers (shared) ─────────────────────────────────────────────
+// ─── AI Analysis helpers ───────────────────────────────────────────────────────
 function RenderAnalysis({ text }: { text: string }) {
   const sections = text.split(/\n\n+/);
   return (
@@ -48,10 +49,10 @@ function usePoemData(id: string | undefined, user: any) {
   const [likerAvatars, setLikerAvatars] = useState<{ username: string; avatar_url?: string }[]>([]);
 
   useEffect(() => {
-    if (id) fetch();
+    if (id) fetchPoem();
   }, [id, user]);
 
-  async function fetch() {
+  async function fetchPoem() {
     setLoading(true);
     const { data } = await supabase
       .from('poems')
@@ -125,8 +126,6 @@ function ClassicPoemPage({ id }: { id: string }) {
       setLiked(true); setLikeCount(c => c + 1);
       await Promise.all([
         supabase.from('poem_likes').insert({ poem_id: poem.id, user_id: user.id }),
-        // +1 Ink to poem owner
-        supabase.rpc ? null : null,
         supabase.from('ink_transactions').insert({ user_id: poem.user_id, amount: 1, reason: 'Poem liked', related_id: poem.id }),
         supabase.from('user_profiles').select('ink_balance').eq('id', poem.user_id).single().then(({ data }) => {
           if (data) supabase.from('user_profiles').update({ ink_balance: (data.ink_balance || 0) + 1 }).eq('id', poem.user_id);
@@ -170,12 +169,10 @@ function ClassicPoemPage({ id }: { id: string }) {
 
   return (
     <div className="max-w-xl mx-auto px-4 py-6 pb-24 lg:pb-8">
-      {/* Back */}
       <button onClick={() => navigate(-1)} className="flex items-center gap-1.5 text-sm text-foreground-muted hover:text-foreground transition-colors mb-8">
         <ArrowLeft size={14} /> Back
       </button>
 
-      {/* Centered poem header */}
       <div className="text-center mb-8">
         {poem.topic && (
           <Link to={`/topic/${poem.topic.slug}`} className="text-xs font-medium text-brand-500 hover:text-brand-600 transition-colors mb-3 block uppercase tracking-widest">
@@ -184,7 +181,7 @@ function ClassicPoemPage({ id }: { id: string }) {
         )}
         <h1 className="poem-title text-3xl sm:text-4xl text-foreground mb-5 leading-tight italic">{poem.title}</h1>
 
-        {/* Author */}
+        {/* Author with badge */}
         <Link to={`/profile/${author?.username}`} className="inline-flex items-center gap-2.5 group">
           <div
             className={cn('w-9 h-9 rounded-full overflow-hidden flex items-center justify-center text-xs font-bold shrink-0', levelCfg.borderClass)}
@@ -196,32 +193,31 @@ function ClassicPoemPage({ id }: { id: string }) {
             }
           </div>
           <div className="text-left">
-            <p className="text-sm font-semibold text-foreground group-hover:text-brand-500 transition-colors leading-none">{author?.username}</p>
+            <div className="flex items-center gap-1.5">
+              <LevelBadgeImage level={authorLevel} size={16} />
+              <p className="text-sm font-semibold text-foreground group-hover:text-brand-500 transition-colors leading-none">{author?.username}</p>
+            </div>
             <p className="text-xs text-foreground-muted mt-0.5">{formatTimeAgo(poem.created_at)}</p>
           </div>
         </Link>
       </div>
 
-      {/* Optional image */}
       {poem.image_url && (
         <div className="rounded-2xl overflow-hidden mb-8 aspect-[16/7]">
           <img src={poem.image_url} alt={poem.title} className="w-full h-full object-cover" />
         </div>
       )}
 
-      {/* Poem text — centered, classic */}
       <div className="poem-text text-foreground leading-[2.1] text-[17px] text-center mb-10">
         {poem.content}
       </div>
 
-      {/* Tags */}
       {poem.tags && poem.tags.length > 0 && (
         <div className="flex flex-wrap gap-2 justify-center mb-8">
           {poem.tags.map(tag => <span key={tag.id} className="tag-pill">{tag.name}</span>)}
         </div>
       )}
 
-      {/* Liker avatars */}
       {(likerAvatars.length > 0 || likeCount > 0) && (
         <div className="flex items-center justify-center gap-2 mb-6">
           {likerAvatars.length > 0 && (
@@ -242,10 +238,8 @@ function ClassicPoemPage({ id }: { id: string }) {
         </div>
       )}
 
-      {/* Divider */}
       <div className="border-t border-border my-6" />
 
-      {/* Actions — Like, Comment, Share, AI Analysis ONLY. No Ink, no Tella, no Feedback, no Behind the Poem */}
       <div className="flex items-center justify-center gap-2 flex-wrap">
         <button
           onClick={handleLike}
@@ -287,12 +281,10 @@ function ClassicPoemPage({ id }: { id: string }) {
         </button>
       </div>
 
-      {/* Comments */}
       {commentOpen && poem && (
         <ClassicCommentSheet poem={{ ...poem, feedback_count: commentCount }} onClose={() => setCommentOpen(false)} />
       )}
 
-      {/* AI Analysis sheet */}
       {analysisOpen && (
         <div className="fixed inset-0 z-50 flex flex-col justify-end">
           <div className="absolute inset-0 bg-black/40 backdrop-blur-sm" onClick={() => setAnalysisOpen(false)} />
@@ -335,8 +327,8 @@ function ClassicPoemPage({ id }: { id: string }) {
   );
 }
 
-// ═════════════════════════════════════���������═══════════════��═════════════════════════
-// Modern Poem Page (original)
+// ═══════════════════════════════════════════════════════════════════════════════
+// Modern Poem Page
 // ═══════════════════════════════════════════════════════════════════════════════
 function ModernPoemPage({ id }: { id: string }) {
   const { user } = useAuth();
@@ -401,26 +393,19 @@ function ModernPoemPage({ id }: { id: string }) {
 
   return (
     <div className="max-w-2xl mx-auto px-4 py-6 pb-24 lg:pb-8">
-      {/* Header with Back and Edit/Menu */}
+      {/* Header */}
       <div className="flex items-center justify-between gap-4 mb-6">
-        {/* Back button in box */}
         <button
           onClick={() => navigate(-1)}
           className="inline-flex items-center justify-center w-10 h-10 rounded-lg border border-border text-foreground-muted hover:text-foreground hover:bg-background-subtle transition-colors shrink-0"
-          title="Go back"
         >
           <ArrowLeft size={18} />
         </button>
-
-        {/* Spacer */}
         <div className="flex-1" />
-
-        {/* Edit button (owner only) or Three-dot menu (others) */}
         {isOwner ? (
           <Link
             to={`/write?edit=${poem?.id}`}
             className="inline-flex items-center justify-center w-10 h-10 rounded-lg border border-brand-200 dark:border-brand-800 text-brand-600 dark:text-brand-400 hover:bg-brand-100 dark:hover:bg-brand-900/30 transition-colors"
-            title="Edit poem"
           >
             <PenLine size={18} />
           </Link>
@@ -429,25 +414,15 @@ function ModernPoemPage({ id }: { id: string }) {
             <button
               onClick={() => setMenuOpen(!menuOpen)}
               className="inline-flex items-center justify-center w-10 h-10 rounded-lg border border-border text-foreground-muted hover:text-foreground hover:bg-background-subtle transition-colors"
-              title="More options"
             >
               <MoreHorizontal size={18} />
             </button>
-            
-            {/* Dropdown menu */}
             {menuOpen && (
               <>
-                <div
-                  className="fixed inset-0 z-40"
-                  onClick={() => setMenuOpen(false)}
-                />
+                <div className="fixed inset-0 z-40" onClick={() => setMenuOpen(false)} />
                 <div className="absolute right-0 top-12 z-50 min-w-48 bg-surface border border-border rounded-lg shadow-lg overflow-hidden">
-                  <button className="w-full text-left px-4 py-2.5 text-sm text-foreground hover:bg-background-subtle transition-colors flex items-center gap-2">
-                    <span>Report poem</span>
-                  </button>
-                  <button className="w-full text-left px-4 py-2.5 text-sm text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors flex items-center gap-2">
-                    <span>Block poet</span>
-                  </button>
+                  <button className="w-full text-left px-4 py-2.5 text-sm text-foreground hover:bg-background-subtle transition-colors">Report poem</button>
+                  <button className="w-full text-left px-4 py-2.5 text-sm text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors">Block poet</button>
                 </div>
               </>
             )}
@@ -455,35 +430,21 @@ function ModernPoemPage({ id }: { id: string }) {
         )}
       </div>
 
-      {/* Title and Poet Sections - Connected frame */}
+      {/* Title + Poet frame */}
       <div className="flex mb-6">
-        {/* Left content area */}
         <div className="flex-1 min-w-0">
-          {/* Title Section */}
+          {/* Title row */}
           <div className="flex border-b border-border">
-            {/* Center - Title content (left-aligned, compact) */}
             <div className="flex-1 px-3 sm:px-6 py-2 sm:py-3 flex items-center">
               <h1 className="poem-title text-xl sm:text-2xl lg:text-3xl text-foreground leading-snug">{poem.title}</h1>
             </div>
-
-            {/* Right rail - "TITLE" label */}
             <div className="flex-none w-8 sm:w-9 flex items-center justify-center border-l border-border">
-              <span
-                className="text-[9px] sm:text-[10px] font-bold tracking-[0.22em] uppercase select-none"
-                style={{
-                  writingMode: 'vertical-rl',
-                  color: '#3b82f6',
-                  letterSpacing: '0.22em',
-                }}
-              >
-                TITLE
-              </span>
+              <span className="text-[9px] sm:text-[10px] font-bold tracking-[0.22em] uppercase select-none" style={{ writingMode: 'vertical-rl', color: '#3b82f6' }}>TITLE</span>
             </div>
           </div>
 
-          {/* Poet Section */}
+          {/* Poet row — badge before name */}
           <div className="flex border-b border-border">
-            {/* Center - Poet profile content (left-aligned, compact) */}
             <div className="flex-1 px-3 sm:px-6 py-2 sm:py-3 flex items-center">
               <Link to={`/profile/${author?.username}`} className="flex items-center gap-2 sm:gap-3 group">
                 <div
@@ -496,32 +457,21 @@ function ModernPoemPage({ id }: { id: string }) {
                   }
                 </div>
                 <div className="min-w-0">
-                  <p className="font-semibold text-xs sm:text-sm text-foreground group-hover:text-brand-500 transition-colors truncate">{author?.username}</p>
+                  <div className="flex items-center gap-1.5">
+                    <LevelBadgeImage level={authorLevel as any} size={14} />
+                    <p className="font-semibold text-xs sm:text-sm text-foreground group-hover:text-brand-500 transition-colors truncate">{author?.username}</p>
+                  </div>
                   <span className={cn('text-[11px] sm:text-xs font-medium', levelCfg.textClass)}>{levelCfg.badgeText}</span>
                 </div>
               </Link>
             </div>
-
-            {/* Right rail - "POET" label with connected line */}
             <div className="flex-none w-8 sm:w-9 flex items-center justify-center border-l border-border relative">
-              {/* Connecting line to top */}
               <div className="absolute top-0 bottom-0 left-1/2 transform -translate-x-1/2 w-px bg-border" />
-              <span
-                className="text-[9px] sm:text-[10px] font-bold tracking-[0.22em] uppercase select-none relative z-10"
-                style={{
-                  writingMode: 'vertical-rl',
-                  color: '#ec4899',
-                  letterSpacing: '0.22em',
-                }}
-              >
-                POET
-              </span>
+              <span className="text-[9px] sm:text-[10px] font-bold tracking-[0.22em] uppercase select-none relative z-10" style={{ writingMode: 'vertical-rl', color: '#ec4899' }}>POET</span>
             </div>
           </div>
         </div>
       </div>
-
-
 
       {poem.image_url && (
         <div className="rounded-2xl overflow-hidden mb-6 max-h-72">
@@ -537,7 +487,7 @@ function ModernPoemPage({ id }: { id: string }) {
         </div>
       )}
 
-      {/* Icon-only action bar */}
+      {/* Actions */}
       <div className="flex items-center justify-center gap-0 py-4 border-t border-b border-border mb-6">
         <button
           onClick={handleLike}
@@ -620,7 +570,7 @@ function ModernPoemPage({ id }: { id: string }) {
   );
 }
 
-// ─── Shared loading/empty states ──────────────────────────────────────────────
+// ─── Shared states ─────────────────────────────────────────────────────────────
 function PoemSkeleton() {
   return (
     <div className="max-w-2xl mx-auto px-4 py-8">
@@ -644,14 +594,11 @@ function PoemNotFound() {
   );
 }
 
-// ═══════════════════════════════════════════════════════════════════════════════
-// Router — pick which page to render
-// ══════════════════════════════════��════════════════════════════════════════════
+// ─── Router ────────────────────────────────────────────────────────────────────
 export default function PoemPage() {
   const { id } = useParams();
   const [searchParams] = useSearchParams();
   const isClassic = searchParams.get('mode') === 'classic';
-
   if (!id) return <PoemNotFound />;
   return isClassic ? <ClassicPoemPage id={id} /> : <ModernPoemPage id={id} />;
 }

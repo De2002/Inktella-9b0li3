@@ -1,6 +1,6 @@
 import { cn, getLevelConfig, getInitials } from '@/lib/utils';
 import type { UserLevel } from '@/types';
-import { LEVEL_CONFIG } from '@/constants';
+import { LEVEL_CONFIG, LEVEL_BADGE_IMAGES } from '@/constants';
 
 interface LevelBadgeProps {
   tella: number;
@@ -41,6 +41,30 @@ export default function LevelBadge({ tella, level, size = 'sm', showLabel = true
     >
       {cfg.badgeText}
     </span>
+  );
+}
+
+// ── Badge Image — shows the actual badge medallion ───────────────────────────
+interface LevelBadgeImageProps {
+  level: UserLevel;
+  size?: number; // px
+  className?: string;
+  showTooltip?: boolean;
+}
+
+export function LevelBadgeImage({ level, size = 32, className, showTooltip = true }: LevelBadgeImageProps) {
+  const cfg = LEVEL_CONFIG[level];
+  const src = LEVEL_BADGE_IMAGES[level];
+  return (
+    <img
+      src={src}
+      alt={cfg.label + ' badge'}
+      title={showTooltip ? cfg.label : undefined}
+      width={size}
+      height={size}
+      className={cn('object-contain drop-shadow-sm shrink-0', className)}
+      style={{ width: size, height: size }}
+    />
   );
 }
 

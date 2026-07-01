@@ -9,6 +9,7 @@ import { getLevel, LEVEL_CONFIG } from '@/constants';
 import { cn, formatTimeAgo, getInitials, tellaToNextLevel } from '@/lib/utils';
 import PoemCard from '@/components/features/PoemCard';
 import FeedbackPanel from '@/components/features/FeedbackPanel';
+import { LevelBadgeImage } from '@/components/features/LevelBadge';
 
 export default function ProfilePage() {
   const { username } = useParams();
@@ -146,14 +147,20 @@ export default function ProfilePage() {
       <div className="px-4 max-w-2xl mx-auto">
         {/* Avatar + actions */}
         <div className="flex items-end justify-between -mt-10 mb-3 relative z-10">
-          <div
-            className={cn('w-20 h-20 rounded-full overflow-hidden flex items-center justify-center text-xl font-bold bg-surface border-4 border-background', levelCfg.borderClass)}
-            style={{ color: levelCfg.color, background: levelCfg.color + '15' }}
-          >
-            {profile.avatar_url
-              ? <img src={profile.avatar_url} alt={profile.username} className="w-full h-full object-cover" />
-              : getInitials(profile.username)
-            }
+          <div className="relative">
+            <div
+              className={cn('w-20 h-20 rounded-full overflow-hidden flex items-center justify-center text-xl font-bold bg-surface border-4 border-background', levelCfg.borderClass)}
+              style={{ color: levelCfg.color, background: levelCfg.color + '15' }}
+            >
+              {profile.avatar_url
+                ? <img src={profile.avatar_url} alt={profile.username} className="w-full h-full object-cover" />
+                : getInitials(profile.username)
+              }
+            </div>
+            {/* Badge medallion overlaid on avatar */}
+            <div className="absolute -bottom-2 -right-2">
+              <LevelBadgeImage level={profile.level} size={30} showTooltip />
+            </div>
           </div>
 
           <div className="flex items-center gap-2">
@@ -179,12 +186,15 @@ export default function ProfilePage() {
           </div>
         </div>
 
-        {/* Name + level */}
+        {/* Name + level with badge image */}
         <div className="mb-1">
           <h1 className="font-serif font-bold text-2xl text-foreground leading-tight">@{profile.username}</h1>
-          <span className={cn('inline-flex items-center text-xs font-medium px-2 py-0.5 rounded-full mt-1', levelCfg.bgClass, levelCfg.textClass)}>
-            {levelCfg.badgeText} · {profile.tella_balance} Tella
-          </span>
+          <div className="flex items-center gap-2 mt-1.5">
+            <LevelBadgeImage level={profile.level} size={24} />
+            <span className={cn('inline-flex items-center text-xs font-medium px-2 py-0.5 rounded-full', levelCfg.bgClass, levelCfg.textClass)}>
+              {levelCfg.label} · {profile.tella_balance} Tella
+            </span>
+          </div>
         </div>
 
         {/* Bio */}
@@ -197,6 +207,16 @@ export default function ProfilePage() {
           <span><strong className="text-foreground">{poems.length}</strong> poems</span>
           <span><strong className="text-foreground">{followerCount}</strong> followers</span>
           <span><strong className="text-foreground">{followingCount}</strong> following</span>
+        </div>
+
+        {/* Level badge showcase */}
+        <div className="mb-5 p-4 bg-surface border border-border rounded-2xl flex items-center gap-4">
+          <LevelBadgeImage level={profile.level} size={64} />
+          <div className="flex-1 min-w-0">
+            <p className={cn('font-bold text-base', levelCfg.textClass)}>{levelCfg.label}</p>
+            <p className="text-xs text-foreground-muted mt-0.5 leading-snug">{levelCfg.description}</p>
+            <p className="text-xs text-foreground-muted mt-1">{profile.tella_balance} Tella earned</p>
+          </div>
         </div>
 
         {/* Tella progress bar */}

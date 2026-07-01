@@ -15,7 +15,7 @@ import { toast } from 'sonner';
 type PasswordStep = 'idle' | 'sending' | 'verify' | 'verifying' | 'set' | 'saving';
 
 export default function SettingsPage() {
-  const { user, profile, refreshProfile, loading: authLoading } = useAuth();
+  const { user, profile, refreshProfile } = useAuth();
   const navigate = useNavigate();
 
   // ── Profile fields ──────────────────────────────────────────────────────────
@@ -50,9 +50,8 @@ export default function SettingsPage() {
   const [otpError, setOtpError] = useState('');
 
   useEffect(() => {
-    if (authLoading) return;
     if (!user) { navigate('/auth'); return; }
-  }, [user, authLoading, navigate]);
+  }, [user]);
 
   useEffect(() => {
     if (profile) {

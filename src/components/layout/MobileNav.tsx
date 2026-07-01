@@ -1,6 +1,7 @@
 import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { Home, Compass, PenLine, Droplets, User } from 'lucide-react';
+import { Home, Compass, Droplets, User } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
+import quillIcon from '@/assets/quill-icon.png';
 
 export default function MobileNav() {
   const { user } = useAuth();
@@ -10,7 +11,7 @@ export default function MobileNav() {
   const navItems = [
     { to: '/feed', icon: Home, label: 'Home' },
     { to: '/explore', icon: Compass, label: 'Explore' },
-    { to: '/write', icon: PenLine, label: 'Write', fab: true },
+    { to: '/write', icon: null, label: 'Write', fab: true },
     { to: '/ink', icon: Droplets, label: 'Ink' },
     { to: `/profile/${user?.username}`, icon: User, label: 'Me' },
   ];
@@ -27,9 +28,9 @@ export default function MobileNav() {
               <button
                 key={to}
                 onClick={() => navigate(to)}
-                className="flex flex-col items-center justify-center -mt-6 w-14 h-14 bg-brand-500 hover:bg-brand-600 rounded-full shadow-lg text-white transition-transform active:scale-95"
+                className="flex flex-col items-center justify-center -mt-6 w-14 h-14 bg-brand-500 hover:bg-brand-600 rounded-full shadow-lg text-white transition-transform active:scale-95 overflow-hidden"
               >
-                <Icon size={22} />
+                <img src={quillIcon} alt="Write" className="w-10 h-10 object-contain filter brightness-0 invert" />
               </button>
             );
           }

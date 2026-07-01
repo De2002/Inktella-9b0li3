@@ -1,6 +1,7 @@
 import { Link, useNavigate } from 'react-router-dom';
-import { Bell, Sun, Moon, Search, PenLine, Settings, User, Droplet, Home } from 'lucide-react';
+import { Bell, Sun, Moon, Search, Settings, User, Droplet } from 'lucide-react';
 import logoSrc from '@/assets/logo.png';
+import quillIcon from '@/assets/quill-icon.png';
 import { useAuth } from '@/contexts/AuthContext';
 import { useTheme } from '@/contexts/ThemeContext';
 import { getLevel, LEVEL_CONFIG } from '@/constants';
@@ -99,7 +100,7 @@ export default function Navbar() {
 
               {/* Write button */}
               <Link to="/write" className="hidden sm:flex items-center gap-1.5 bg-brand-500 hover:bg-brand-600 text-white px-4 py-2 rounded-full text-sm font-medium transition-colors">
-                <PenLine size={14} />
+                <img src={quillIcon} alt="" className="w-4 h-4 object-contain filter brightness-0 invert" />
                 Write
               </Link>
 
@@ -151,7 +152,7 @@ export default function Navbar() {
                         className="flex items-center justify-center w-8 h-8 rounded-lg text-foreground-secondary hover:text-foreground hover:bg-background-subtle transition-colors"
                         title="Write Poem"
                       >
-                        <PenLine size={18} />
+                        <img src={quillIcon} alt="Write" className="w-5 h-5 object-contain opacity-70" />
                       </Link>
                       <Link 
                         to="/settings" 
@@ -205,10 +206,10 @@ export default function Navbar() {
                     <Link
                       to="/write"
                       onClick={() => setProfileOpen(false)}
-                      className="w-9 h-9 rounded-full flex items-center justify-center bg-purple-500 hover:bg-purple-600 text-white shadow-lg transition-all transform hover:scale-110"
+                      className="w-9 h-9 rounded-full flex items-center justify-center bg-purple-500 hover:bg-purple-600 text-white shadow-lg transition-all transform hover:scale-110 overflow-hidden"
                       title="Write Poem"
                     >
-                      <PenLine size={18} />
+                      <img src={quillIcon} alt="Write" className="w-7 h-7 object-contain filter brightness-0 invert" />
                     </Link>
                     <Link
                       to="/settings"

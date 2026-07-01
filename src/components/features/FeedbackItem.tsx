@@ -6,6 +6,7 @@ import type { Feedback, FeedbackReply, UserLevel } from '@/types';
 import { supabase } from '@/lib/supabase';
 import { useAuth } from '@/contexts/AuthContext';
 import { toast } from 'sonner';
+import { LevelBadgeImage } from './LevelBadge';
 
 interface FeedbackItemProps {
   feedback: Feedback;
@@ -311,6 +312,7 @@ export default function FeedbackItem({ feedback, poemOwnerId, userLevel, onUpdat
         <div className="flex-1 min-w-0">
           {/* Author meta */}
           <div className="flex items-center gap-1.5 mb-1.5 flex-wrap">
+            <LevelBadgeImage level={authorLevel} size={16} showTooltip={false} />
             <span className="text-xs font-semibold text-foreground">@{author?.username || 'user'}</span>
             <span className={cn('text-[10px] font-medium px-1.5 py-0.5 rounded-full', levelCfg.bgClass, levelCfg.textClass)}>
               {levelCfg.label}
