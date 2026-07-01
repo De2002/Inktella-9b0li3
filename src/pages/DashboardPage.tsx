@@ -24,9 +24,18 @@ const mockTopPoems = [
 ];
 
 const mockCriticPushes = [
-  { id: '1', title: 'Midnight Rain', badge: 'featured' as const, critics: ['Luna W.', 'Kailos'], description: 'Featured by 3 Critics' },
-  { id: '2', title: 'The Empty Station', badge: 'pick' as const, critics: ['Nova Verse', 'Editor'], description: 'Critic Pick' },
-  { id: '3', title: 'Letters Unsent', badge: 'pick' as const, critics: ['Poet Circle'], description: 'Critic Pick' },
+  { id: '1', title: 'Midnight Rain', badge: 'featured' as const, critics: [
+    { name: 'Luna W.', avatar: 'https://i.pravatar.cc/32?img=1' },
+    { name: 'Kailos', avatar: 'https://i.pravatar.cc/32?img=2' },
+    { name: 'Elenor Stone', avatar: 'https://i.pravatar.cc/32?img=3' }
+  ], description: 'Featured by 3 Critics' },
+  { id: '2', title: 'The Empty Station', badge: 'pick' as const, critics: [
+    { name: 'Nova Verse', avatar: 'https://i.pravatar.cc/32?img=4' },
+    { name: 'Editor', avatar: 'https://i.pravatar.cc/32?img=5' }
+  ], description: 'Critic Pick' },
+  { id: '3', title: 'Letters Unsent', badge: 'pick' as const, critics: [
+    { name: 'Poet Circle', avatar: 'https://i.pravatar.cc/32?img=6' }
+  ], description: 'Critic Pick' },
 ];
 
 const mockActivities = [

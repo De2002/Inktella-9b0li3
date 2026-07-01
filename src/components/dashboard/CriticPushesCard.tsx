@@ -1,11 +1,16 @@
-import { Award, Crown } from 'lucide-react';
+import { Award, Crown, Zap } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+
+interface Critic {
+  name: string;
+  avatar: string;
+}
 
 interface CriticPush {
   id: string;
   title: string;
   badge: 'featured' | 'pick';
-  critics: string[];
+  critics: Critic[];
   description?: string;
 }
 
@@ -17,7 +22,10 @@ export default function CriticPushesCard({ pushes }: CriticPushesCardProps) {
   return (
     <div className="bg-surface p-6 rounded-lg border border-border shadow-sm">
       <div className="flex items-center justify-between mb-4">
-        <h3 className="font-bold text-lg text-foreground">Critic Pushes</h3>
+        <div className="flex items-center gap-2">
+          <Zap size={20} className="text-amber-500" />
+          <h3 className="font-bold text-lg text-foreground">Critic Pushes</h3>
+        </div>
         <Button variant="ghost" className="text-purple-600 dark:text-purple-400 text-sm font-medium p-0 h-auto">View all →</Button>
       </div>
       <p className="text-foreground-secondary text-sm mb-4">Poems selected and pushed by critics</p>
@@ -40,10 +48,22 @@ export default function CriticPushesCard({ pushes }: CriticPushesCardProps) {
               </div>
               {push.description && <p className="text-foreground-secondary text-xs mb-2">{push.description}</p>}
               <div className="flex items-center gap-2">
-                {push.critics.map((_, i) => (
-                  <div key={i} className="w-5 h-5 rounded-full bg-gradient-to-br from-purple-400 to-blue-400" />
-                ))}
-                {push.critics.length > 0 && <span className="text-foreground-muted text-xs">+{push.critics.length}</span>}
+                <div className="flex -space-x-2">
+                  {push.critics.slice(0, 3).map((critic, i) => (
+                    <img
+                      key={i}
+                      src={critic.avatar}
+                      alt={critic.name}
+                      title={critic.name}
+                      className="w-6 h-6 rounded-full border-2 border-surface object-cover"
+                    />
+                  ))}
+                  {push.critics.length > 3 && (
+                    <div className="w-6 h-6 rounded-full bg-muted border-2 border-surface flex items-center justify-center text-xs font-semibold text-foreground-secondary">
+                      +{push.critics.length - 3}
+                    </div>
+                  )}
+                </div>
               </div>
             </div>
           </div>
