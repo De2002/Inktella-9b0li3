@@ -13,6 +13,7 @@ import ClassicCommentSheet from '@/components/features/ClassicCommentSheet';
 import { useAuth } from '@/contexts/AuthContext';
 import { formatTimeAgo, cn, getInitials } from '@/lib/utils';
 import { getLevel, LEVEL_CONFIG, LEVEL_BADGE_IMAGES } from '@/constants';
+import { LevelBadgeImage } from '@/components/features/LevelBadge';
 import { toast } from 'sonner';
 import { FunctionsHttpError } from '@supabase/supabase-js';
 
@@ -181,7 +182,7 @@ function ClassicPoemPage({ id }: { id: string }) {
         <h1 className="poem-title text-3xl sm:text-4xl text-foreground mb-5 leading-tight italic">{poem.title}</h1>
 
         {/* Author profile row */}
-        <div className="flex items-center justify-center gap-3 group">
+        <div className="flex items-center justify-between gap-3 group">
           {/* Profile picture on left */}
           <Link to={`/profile/${author?.username}`}>
             <div
@@ -189,22 +190,23 @@ function ClassicPoemPage({ id }: { id: string }) {
               style={{ background: levelCfg.color + '15', color: levelCfg.color }}
             >
               {author?.avatar_url
-                ? <img src={author.avatar_url} alt={author.username} className="w-full h-full object-cover" />
+                ? <img src={author.avatar_url} alt={author?.username} className="w-full h-full object-cover" />
                 : getInitials(author?.username || '?')
               }
             </div>
           </Link>
           
-          {/* Centered username and time */}
+          {/* Centered username, badge and time */}
           <Link to={`/profile/${author?.username}`} className="flex flex-col items-center flex-1">
-            <p className="text-sm font-semibold text-foreground hover:text-brand-500 transition-colors leading-none">{author?.username}</p>
+            <div className="flex items-center gap-2">
+              <p className="text-sm font-semibold text-foreground hover:text-brand-500 transition-colors leading-none">{author?.username}</p>
+              <img src={LEVEL_BADGE_IMAGES[authorLevel]} alt={authorLevel} className="w-5 h-5 shrink-0" />
+            </div>
             <p className="text-xs text-foreground-muted mt-0.5">{formatTimeAgo(poem.created_at)}</p>
           </Link>
 
-          {/* Badge on right */}
-          <div className="w-9 h-9 shrink-0">
-            <img src={LEVEL_BADGE_IMAGES[authorLevel]} alt={authorLevel} className="w-full h-full object-contain" />
-          </div>
+          {/* Empty space on right for balance */}
+          <div className="w-9 shrink-0" />
         </div>
       </div>
 
@@ -333,7 +335,7 @@ function ClassicPoemPage({ id }: { id: string }) {
   );
 }
 
-// ═══════════════════════════════════════════════════════════════════════════════
+// ════════════════════════════���══════════════════════��═══════════════════════════
 // Modern Poem Page
 // ═════════════════════════════════════════════���═════════════════════════════════
 function ModernPoemPage({ id }: { id: string }) {
@@ -458,16 +460,15 @@ function ModernPoemPage({ id }: { id: string }) {
                   style={{ background: levelCfg.color + '15', color: levelCfg.color }}
                 >
                   {author?.avatar_url
-                    ? <img src={author.avatar_url} alt={author.username} className="w-full h-full object-cover" />
+                    ? <img src={author.avatar_url} alt={author?.username} className="w-full h-full object-cover" />
                     : getInitials(author?.username || '?')
                   }
                 </div>
-                <div className="min-w-0">
-                  <div className="flex items-center gap-1.5">
-                    <LevelBadgeImage level={authorLevel as any} size={14} />
-                    <p className="font-semibold text-xs sm:text-sm text-foreground group-hover:text-brand-500 transition-colors truncate">{author?.username}</p>
+                <div className="min-w-0 text-center flex-1">
+                  <div className="flex items-center justify-center gap-1.5">
+                    <p className="font-semibold text-xs sm:text-sm text-foreground group-hover:text-brand-500 transition-colors">{author?.username}</p>
+                    <img src={LEVEL_BADGE_IMAGES[authorLevel]} alt={authorLevel} className="w-4 h-4 sm:w-5 sm:h-5 shrink-0" />
                   </div>
-                  <span className={cn('text-[11px] sm:text-xs font-medium', levelCfg.textClass)}>{levelCfg.badgeText}</span>
                 </div>
               </Link>
             </div>
