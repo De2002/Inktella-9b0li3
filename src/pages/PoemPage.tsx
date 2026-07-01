@@ -13,6 +13,7 @@ import ClassicCommentSheet from '@/components/features/ClassicCommentSheet';
 import { useAuth } from '@/contexts/AuthContext';
 import { formatTimeAgo, cn, getInitials } from '@/lib/utils';
 import { getLevel, LEVEL_CONFIG, LEVEL_BADGE_IMAGES } from '@/constants';
+import { LevelBadgeImage } from '@/components/features/LevelBadge';
 import { toast } from 'sonner';
 import { FunctionsHttpError } from '@supabase/supabase-js';
 
@@ -189,7 +190,7 @@ function ClassicPoemPage({ id }: { id: string }) {
               style={{ background: levelCfg.color + '15', color: levelCfg.color }}
             >
               {author?.avatar_url
-                ? <img src={author.avatar_url} alt={author.username} className="w-full h-full object-cover" />
+                ? <img src={author.avatar_url} alt={author?.username} className="w-full h-full object-cover" />
                 : getInitials(author?.username || '?')
               }
             </div>
@@ -333,7 +334,7 @@ function ClassicPoemPage({ id }: { id: string }) {
   );
 }
 
-// ═══════════════════════════════════════════════════════════════════════════════
+// ═══════════════════════════════════════════════════��═══════════════════════════
 // Modern Poem Page
 // ═════════════════════════════════════════════���═════════════════════════════════
 function ModernPoemPage({ id }: { id: string }) {
@@ -458,7 +459,7 @@ function ModernPoemPage({ id }: { id: string }) {
                   style={{ background: levelCfg.color + '15', color: levelCfg.color }}
                 >
                   {author?.avatar_url
-                    ? <img src={author.avatar_url} alt={author.username} className="w-full h-full object-cover" />
+                    ? <img src={author.avatar_url} alt={author?.username} className="w-full h-full object-cover" />
                     : getInitials(author?.username || '?')
                   }
                 </div>
