@@ -59,13 +59,7 @@ const mockMembers = [
   { id: '5', name: 'Orpheus', avatar: 'https://i.pravatar.cc/32?img=8', since: 'Sep 2023' },
 ];
 
-const mockPrivileges = [
-  { id: '1', name: 'Publish Unlimited Poems', icon: '📝' },
-  { id: '2', name: 'Receive Critic Notes', icon: '💬' },
-  { id: '3', name: 'Join Writing Circles', icon: '👥' },
-  { id: '4', name: 'Bookmark Unlimited', icon: '🔖' },
-  { id: '5', name: 'Access Analytics', icon: '📊' },
-];
+
 
 export default function DashboardPage() {
   const { user, profile, isAuthenticated } = useAuth();
@@ -134,8 +128,8 @@ export default function DashboardPage() {
           {/* Center Column - Level & Activity */}
           <div className="md:col-span-2 lg:col-span-2 space-y-4 sm:space-y-6">
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <LevelBadgeCard level="Poet" currentXp={2450} maxXp={3500} nextUnlock="Wordsmith (1,050 XP to go)" />
-              <PrivilegesSection privileges={mockPrivileges.slice(0, 3)} />
+              <LevelBadgeCard level={profile.level} nextLevel={profile.level === 'observer' ? 'guide' : profile.level === 'guide' ? 'critic' : undefined} />
+              <PrivilegesSection level={profile.level} />
             </div>
             <CriticalActivityCard 
               activities={mockActivities} 
