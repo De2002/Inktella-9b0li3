@@ -46,34 +46,14 @@ const faqs = [
     answer: 'No. Poetry should be valued based on creativity, engagement, and community response — not financial support. Poem discovery is based on community feedback and merit.',
   },
   {
-    id: 'ads',
-    question: 'Will Inktella have advertisements?',
-    answer: 'Inktella\'s goal is to keep the poetry experience clean and enjoyable. We may explore carefully selected advertising or partnerships in the future to help sustain the platform, but we will avoid intrusive ads that interrupt reading, writing, or discovery.',
-  },
-  {
     id: 'money-used',
     question: 'How will Premium revenue be used?',
     answer: 'Premium subscriptions help fund: platform hosting and maintenance, development of new features, improving tools for poets and readers, community improvements, and keeping Inktella accessible worldwide.',
   },
   {
-    id: 'other-support',
-    question: 'Can I support Inktella without Premium?',
-    answer: 'Yes. You can support Inktella by sharing poems, giving meaningful feedback, inviting poets, participating in the community, and spreading the word. Every contribution matters.',
-  },
-  {
     id: 'cancel-premium',
     question: 'Can I change or cancel Premium?',
     answer: 'Yes. You can manage or cancel your Premium subscription at any time. Cancellation takes effect at the end of your current billing period.',
-  },
-  {
-    id: 'one-time',
-    question: 'Can I make a one-time contribution?',
-    answer: 'Currently, Premium is offered as a monthly subscription. One-time contribution options may become available in the future.',
-  },
-  {
-    id: 'cannot-afford',
-    question: 'What if I cannot afford Premium?',
-    answer: 'That is completely okay. Inktella exists for everyone. Reading poems, sharing your work, and being part of the community are valuable forms of support too.',
   },
   {
     id: 'pay-success',
