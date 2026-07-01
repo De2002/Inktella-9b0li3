@@ -2,12 +2,11 @@ import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Heart, Bookmark, BookOpen, MessageSquare, Share2, ArrowUpFromLine } from 'lucide-react';
 import { formatTimeAgo, cn, getInitials } from '@/lib/utils';
-import { getLevel, LEVEL_CONFIG } from '@/constants';
+import { getLevel, LEVEL_CONFIG, LEVEL_BADGE_IMAGES } from '@/constants';
 import type { Poem, FeedLabel } from '@/types';
 import { supabase } from '@/lib/supabase';
 import { useAuth } from '@/contexts/AuthContext';
 import { toast } from 'sonner';
-import LevelBadge from '@/components/features/LevelBadge';
 
 interface PoemCardProps {
   poem: Poem;
@@ -145,8 +144,13 @@ export default function PoemCard({ poem, feedLabel, onFeedbackClick, onUpdate }:
               getInitials(author?.username || '?')
             )}
           </div>
-          {/* Level Badge */}
-          <LevelBadge level={authorLevel} size="xs" showLabel={false} />
+          {/* Level Badge Image */}
+          <img 
+            src={LEVEL_BADGE_IMAGES[authorLevel]} 
+            alt={authorLevel} 
+            className="w-6 h-6 shrink-0"
+            title={levelCfg.label}
+          />
         </Link>
       </div>
 
