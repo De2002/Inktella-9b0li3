@@ -7,6 +7,7 @@ import type { Poem, FeedLabel } from '@/types';
 import { supabase } from '@/lib/supabase';
 import { useAuth } from '@/contexts/AuthContext';
 import { toast } from 'sonner';
+import LevelBadge from '@/components/features/LevelBadge';
 
 interface PoemCardProps {
   poem: Poem;
@@ -144,14 +145,8 @@ export default function PoemCard({ poem, feedLabel, onFeedbackClick, onUpdate }:
               getInitials(author?.username || '?')
             )}
           </div>
-          {/* User Badge */}
-          <div
-            className="w-4 h-4 rounded-full flex items-center justify-center text-[9px] font-bold shrink-0 border border-border"
-            style={{ background: levelCfg.color + '25', color: levelCfg.color }}
-            title={levelCfg.label}
-          >
-            {levelCfg.label.charAt(0)}
-          </div>
+          {/* Level Badge */}
+          <LevelBadge level={authorLevel} size="xs" showLabel={false} />
         </Link>
       </div>
 
