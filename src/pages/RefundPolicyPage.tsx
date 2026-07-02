@@ -17,9 +17,6 @@ export default function RefundPolicyPage() {
         <div className="prose prose-invert max-w-none space-y-8">
           <div>
             <p className="text-foreground-secondary leading-relaxed">
-              At Inktella, we appreciate everyone who chooses to support our mission of building a free and open home for poets.
-            </p>
-            <p className="text-foreground-secondary leading-relaxed mt-4">
               This Refund Policy explains how refunds for Inktella Premium subscriptions are handled.
             </p>
           </div>
@@ -28,7 +25,7 @@ export default function RefundPolicyPage() {
           <div>
             <h2 className="text-2xl font-bold text-foreground mb-4">1. Payment Processing</h2>
             <p className="text-foreground-secondary leading-relaxed mb-3">
-              Payments for Inktella Premium subscriptions are processed by Paddle, which acts as our Merchant of Record.
+              Payments for Inktella Premium subscriptions are processed by <strong className="text-foreground">Paddle</strong>, which acts as our Merchant of Record.
             </p>
             <p className="text-foreground-secondary leading-relaxed mb-3">
               As Merchant of Record, Paddle is responsible for processing payments, handling applicable taxes, issuing receipts, and managing payment-related services.
@@ -40,12 +37,12 @@ export default function RefundPolicyPage() {
 
           {/* Section 2 */}
           <div>
-            <h2 className="text-2xl font-bold text-foreground mb-4">2. About Inktella Premium Subscription</h2>
+            <h2 className="text-2xl font-bold text-foreground mb-4">2. About the Inktella Premium Subscription</h2>
             <p className="text-foreground-secondary leading-relaxed mb-3">
-              Inktella Premium subscriptions help fund the continued development, maintenance, and improvement of the Inktella platform.
+              Inktella Premium is an optional paid subscription that unlocks additional features and functionality on the Inktella platform.
             </p>
             <p className="text-foreground-secondary leading-relaxed">
-              Premium is optional and provides access to enhanced features. A free version of Inktella remains available to all users.
+              A free version of Inktella remains available to all users. Premium is purchased separately and provides an enhanced experience for those who choose to upgrade.
             </p>
           </div>
 
@@ -97,12 +94,12 @@ export default function RefundPolicyPage() {
           <div>
             <h2 className="text-2xl font-bold text-foreground mb-4">5. Subscription Cancellation</h2>
             <p className="text-foreground-secondary leading-relaxed mb-3">
-              If you support Inktella through a recurring contribution, you may cancel at any time. Cancellation:
+              If you have an active Inktella Premium subscription, you may cancel at any time. Cancellation:
             </p>
             <ul className="space-y-2 ml-4">
               <li className="text-foreground-secondary list-disc">Stops future charges</li>
               <li className="text-foreground-secondary list-disc">Does not automatically refund previous payments</li>
-              <li className="text-foreground-secondary list-disc">Takes effect at the end of the current billing period</li>
+              <li className="text-foreground-secondary list-disc">Takes effect at the end of the current billing period (you will retain access to Premium features until that date)</li>
             </ul>
           </div>
 
@@ -127,7 +124,7 @@ export default function RefundPolicyPage() {
           <div>
             <h2 className="text-2xl font-bold text-foreground mb-4">7. Technical Issues</h2>
             <p className="text-foreground-secondary leading-relaxed mb-3">
-              If you experience a technical issue related to an Inktella service you paid for, please contact Inktella first so we can attempt to resolve the issue.
+              If you experience a technical issue that prevents you from accessing the Premium features you paid for, please contact Inktella first so we can attempt to resolve the issue.
             </p>
             <p className="text-foreground-secondary leading-relaxed">
               If the issue cannot be resolved, Paddle may review the matter and issue a refund where appropriate.
@@ -146,13 +143,13 @@ export default function RefundPolicyPage() {
           <div>
             <h2 className="text-2xl font-bold text-foreground mb-4">9. Contact</h2>
             <p className="text-foreground-secondary leading-relaxed mb-3">
-              For questions about Inktella support:
+              For questions about your Inktella subscription or the platform:
             </p>
             <p className="text-foreground-secondary leading-relaxed mb-4">
-              Email: <a href="mailto:poetry@inktella.cyou" className="text-purple-600 dark:text-purple-400 hover:underline">poetry@inktella.cyou</a>
+              <strong className="text-foreground">Email:</strong> <a href="mailto:poetry@inktella.cyou" className="text-purple-600 dark:text-purple-400 hover:underline">poetry@inktella.cyou</a>
             </p>
             <p className="text-foreground-secondary leading-relaxed">
-              For payment, billing, or refund processing: Please contact Paddle through your payment receipt or Paddle support.
+              For payment, billing, or refund processing: Please contact <strong className="text-foreground">Paddle</strong> through your payment receipt or Paddle support.
             </p>
           </div>
         </div>
