@@ -1,10 +1,8 @@
-import { Heart, MessageCircle, Bookmark, MoreHorizontal } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
 interface Poem {
   id: string;
   title: string;
-  image?: string;
   likes: number;
   feedback: number;
   bookmarks: number;
@@ -32,13 +30,13 @@ export default function TopPoemsTable({ poems }: TopPoemsTableProps) {
             </tr>
           </thead>
           <tbody>
-            {poems.map((poem) => (
+            {poems.map((poem, index) => (
               <tr key={poem.id} className="border-b border-border-subtle hover:bg-background-subtle transition-colors">
                 <td className="py-3 px-2">
                   <div className="flex items-center gap-3">
-                    {poem.image && (
-                      <img src={poem.image} alt={poem.title} className="w-8 h-8 rounded object-cover" />
-                    )}
+                    <span className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full bg-purple-100 text-sm font-bold text-purple-700 dark:bg-purple-900/60 dark:text-purple-300" aria-label={`Rank ${index + 1}`}>
+                      {index + 1}
+                    </span>
                     <span className="font-medium text-foreground">{poem.title}</span>
                   </div>
                 </td>
