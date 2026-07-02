@@ -3,67 +3,36 @@ import { Check, ChevronDown } from 'lucide-react';
 import { useState } from 'react';
 
 const premiumFeatures = [
-  'Free monthly ink allocation',
-  'Access dashboard analytics',
-  'Premium user badge',
-  'Submit feature requests',
-  'Add images to poems',
-  'Audio adaptation support',
-  'Access "Behind the Poem" content',
+  'Monthly Ink credits for creating more poems',
+  'Advanced dashboard insights on your writing',
+  'Premium badge on your profile',
+  'Image embedding in poems',
+  'Professional Audio poem adaptation',
   'Listen to audio poems',
-  'See followers list',
+  'Deep analytics (views, reads, saves, listens)',
+  'Best performing poems insights',
+  'Notes or Analysis from poets',
+  'View your followers',
+  'Limited Ads',
 ];
 
-const benefits = [
-  'Keep Inktella free for everyone',
-  'Build better writing and feedback tools',
-  'Create professional audio poem adaptations',
-  'Help more poets discover an audience',
-  'Develop new features faster',
-  'Maintain a safe, welcoming community',
-  'Improve the speed, reliability, and accessibility of the platform',
-];
+
 
 const faqs = [
   {
-    id: 'what-is-premium',
-    question: 'What is Inktella Premium?',
-    answer: 'Inktella Premium is an optional subscription that unlocks enhanced features while keeping the core platform free. Premium subscribers get exclusive tools, badges, and content access to support their writing journey.',
+    id: 'keep-free-account',
+    question: 'Do I keep my free account?',
+    answer: 'Yes. The free version stays available.',
   },
   {
-    id: 'is-free-enough',
-    question: 'Is Inktella free version enough?',
-    answer: 'Yes. Inktella remains free and open for poets and readers. Premium is completely optional and offers additional features for those who want more from their creative experience.',
+    id: 'cancel-anytime',
+    question: 'Can I cancel anytime?',
+    answer: 'Yes. No long-term commitment.',
   },
   {
-    id: 'what-benefits',
-    question: 'What do Premium members receive?',
-    answer: 'Premium members receive monthly ink allocation, dashboard access, a premium badge, the ability to request features, image and audio support for poems, access to behind-the-scenes content, and more. Importantly, Premium does not influence poem discovery or give competitive advantages.',
-  },
-  {
-    id: 'poem-visibility',
-    question: 'Will Premium members get more visibility for their poems?',
-    answer: 'No. Poetry should be valued based on creativity, engagement, and community response — not financial support. Poem discovery is based on community feedback and merit.',
-  },
-  {
-    id: 'money-used',
-    question: 'How will Premium revenue be used?',
-    answer: 'Premium subscriptions help fund: platform hosting and maintenance, development of new features, improving tools for poets and readers, community improvements, and keeping Inktella accessible worldwide.',
-  },
-  {
-    id: 'cancel-premium',
-    question: 'Can I change or cancel Premium?',
-    answer: 'Yes. You can manage or cancel your Premium subscription at any time. Cancellation takes effect at the end of your current billing period.',
-  },
-  {
-    id: 'pay-success',
-    question: 'Will Premium make my poems more successful?',
-    answer: 'No. Premium subscription does not give anyone an advantage in publishing, feedback, discovery, or recognition. Every poet deserves an equal opportunity to be heard.',
-  },
-  {
-    id: 'flexible-billing',
-    question: 'What payment methods do you accept?',
-    answer: 'We accept all major credit cards and digital payment methods through our payment partner, Paddle. Payment is processed securely, and you can manage your subscription anytime.',
+    id: 'premium-visibility',
+    question: 'Will Premium affect visibility?',
+    answer: 'No. All poets are treated equally.',
   },
 ];
 
@@ -122,26 +91,6 @@ export default function PremiumPage() {
               <p className="text-center text-foreground-secondary text-xs mt-4">
                 Cancel anytime. No commitment.
               </p>
-            </div>
-          </div>
-        </div>
-
-        {/* What Your Support Makes Possible */}
-        <div className="mb-12 sm:mb-16">
-          <h2 className="text-2xl sm:text-3xl font-bold text-foreground text-center mb-8 sm:mb-10">
-            What Your Premium Supports
-          </h2>
-          <div className="bg-surface border border-border rounded-lg p-8 sm:p-10">
-            <p className="text-foreground-secondary mb-6 sm:mb-8 text-center text-sm sm:text-base">
-              Premium revenue directly supports:
-            </p>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6 max-w-2xl mx-auto">
-              {benefits.map((benefit, idx) => (
-                <div key={idx} className="flex items-start gap-3 sm:gap-4">
-                  <Check className="w-5 h-5 sm:w-6 sm:h-6 text-brand-600 dark:text-brand-400 flex-shrink-0 mt-0.5" />
-                  <span className="text-foreground text-sm sm:text-base">{benefit}</span>
-                </div>
-              ))}
             </div>
           </div>
         </div>
