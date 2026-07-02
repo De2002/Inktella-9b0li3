@@ -395,11 +395,6 @@ export default function LandingPage() {
                     Join Free
                   </Link>
                 </li>
-                <li>
-                  <Link to="/critic-notes" className="text-foreground-secondary hover:text-foreground text-sm transition-colors">
-                    Critic Notes
-                  </Link>
-                </li>
               </ul>
             </div>
 
