@@ -46,14 +46,8 @@ export default function PremiumPage() {
           <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-foreground mb-4 sm:mb-6">
             Inktella Premium
           </h1>
-          <p className="text-base sm:text-lg text-foreground-secondary max-w-3xl mx-auto mb-4 sm:mb-6">
-            Unlock enhanced features and support the future of poetry.
-          </p>
-          <p className="text-sm sm:text-base text-foreground-secondary max-w-3xl mx-auto mb-4">
-            Inktella remains free for all. Premium is optional and helps us keep building the best poetry platform.
-          </p>
-          <p className="text-sm sm:text-base text-foreground max-w-3xl mx-auto font-medium">
-            Your Premium subscription supports platform development, new features, and a thriving poetry community.
+          <p className="text-base sm:text-lg text-foreground-secondary max-w-3xl mx-auto">
+            Get more insights into your writing, create more poems, and unlock features designed to enhance your creative journey.
           </p>
         </div>
 
@@ -128,7 +122,7 @@ export default function PremiumPage() {
         <div className="text-center py-8 sm:py-12 border-t border-border">
           <h2 className="text-2xl sm:text-3xl font-bold text-foreground mb-4">Ready to go Premium?</h2>
           <p className="text-foreground-secondary text-base sm:text-lg mb-8 max-w-2xl mx-auto">
-            Support Inktella and unlock features designed to enhance your poetry experience.
+            Unlock deeper insights, create more, and take your writing to the next level.
           </p>
           <Button className="font-semibold bg-brand-600 hover:bg-brand-700 dark:bg-brand-700 dark:hover:bg-brand-600 text-white px-8 py-3">
             Upgrade to Premium
