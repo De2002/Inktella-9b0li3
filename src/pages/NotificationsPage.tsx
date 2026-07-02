@@ -84,45 +84,7 @@ function getDateGroup(dateStr: string): 'Today' | 'Yesterday' | 'Earlier' {
   return 'Earlier';
 }
 
-// ─── Mock data ──────────────────────────────────────────────────────────────────
-const MOCK_NOTIFS: Notification[] = [
-  {
-    id: '1',
-    user_id: 'me',
-    type: 'feedback_received',
-    content: '@wordwanderer gave feedback on "after the rain"',
-    read: false,
-    related_id: 'a1000001-0000-0000-0000-000000000001',
-    created_at: new Date(Date.now() - 3600000).toISOString(),
-  },
-  {
-    id: '2',
-    user_id: 'me',
-    type: 'poem_liked',
-    content: '@silent.ink and 12 others hearted "after the rain"',
-    read: false,
-    related_id: 'a1000001-0000-0000-0000-000000000001',
-    created_at: new Date(Date.now() - 7200000).toISOString(),
-  },
-  {
-    id: '3',
-    user_id: 'me',
-    type: 'credit_received',
-    content: '@river.notes credited your feedback on "cartography of grief"',
-    read: true,
-    related_id: 'a5000005-0000-0000-0000-000000000001',
-    created_at: new Date(Date.now() - 86400000 * 1.5).toISOString(),
-  },
-  {
-    id: '4',
-    user_id: 'me',
-    type: 'followed',
-    content: '@newpen started following you',
-    read: true,
-    related_id: null,
-    created_at: new Date(Date.now() - 86400000 * 3).toISOString(),
-  },
-];
+
 
 // ─── Notification row ───────────────────────────────────────────────────────────
 function NotifRow({
@@ -244,16 +206,12 @@ export default function NotificationsPage() {
       .order('created_at', { ascending: false })
       .limit(60);
 
-    if (!data || data.length === 0) {
-      setNotifications(MOCK_NOTIFS as any);
-    } else {
-      setNotifications(
-        data.map((n: any) => ({
-          ...n,
-          actor: Array.isArray(n.actor) ? n.actor[0] : n.actor,
-        }))
-      );
-    }
+    setNotifications(
+      (data || []).map((n: any) => ({
+        ...n,
+        actor: Array.isArray(n.actor) ? n.actor[0] : n.actor,
+      }))
+    );
     setLoading(false);
   }
 

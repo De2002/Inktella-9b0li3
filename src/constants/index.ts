@@ -1,10 +1,13 @@
 import type { UserLevel } from '@/types';
+import observerBadge from '@/assets/observer-badge.png';
+import guideBadge from '@/assets/guide-badge.png';
+import criticBadge from '@/assets/critic-badge.png';
 
 // Badge image imports
 export const LEVEL_BADGE_IMAGES: Record<string, string> = {
-  observer: '/observer-badge.png',
-  guide: '/guide-badge.png',
-  critic: '/critic-badge.png',
+  observer: observerBadge,
+  guide: guideBadge,
+  critic: criticBadge,
 };
 
 export const INK_PUBLISH_COST = 10;
