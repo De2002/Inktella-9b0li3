@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Trash2, Edit2, BookOpen, Badge } from 'lucide-react';
+import { Trash2, Edit2, Badge } from 'lucide-react';
 
 interface Poem {
   id: string;
@@ -83,14 +83,11 @@ export default function MyPoemsSection({ userId }: MyPoemsSectionProps) {
     <div className="bg-card rounded-lg border border-border p-6">
       {/* Header */}
       <div className="flex items-center justify-between mb-6">
-        <div className="flex items-center gap-3">
-          <BookOpen className="w-6 h-6 text-primary" />
-          <div>
-            <h2 className="text-2xl font-bold text-foreground">My Poems</h2>
-            <p className="text-sm text-foreground/60">
-              {publishedCount} published • {draftCount} draft{draftCount !== 1 ? 's' : ''}
-            </p>
-          </div>
+        <div>
+          <h2 className="text-2xl font-bold text-foreground">My Poems</h2>
+          <p className="text-sm text-foreground/60">
+            {publishedCount} published • {draftCount} draft{draftCount !== 1 ? 's' : ''}
+          </p>
         </div>
       </div>
 

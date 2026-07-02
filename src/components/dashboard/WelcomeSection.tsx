@@ -38,10 +38,15 @@ export default function WelcomeSection({ username, userLevel }: WelcomeSectionPr
   }, []);
 
   const getGreeting = () => {
-    const hour = new Date().getHours();
+    const now = new Date();
+    // Use user's local timezone for accurate time-based greeting
+    const hour = now.getHours();
+    
+    if (hour < 5) return 'Welcome, night owl';
     if (hour < 12) return 'Good morning';
-    if (hour < 18) return 'Good afternoon';
-    return 'Good evening';
+    if (hour < 17) return 'Good afternoon';
+    if (hour < 21) return 'Good evening';
+    return 'Welcome, night owl';
   };
 
   return (
