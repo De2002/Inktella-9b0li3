@@ -10,7 +10,7 @@ import { formatTimeAgo, getInitials, cn } from '@/lib/utils';
 import { getLevel, LEVEL_CONFIG, LEVEL_BADGE_IMAGES, LEVEL_THRESHOLDS } from '@/constants';
 import TopPoemsTable from '@/components/dashboard/TopPoemsTable';
 import CriticPushesCard from '@/components/dashboard/CriticPushesCard';
-import PrivilegesSection from '@/components/dashboard/PrivilegesSection';
+import LevelPrivilegesSection from '@/components/dashboard/LevelPrivilegesSection';
 import LevelBadgeCard from '@/components/dashboard/LevelBadgeCard';
 import type { Poem, Notification } from '@/types';
 
@@ -667,7 +667,7 @@ export default function DashboardPage() {
 
           {/* Privileges */}
           <div className="md:col-span-2 lg:col-span-2 space-y-4 sm:space-y-6">
-            <PrivilegesSection level={profile.level} />
+            <LevelPrivilegesSection level={profile.level} tellaBalance={tellaBalance} />
           </div>
 
           {/* Top Poems & Critic Pushes */}
