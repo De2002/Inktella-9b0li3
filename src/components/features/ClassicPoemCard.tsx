@@ -9,6 +9,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { toast } from 'sonner';
 import { FunctionsHttpError } from '@supabase/supabase-js';
 import ClassicCommentSheet from '@/components/features/ClassicCommentSheet';
+import { shareContent } from '@/lib/share';
 
 interface ClassicPoemCardProps {
   poem: Poem;
@@ -78,12 +79,7 @@ export default function ClassicPoemCard({ poem, onUpdate }: ClassicPoemCardProps
 
   function handleShare() {
     const url = `${window.location.origin}/poem/${poem.id}?mode=classic`;
-    if (navigator.share) {
-      navigator.share({ title: poem.title, url });
-    } else {
-      navigator.clipboard.writeText(url);
-      toast.success('Link copied');
-    }
+    shareContent({ title: poem.title, url });
   }
 
   async function openAnalysis() {

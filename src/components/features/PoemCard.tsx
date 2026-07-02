@@ -7,6 +7,7 @@ import type { Poem, FeedLabel } from '@/types';
 import { supabase } from '@/lib/supabase';
 import { useAuth } from '@/contexts/AuthContext';
 import { toast } from 'sonner';
+import { shareContent } from '@/lib/share';
 
 interface PoemCardProps {
   poem: Poem;
@@ -217,7 +218,7 @@ export default function PoemCard({ poem, feedLabel, onFeedbackClick, onUpdate }:
         <div className="w-px h-5 bg-border" />
 
         <button
-          onClick={() => navigate(`/poem/${poem.id}`)}
+          onClick={() => shareContent({ title: poem.title, url: `${window.location.origin}/poem/${poem.id}` })}
           className="flex-1 flex items-center justify-center py-2 text-foreground-muted hover:text-foreground hover:bg-background-subtle transition-all max-w-[60px]"
           title="Share"
         >

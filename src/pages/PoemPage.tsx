@@ -16,6 +16,7 @@ import { getLevel, LEVEL_CONFIG, LEVEL_BADGE_IMAGES } from '@/constants';
 import { LevelBadgeImage } from '@/components/features/LevelBadge';
 import { toast } from 'sonner';
 import { FunctionsHttpError } from '@supabase/supabase-js';
+import { shareContent } from '@/lib/share';
 
 // ─── AI Analysis helpers ───────────────────────────────────────────────────────
 function RenderAnalysis({ text }: { text: string }) {
@@ -137,8 +138,7 @@ function ClassicPoemPage({ id }: { id: string }) {
 
   function handleShare() {
     const url = `${window.location.origin}/poem/${id}?mode=classic`;
-    if (navigator.share) navigator.share({ title: poem?.title || '', url });
-    else { navigator.clipboard.writeText(url); toast.success('Link copied'); }
+    shareContent({ title: poem?.title || '', url });
   }
 
   async function openAnalysis() {
@@ -335,7 +335,7 @@ function ClassicPoemPage({ id }: { id: string }) {
   );
 }
 
-// ════════════════════════════���══════════════════════��═══════════════════════════
+// ═══���════════════════════════���══════════════════════��═══════════════════════════
 // Modern Poem Page
 // ═════════════════════════════════════════════���═════════════════════════════════
 function ModernPoemPage({ id }: { id: string }) {
@@ -388,8 +388,7 @@ function ModernPoemPage({ id }: { id: string }) {
   }
 
   function handleShare() {
-    navigator.clipboard.writeText(window.location.href);
-    toast.success('Link copied to clipboard');
+    shareContent({ title: poem?.title || '', url: window.location.href });
   }
 
   if (loading) return <PoemSkeleton />;
