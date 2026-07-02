@@ -9,11 +9,11 @@ import LevelBadgeCard from '@/components/dashboard/LevelBadgeCard';
 
 // Mock data
 const mockTopPoems = [
-  { id: '1', title: 'Rain at Dawn', image: 'https://images.unsplash.com/photo-1516979187457-635afe6d6b27?w=40', likes: 1246, feedback: 320, bookmarks: 568 },
-  { id: '2', title: 'Fragments', image: 'https://images.unsplash.com/photo-1507842217343-583f20270319?w=40', likes: 982, feedback: 210, bookmarks: 421 },
-  { id: '3', title: 'The Silent Stars', image: 'https://images.unsplash.com/photo-1519904981063-b0cf448d479e?w=40', likes: 874, feedback: 198, bookmarks: 365 },
-  { id: '4', title: 'Echoes of You', image: 'https://images.unsplash.com/photo-1517694712202-14dd9538aa97?w=40', likes: 623, feedback: 142, bookmarks: 289 },
-  { id: '5', title: 'Midnight Letters', image: 'https://images.unsplash.com/photo-1505228395891-9a51e7e86e81?w=40', likes: 512, feedback: 97, bookmarks: 208 },
+  { id: '1', title: 'Rain at Dawn', likes: 1246, feedback: 320, bookmarks: 568 },
+  { id: '2', title: 'Fragments', likes: 982, feedback: 210, bookmarks: 421 },
+  { id: '3', title: 'The Silent Stars', likes: 874, feedback: 198, bookmarks: 365 },
+  { id: '4', title: 'Echoes of You', likes: 623, feedback: 142, bookmarks: 289 },
+  { id: '5', title: 'Midnight Letters', likes: 512, feedback: 97, bookmarks: 208 },
 ];
 
 const mockCriticPushes = [
