@@ -325,6 +325,10 @@ export default function FeedPage() {
 
   function handleModeSwitch(m: Mode) {
     if (m === mode) return;
+    if (m === 'classics') {
+      toast.info('Classics is being set up and will be available in a few weeks!');
+      return;
+    }
     setMode(m);
     setPage(0);
     setPoems([]);
@@ -401,20 +405,15 @@ export default function FeedPage() {
 
           <button
             onClick={() => handleModeSwitch('classics')}
+            disabled
             className={cn(
-              'relative flex-1 flex items-center justify-center gap-2 text-xs font-bold tracking-[0.18em] uppercase transition-all duration-200 px-4 py-3',
-              mode === 'classics'
-                ? 'text-foreground bg-background'
-                : 'text-foreground-muted hover:text-foreground bg-background-subtle/60'
+              'relative flex-1 flex items-center justify-center gap-2 text-xs font-bold tracking-[0.18em] uppercase transition-all duration-200 px-4 py-3 opacity-50 cursor-not-allowed',
+              'text-foreground-muted bg-background-subtle/30'
             )}
+            title="Classics is coming soon"
           >
-            {mode === 'classics' && (
-              <span className="absolute bottom-0 left-4 right-4 h-[2px] bg-foreground rounded-full" />
-            )}
             Classics
-            {mode === 'classics' && (
-              <span className="w-1.5 h-1.5 rounded-full bg-tella-500 shrink-0" />
-            )}
+            <span className="text-[10px] ml-1 opacity-70">soon</span>
           </button>
         </div>
 
