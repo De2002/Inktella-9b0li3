@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
-import { Feather, X, ChevronDown, Plus, Eye, PenLine, Check, Users, Save, Loader2 } from 'lucide-react';
+import { Feather, X, ChevronDown, Plus, PenLine, Check, Users, Save, Loader2 } from 'lucide-react';
 import { supabase } from '@/lib/supabase';
 import { useAuth } from '@/contexts/AuthContext';
 import type { Topic } from '@/types';
@@ -46,7 +46,6 @@ export default function WritePage() {
   });
   const [originalPoemData, setOriginalPoemData] = useState<any>(null);
   const [topics, setTopics] = useState<Topic[]>([]);
-  const [preview, setPreview] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [loadingPoem, setLoadingPoem] = useState(isEditMode);
   const [autoSaved, setAutoSaved] = useState(false);
@@ -542,32 +541,29 @@ export default function WritePage() {
               }
             </div>
           )}
-          <button
-            onClick={() => setPreview(!preview)}
-            className={cn(
-              'flex items-center gap-1.5 text-sm font-medium px-3 py-2 rounded-lg transition-colors',
-              preview ? 'bg-brand-50 dark:bg-brand-900/20 text-brand-500' : 'text-foreground-muted hover:bg-background-subtle'
-            )}
-          >
-            <Eye size={14} />
-            {preview ? 'Edit' : 'Preview'}
-          </button>
         </div>
       </div>
 
-      {/* Ink balance — new poems only */}
+      {/* Game-style HUD widget — new poems only */}
       {!isEditMode && (
-        <div className="flex items-center justify-end gap-4 mb-5 text-xs text-foreground-muted">
-          {!canPublish && <span className="text-red-600 dark:text-red-400 font-medium">Need more ink</span>}
-          <div className="flex items-center gap-1">
-            <span className="text-lg">💧</span>
-            <span>
-              <strong className={canPublish ? 'text-foreground' : 'text-red-600 dark:text-red-400'}>
-                {profile?.ink_balance || 0}
-              </strong>
-            </span>
+        <div className="fixed bottom-20 right-4 bg-black/70 backdrop-blur-sm border border-foreground-muted/30 rounded-lg p-3 text-xs font-mono space-y-1.5 max-w-[200px] z-30">
+          {/* Line 1: Available Ink */}
+          <div className={canPublish ? 'text-green-400' : 'text-red-400'}>
+            Available Ink: <strong>{profile?.ink_balance || 0}</strong> / {INK_PUBLISH_COST}
           </div>
-          <span>publishing costs {INK_PUBLISH_COST}</span>
+          
+          {/* Line 2: Status */}
+          <div>
+            {canPublish 
+              ? <span className="text-green-400">✅ Ready to Publish</span>
+              : <span className="text-red-400 font-bold">⚠️ NEED MORE INK</span>
+            }
+          </div>
+          
+          {/* Line 3: Quest objective */}
+          <div className="text-foreground-muted">
+            ▶ Review poems to earn +2 Ink
+          </div>
         </div>
       )}
 
