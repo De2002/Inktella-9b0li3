@@ -570,8 +570,6 @@ export default function WritePage() {
           <span>publishing costs {INK_PUBLISH_COST}</span>
         </div>
       )}
-        </>
-      )}
 
       {isEditMode && (
         <div className="flex items-center gap-2 p-3 rounded-xl mb-5 text-sm bg-brand-50 dark:bg-brand-900/20 border border-brand-200 dark:border-brand-800">
