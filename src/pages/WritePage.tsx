@@ -576,33 +576,8 @@ export default function WritePage() {
         </div>
       )}
 
-      {/* Preview */}
-      {preview ? (
-        <div className="space-y-4">
-          <div className="border-b border-border pb-4">
-            {title ? (
-              <h2 className="poem-title text-3xl text-foreground mb-2">{title}</h2>
-            ) : (
-              <p className="italic text-foreground-muted text-lg">No title yet…</p>
-            )}
-            <p className="text-xs text-foreground-muted">@{user?.username} · Draft preview</p>
-          </div>
-          <div className="poem-text text-foreground-secondary leading-[1.85] text-lg min-h-[80px] whitespace-pre-wrap">
-            {content || <span className="italic text-foreground-muted">Start writing…</span>}
-          </div>
-          {tags.length > 0 && (
-            <div className="flex flex-wrap gap-1.5">
-              {tags.map(t => <span key={t} className="tag-pill">{t}</span>)}
-            </div>
-          )}
-          {imageUrl && (
-            <div className="rounded-xl overflow-hidden max-h-48">
-              <img src={imageUrl} alt="Poem visual" className="w-full object-cover" />
-            </div>
-          )}
-        </div>
-      ) : (
-        <div className="space-y-5">
+      {/* Editor form */}
+      <div className="space-y-5">
           {/* ── Title ── */}
           <input
             type="text"
@@ -891,7 +866,6 @@ export default function WritePage() {
             )}
           </div>
         </div>
-      )}
 
       {/* Action buttons */}
       <div className="mt-8 flex items-center gap-3 flex-wrap">
