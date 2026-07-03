@@ -1,5 +1,5 @@
-import { useState, useEffect, useRef } from 'react';
-import { X, Send, Feather, ChevronDown, ChevronUp, Zap, BarChart2, Clock, ThumbsUp, Star } from 'lucide-react';
+import { useState, useEffect, useRef, useCallback } from 'react';
+import { X, Send, Feather, ChevronDown, ChevronUp, Zap, BarChart2, Clock, ThumbsUp, Star, Save } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { getLevel, LEVEL_CONFIG, GUIDE_FEEDBACK_TEMPLATES } from '@/constants';
 import type { Poem, Feedback, FeedbackSort } from '@/types';
@@ -19,6 +19,8 @@ const SORT_OPTIONS: { key: FeedbackSort; label: string; icon: typeof Clock }[] =
   { key: 'highlighted', label: 'Highlighted', icon: Star },
 ];
 
+const AUTOSAVE_KEY = (poemId: string) => `inktella_feedback_draft_${poemId}`;
+
 export default function FeedbackPanel({ poem, onClose }: FeedbackPanelProps) {
   const { user, profile, refreshProfile } = useAuth();
   const [feedbackList, setFeedbackList] = useState<Feedback[]>([]);
@@ -29,19 +31,48 @@ export default function FeedbackPanel({ poem, onClose }: FeedbackPanelProps) {
   const [showTemplates, setShowTemplates] = useState(false);
   const [showAnalytics, setShowAnalytics] = useState(false);
   const [sort, setSort] = useState<FeedbackSort>('recent');
+  const [autoSaved, setAutoSaved] = useState(false);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
+  const autoSaveTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const level = profile ? getLevel(profile.tella_balance) : 'observer';
   const maxChars = LEVEL_CONFIG[level].maxFeedbackChars;
   const isGuide = level === 'guide';
   const isCritic = level === 'critic';
   const isGuideOrCritic = isGuide || isCritic;
-
   const isOwner = user?.id === poem?.user_id;
+
+  // Load saved draft on mount
+  useEffect(() => {
+    if (poem?.id) {
+      const saved = localStorage.getItem(AUTOSAVE_KEY(poem.id));
+      if (saved) {
+        setContent(saved);
+        setAutoSaved(true);
+      }
+    }
+  }, [poem?.id]);
+
+  // Auto-save feedback draft
+  useEffect(() => {
+    if (!poem?.id || isOwner) return;
+    if (autoSaveTimer.current) clearTimeout(autoSaveTimer.current);
+    autoSaveTimer.current = setTimeout(() => {
+      if (content.trim()) {
+        localStorage.setItem(AUTOSAVE_KEY(poem.id), content);
+        setAutoSaved(true);
+      } else {
+        localStorage.removeItem(AUTOSAVE_KEY(poem.id));
+        setAutoSaved(false);
+      }
+    }, 1200);
+    return () => {
+      if (autoSaveTimer.current) clearTimeout(autoSaveTimer.current);
+    };
+  }, [content, poem?.id, isOwner]);
 
   useEffect(() => {
     if (poem) {
-      setContent('');
       setSelectedTemplate(null);
       fetchFeedback();
     }
@@ -60,7 +91,10 @@ export default function FeedbackPanel({ poem, onClose }: FeedbackPanelProps) {
 
     if (data) {
       const enriched = await Promise.all(data.map(async (f) => {
-        const [helpfulCountRes, likeCountRes, highlightRes, downrankCountRes, helpfulMineRes, likeMineRes, highlightMineRes, downrankMineRes] = await Promise.all([
+        const [
+          helpfulCountRes, likeCountRes, highlightRes, downrankCountRes,
+          helpfulMineRes, likeMineRes, highlightMineRes, downrankMineRes,
+        ] = await Promise.all([
           supabase.from('feedback_helpful').select('*', { count: 'exact', head: true }).eq('feedback_id', f.id),
           supabase.from('feedback_likes').select('*', { count: 'exact', head: true }).eq('feedback_id', f.id),
           supabase.from('feedback_highlights').select('user:user_profiles!feedback_highlights_user_id_fkey(username, avatar_url)', { count: 'exact' }).eq('feedback_id', f.id).limit(5),
@@ -92,27 +126,43 @@ export default function FeedbackPanel({ poem, onClose }: FeedbackPanelProps) {
     setLoading(false);
   }
 
-  // Sort feedback based on active tab
+  // Sort + filter feedback per tab
   const sortedFeedback = [...feedbackList].sort((a, b) => {
     if (sort === 'helpful') {
-      return (b.helpful_count || 0) - (a.helpful_count || 0);
+      // Rank by helpful_count desc, then highlight_count, then recent
+      const aScore = (a.helpful_count || 0) * 3 + (a.highlight_count || 0) * 2 + (a.like_count || 0);
+      const bScore = (b.helpful_count || 0) * 3 + (b.highlight_count || 0) * 2 + (b.like_count || 0);
+      if (bScore !== aScore) return bScore - aScore;
+      return new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
     }
     if (sort === 'highlighted') {
-      const aH = (a.highlight_count || 0) > 0 ? 1 : 0;
-      const bH = (b.highlight_count || 0) > 0 ? 1 : 0;
-      if (bH !== aH) return bH - aH;
-      return (b.highlight_count || 0) - (a.highlight_count || 0);
+      // Rank by highlight_count desc, then helpful_count
+      const aScore = (a.highlight_count || 0) * 3 + (a.helpful_count || 0) * 2;
+      const bScore = (b.highlight_count || 0) * 3 + (b.helpful_count || 0) * 2;
+      if (bScore !== aScore) return bScore - aScore;
+      return new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
     }
-    // recent
     return new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
   });
 
-  // Poem owner cannot give feedback on own poem — they can only reply
+  // For helpful/highlighted tabs, filter to only show relevant items (or show empty state)
+  const displayFeedback = (() => {
+    if (sort === 'helpful') {
+      const filtered = sortedFeedback.filter(f => (f.helpful_count || 0) > 0);
+      return filtered.length > 0 ? filtered : null; // null = show empty state
+    }
+    if (sort === 'highlighted') {
+      const filtered = sortedFeedback.filter(f => (f.highlight_count || 0) > 0);
+      return filtered.length > 0 ? filtered : null;
+    }
+    return sortedFeedback;
+  })();
+
   const canSubmitFeedback = !!user && !isOwner;
 
   async function handleSubmit() {
     if (!user) { toast.error('Sign in to give feedback'); return; }
-    if (isOwner) { toast.error("You can't give feedback on your own poem — but you can reply to others' feedback"); return; }
+    if (isOwner) { toast.error("You can reply to feedback, but not submit new feedback on your own poem"); return; }
     if (!content.trim()) { toast.error('Write something meaningful'); return; }
     if (content.trim().length < 10) { toast.error('Feedback should be at least 10 characters'); return; }
     if (content.length > maxChars) { toast.error(`Feedback too long (max ${maxChars} chars for your level)`); return; }
@@ -131,13 +181,19 @@ export default function FeedbackPanel({ poem, onClose }: FeedbackPanelProps) {
       return;
     }
 
-    // +2 Ink for giving feedback
+    // +2 Ink + Tella for giving feedback
+    const currentInk = profile?.ink_balance || 0;
+    const currentTella = profile?.tella_balance || 0;
     await Promise.all([
       supabase.from('ink_transactions').insert({
         user_id: user.id, amount: 2, reason: 'Gave feedback', related_id: poem!.id,
       }),
+      supabase.from('tella_transactions').insert({
+        user_id: user.id, amount: 3, reason: 'Gave feedback', related_id: poem!.id,
+      }),
       supabase.from('user_profiles').update({
-        ink_balance: (profile?.ink_balance || 0) + 2,
+        ink_balance: currentInk + 2,
+        tella_balance: currentTella + 3,
       }).eq('id', user.id),
     ]);
 
@@ -169,8 +225,12 @@ export default function FeedbackPanel({ poem, onClose }: FeedbackPanelProps) {
     setFeedbackList(prev => [newFeedback, ...prev]);
     setContent('');
     setSelectedTemplate(null);
+    // Clear autosave
+    localStorage.removeItem(AUTOSAVE_KEY(poem!.id));
+    setAutoSaved(false);
+
     await refreshProfile();
-    toast.success('+2 Ink earned for giving feedback!', { icon: '✦' });
+    toast.success('+2 Ink · +3 Tella earned for giving feedback!', { icon: '✦' });
     setSubmitting(false);
   }
 
@@ -191,10 +251,7 @@ export default function FeedbackPanel({ poem, onClose }: FeedbackPanelProps) {
 
   return (
     <>
-      {/* Backdrop */}
       <div className="fixed inset-0 bg-black/40 z-40 lg:hidden" onClick={onClose} />
-
-      {/* Panel */}
       <div className={cn(
         'fixed z-50 bg-surface flex flex-col',
         'bottom-0 left-0 right-0 rounded-t-2xl max-h-[90vh] sheet-slide-up',
@@ -207,7 +264,7 @@ export default function FeedbackPanel({ poem, onClose }: FeedbackPanelProps) {
               <Feather size={16} className="text-brand-500" />
               Feedback
             </h3>
-            <p className="text-xs text-foreground-muted mt-0.5">
+            <p className="text-xs text-foreground-muted mt-0.5 max-w-[200px] truncate">
               {poem?.title} · {feedbackList.length} {feedbackList.length === 1 ? 'voice' : 'voices'}
             </p>
           </div>
@@ -298,15 +355,37 @@ export default function FeedbackPanel({ poem, onClose }: FeedbackPanelProps) {
               <p className="font-serif text-foreground-secondary">Be the first voice.</p>
               <p className="text-sm text-foreground-muted mt-1">This poem is waiting for honest feedback.</p>
             </div>
-          ) : sortedFeedback.length === 0 ? (
-            <div className="flex flex-col items-center justify-center py-12 px-4 text-center">
-              <p className="text-sm text-foreground-muted font-serif italic">
-                {sort === 'highlighted' ? 'No highlighted feedback yet.' : 'No helpful feedback marked yet.'}
+          ) : displayFeedback === null ? (
+            // Tab-specific empty state
+            <div className="flex flex-col items-center justify-center py-16 px-4 text-center">
+              <div className="w-12 h-12 rounded-full bg-background-subtle flex items-center justify-center mx-auto mb-3">
+                {sort === 'highlighted'
+                  ? <Star size={22} className="text-amber-400 opacity-50" />
+                  : <ThumbsUp size={22} className="text-brand-400 opacity-50" />
+                }
+              </div>
+              <p className="font-serif italic text-foreground-muted text-sm">
+                {sort === 'highlighted'
+                  ? 'No highlighted feedback yet.'
+                  : 'No feedback marked helpful yet.'
+                }
               </p>
+              <p className="text-xs text-foreground-muted mt-1 max-w-[220px]">
+                {sort === 'highlighted'
+                  ? 'Guides and Critics can highlight standout feedback.'
+                  : 'The poem author and Critics can mark valuable feedback as helpful.'
+                }
+              </p>
+              <button
+                onClick={() => setSort('recent')}
+                className="mt-3 text-xs text-brand-500 hover:text-brand-600 font-medium transition-colors"
+              >
+                View all feedback →
+              </button>
             </div>
           ) : (
             <div className="px-4 py-2 divide-y divide-border-subtle">
-              {sortedFeedback.map(f => (
+              {displayFeedback.map(f => (
                 <FeedbackItem
                   key={f.id}
                   feedback={f}
@@ -319,7 +398,7 @@ export default function FeedbackPanel({ poem, onClose }: FeedbackPanelProps) {
           )}
         </div>
 
-        {/* Write feedback area — hidden for poem owners */}
+        {/* Write feedback area */}
         <div className="border-t border-border shrink-0 p-4 space-y-3">
           {isOwner ? (
             <div className="text-center py-2">
@@ -368,6 +447,14 @@ export default function FeedbackPanel({ poem, onClose }: FeedbackPanelProps) {
                 </div>
               )}
 
+              {/* Auto-save indicator */}
+              {autoSaved && content.trim() && (
+                <div className="flex items-center gap-1 text-[10px] text-foreground-muted">
+                  <Save size={9} />
+                  <span>Draft saved</span>
+                </div>
+              )}
+
               {/* Textarea */}
               <div className="relative">
                 <textarea
@@ -396,17 +483,17 @@ export default function FeedbackPanel({ poem, onClose }: FeedbackPanelProps) {
                 </div>
               </div>
 
-              <div className="flex items-center justify-between">
+              <div className="flex items-center justify-between gap-2">
                 <span className={cn('text-xs font-medium', LEVEL_CONFIG[level].textClass)}>
                   {LEVEL_CONFIG[level].badgeText} · max {maxChars} chars
                 </span>
                 <button
                   onClick={handleSubmit}
                   disabled={submitting || !content.trim() || content.length > maxChars || !canSubmitFeedback}
-                  className="flex items-center gap-1.5 bg-brand-500 hover:bg-brand-600 disabled:opacity-50 disabled:cursor-not-allowed text-white text-sm font-medium px-4 py-2 rounded-xl transition-colors"
+                  className="flex items-center gap-1.5 bg-brand-500 hover:bg-brand-600 disabled:opacity-50 disabled:cursor-not-allowed text-white text-sm font-medium px-4 py-2 rounded-xl transition-colors shrink-0"
                 >
                   <Send size={14} />
-                  {submitting ? 'Sending...' : 'Send'}
+                  {submitting ? 'Sending...' : 'Send · +2 Ink'}
                 </button>
               </div>
 

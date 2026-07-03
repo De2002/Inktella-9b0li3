@@ -1,6 +1,6 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
-import { Feather, X, ChevronDown, Plus, Eye, PenLine, Check, Users } from 'lucide-react';
+import { Feather, X, ChevronDown, Plus, Eye, PenLine, Check, Users, Save, Loader2 } from 'lucide-react';
 import { supabase } from '@/lib/supabase';
 import { useAuth } from '@/contexts/AuthContext';
 import type { Topic } from '@/types';
@@ -8,6 +8,9 @@ import { INK_PUBLISH_COST, getLevel, LEVEL_CONFIG } from '@/constants';
 import { cn, getInitials } from '@/lib/utils';
 import { toast } from 'sonner';
 import PoetAnalysisEditor from '@/components/features/PoetAnalysisEditor';
+
+const POEM_DRAFT_KEY = (id: string) => `inktella_poem_draft_${id}`;
+const NEW_POEM_KEY = 'inktella_new_poem_draft';
 
 interface CreditCandidate {
   id: string;
@@ -38,52 +41,99 @@ export default function WritePage() {
   const [preview, setPreview] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [loadingPoem, setLoadingPoem] = useState(isEditMode);
+  const [autoSaved, setAutoSaved] = useState(false);
+  const [autoSaving, setAutoSaving] = useState(false);
   const contentRef = useRef<HTMLTextAreaElement>(null);
+  const autoSaveTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  // Credit step state — shown after a revision publishes
+  // Focus state for distraction-free feel
+  const [editorFocused, setEditorFocused] = useState(false);
+
+  // Credit step state
   const [publishedPoemId, setPublishedPoemId] = useState<string | null>(null);
   const [creditCandidates, setCreditCandidates] = useState<CreditCandidate[]>([]);
   const [selectedCredits, setSelectedCredits] = useState<Set<string>>(new Set());
   const [creditSearch, setCreditSearch] = useState('');
   const [savingCredits, setSavingCredits] = useState(false);
 
+  const draftKey = isEditMode && editPoemId ? POEM_DRAFT_KEY(editPoemId) : NEW_POEM_KEY;
+
   useEffect(() => {
-    if (!user) {
-      navigate('/auth');
-      return;
-    }
+    if (!user) { navigate('/auth'); return; }
     fetchTopics();
     if (isEditMode && editPoemId) {
       loadPoemForEdit(editPoemId);
+    } else {
+      // Load new poem draft from localStorage
+      const saved = localStorage.getItem(draftKey);
+      if (saved) {
+        try {
+          const parsed = JSON.parse(saved);
+          setTitle(parsed.title || '');
+          setContent(parsed.content || '');
+          setImageUrl(parsed.imageUrl || '');
+          if (parsed.topicId) setTopicId(parsed.topicId);
+          setTags(parsed.tags || []);
+          setPoetNote(parsed.poetNote || '');
+          setAutoSaved(true);
+        } catch { /* ignore */ }
+      }
     }
   }, [user]);
 
+  // Auto-save poem content
+  const triggerAutoSave = useCallback(() => {
+    if (autoSaveTimer.current) clearTimeout(autoSaveTimer.current);
+    autoSaveTimer.current = setTimeout(() => {
+      const data = {
+        title, content, imageUrl, topicId, tags, poetNote,
+        savedAt: new Date().toISOString(),
+      };
+      localStorage.setItem(draftKey, JSON.stringify(data));
+      setAutoSaved(true);
+      setAutoSaving(false);
+    }, 1500);
+    setAutoSaving(true);
+  }, [title, content, imageUrl, topicId, tags, poetNote, draftKey]);
+
+  useEffect(() => {
+    if (!user || loadingPoem) return;
+    if (title || content) {
+      triggerAutoSave();
+    }
+    return () => {
+      if (autoSaveTimer.current) clearTimeout(autoSaveTimer.current);
+    };
+  }, [title, content, imageUrl, topicId, tags, poetNote]);
+
   async function loadPoemForEdit(poemId: string) {
     setLoadingPoem(true);
+
+    // Try loading from localStorage first for unsaved changes
+    const saved = localStorage.getItem(POEM_DRAFT_KEY(poemId));
+    let localDraft: any = null;
+    if (saved) {
+      try { localDraft = JSON.parse(saved); } catch { /* ignore */ }
+    }
+
     const { data } = await supabase
       .from('poems')
       .select('*, poem_tags(tag:tags(id, name))')
       .eq('id', poemId)
       .single();
 
-    if (!data) {
-      toast.error('Poem not found');
-      navigate(-1);
-      return;
-    }
+    if (!data) { toast.error('Poem not found'); navigate(-1); return; }
+    if (data.user_id !== user?.id) { toast.error('You can only edit your own poems'); navigate(-1); return; }
 
-    if (data.user_id !== user?.id) {
-      toast.error('You can only edit your own poems');
-      navigate(-1);
-      return;
-    }
-
-    setTitle(data.title || '');
-    setContent(data.content || '');
-    setImageUrl(data.image_url || '');
-    setTopicId(data.topic_id || '');
-    setTags(data.poem_tags?.map((pt: any) => pt.tag?.name).filter(Boolean) || []);
+    // Prefer local draft if newer
+    setTitle(localDraft?.title || data.title || '');
+    setContent(localDraft?.content || data.content || '');
+    setImageUrl(localDraft?.imageUrl || data.image_url || '');
+    setTopicId(localDraft?.topicId || data.topic_id || '');
+    setTags(localDraft?.tags || data.poem_tags?.map((pt: any) => pt.tag?.name).filter(Boolean) || []);
+    setPoetNote(localDraft?.poetNote || '');
     setOriginalPoemData(data);
+    if (localDraft) setAutoSaved(true);
     setLoadingPoem(false);
   }
 
@@ -100,9 +150,7 @@ export default function WritePage() {
     setTagInput('');
   }
 
-  function removeTag(tag: string) {
-    setTags(prev => prev.filter(t => t !== tag));
-  }
+  function removeTag(tag: string) { setTags(prev => prev.filter(t => t !== tag)); }
 
   function addChange() {
     const trimmed = changesSummaryInput.trim();
@@ -112,15 +160,11 @@ export default function WritePage() {
     setChangesSummaryInput('');
   }
 
-  function removeChange(item: string) {
-    setChangesList(prev => prev.filter(c => c !== item));
-  }
-
+  function removeChange(item: string) { setChangesList(prev => prev.filter(c => c !== item)); }
   function toggleCredit(id: string) {
     setSelectedCredits(prev => {
       const next = new Set(prev);
-      if (next.has(id)) next.delete(id);
-      else next.add(id);
+      next.has(id) ? next.delete(id) : next.add(id);
       return next;
     });
   }
@@ -129,27 +173,57 @@ export default function WritePage() {
     if (!publishedPoemId) return;
     if (!skip && selectedCredits.size > 0) {
       setSavingCredits(true);
+
       const inserts = [...selectedCredits].map(uid => ({
         poem_id: publishedPoemId,
         credited_user_id: uid,
       }));
-      await supabase
-        .from('feedback_credits')
-        .upsert(inserts, { onConflict: 'poem_id,credited_user_id' });
+      await supabase.from('feedback_credits').upsert(inserts, { onConflict: 'poem_id,credited_user_id' });
+
+      // Award 2 Tella to each credited user
+      await Promise.all([...selectedCredits].map(async uid => {
+        const { data: creditedProfile } = await supabase
+          .from('user_profiles')
+          .select('tella_balance')
+          .eq('id', uid)
+          .single();
+
+        if (creditedProfile) {
+          await Promise.all([
+            supabase.from('tella_transactions').insert({
+              user_id: uid,
+              amount: 2,
+              reason: 'Credited for feedback contribution',
+              related_id: publishedPoemId,
+            }),
+            supabase.from('user_profiles').update({
+              tella_balance: creditedProfile.tella_balance + 2,
+            }).eq('id', uid),
+            supabase.from('notifications').insert({
+              user_id: uid,
+              type: 'feedback_credited',
+              content: `@${profile?.username} credited your feedback contribution (+2 Tella)`,
+              related_id: publishedPoemId,
+              actor_id: user!.id,
+            }),
+          ]);
+        }
+      }));
       setSavingCredits(false);
     }
+
+    // Clear draft
+    localStorage.removeItem(isEditMode && editPoemId ? POEM_DRAFT_KEY(editPoemId) : NEW_POEM_KEY);
     navigate(`/poem/${publishedPoemId}`);
   }
 
   async function handleRevise() {
     if (!user || !profile || !editPoemId || !originalPoemData) return;
-
     if (!title.trim()) { toast.error('Your poem needs a title'); return; }
     if (!content.trim() || content.trim().length < 10) { toast.error('Write at least a few lines'); return; }
 
     setSubmitting(true);
 
-    // 1. Update poem row
     const { error: updateError } = await supabase
       .from('poems')
       .update({
@@ -162,31 +236,22 @@ export default function WritePage() {
       })
       .eq('id', editPoemId);
 
-    if (updateError) {
-      toast.error('Failed to save revision');
-      setSubmitting(false);
-      return;
-    }
+    if (updateError) { toast.error('Failed to save revision'); setSubmitting(false); return; }
 
-    // 2. Next draft number
     const { data: existingDrafts } = await supabase
-      .from('poem_drafts')
-      .select('draft_number')
-      .eq('poem_id', editPoemId)
-      .order('draft_number', { ascending: false })
-      .limit(1);
+      .from('poem_drafts').select('draft_number').eq('poem_id', editPoemId)
+      .order('draft_number', { ascending: false }).limit(1);
     const nextDraftNumber = (existingDrafts?.[0]?.draft_number || 0) + 1;
 
-    // 3. Save draft
     await supabase.from('poem_drafts').insert({
       poem_id: editPoemId,
       content: content.trim(),
       draft_number: nextDraftNumber,
-      poet_note: poetNote.trim() || null,
+      poet_note: poetNote || null,
       changes_summary: changesList.length > 0 ? changesList : [],
     });
 
-    // 4. Update tags
+    // Update tags
     await supabase.from('poem_tags').delete().eq('poem_id', editPoemId);
     for (const tagName of tags) {
       const { data: existingTag } = await supabase.from('tags').select('id').eq('name', tagName).single();
@@ -195,12 +260,10 @@ export default function WritePage() {
         const { data: newTag } = await supabase.from('tags').insert({ name: tagName }).select('id').single();
         tagId = newTag?.id;
       }
-      if (tagId) {
-        await supabase.from('poem_tags').insert({ poem_id: editPoemId, tag_id: tagId });
-      }
+      if (tagId) await supabase.from('poem_tags').insert({ poem_id: editPoemId, tag_id: tagId });
     }
 
-    // 5. Notify feedback givers + collect credit candidates
+    // Notify feedback givers
     const { data: feedbackRows } = await supabase
       .from('feedback')
       .select('user_id, author:user_profiles!feedback_user_id_fkey(id, username, avatar_url, tella_balance)')
@@ -209,17 +272,15 @@ export default function WritePage() {
 
     if (feedbackRows && feedbackRows.length > 0) {
       const uniqueIds = [...new Set(feedbackRows.map((f: any) => f.user_id))];
-      const notifications = uniqueIds.map((uid: string) => ({
+      await supabase.from('notifications').insert(uniqueIds.map((uid: string) => ({
         user_id: uid,
         type: 'poem_revised',
         content: `@${profile.username} revised "${title.trim()}" — you gave feedback on this poem.`,
         read: false,
         related_id: editPoemId,
         actor_id: user.id,
-      }));
-      await supabase.from('notifications').insert(notifications);
+      })));
 
-      // Build unique contributor list for the credit step
       const seen = new Set<string>();
       const contributors: CreditCandidate[] = feedbackRows
         .map((f: any) => (Array.isArray(f.author) ? f.author[0] : f.author))
@@ -227,22 +288,17 @@ export default function WritePage() {
       setCreditCandidates(contributors);
     }
 
+    // Clear local draft
+    localStorage.removeItem(POEM_DRAFT_KEY(editPoemId));
     toast.success('Revision published!', { description: `Draft ${nextDraftNumber} saved` });
     setSubmitting(false);
-    setPublishedPoemId(editPoemId); // triggers credit step
+    setPublishedPoemId(editPoemId);
   }
 
   async function handlePublish() {
     if (!user || !profile) return;
-
-    if (!title.trim()) {
-      toast.error('Your poem needs a title');
-      return;
-    }
-    if (!content.trim() || content.trim().length < 10) {
-      toast.error('Write at least a few lines');
-      return;
-    }
+    if (!title.trim()) { toast.error('Your poem needs a title'); return; }
+    if (!content.trim() || content.trim().length < 10) { toast.error('Write at least a few lines'); return; }
     if (profile.ink_balance < INK_PUBLISH_COST) {
       toast.error(`You need ${INK_PUBLISH_COST} Ink to publish. Give feedback to earn more.`);
       return;
@@ -261,34 +317,25 @@ export default function WritePage() {
         ink_spent: INK_PUBLISH_COST,
         published: true,
       })
-      .select()
-      .single();
+      .select().single();
 
-    if (error) {
-      toast.error('Failed to publish poem');
-      setSubmitting(false);
-      return;
-    }
+    if (error) { toast.error('Failed to publish poem'); setSubmitting(false); return; }
 
     await supabase.from('poem_drafts').insert({
       poem_id: poem.id,
       content: content.trim(),
       draft_number: 1,
-      poet_note: poetNote.trim() || null,
+      poet_note: poetNote || null,
     });
 
-    if (tags.length > 0) {
-      for (const tagName of tags) {
-        const { data: existingTag } = await supabase.from('tags').select('id').eq('name', tagName).single();
-        let tagId = existingTag?.id;
-        if (!tagId) {
-          const { data: newTag } = await supabase.from('tags').insert({ name: tagName }).select('id').single();
-          tagId = newTag?.id;
-        }
-        if (tagId) {
-          await supabase.from('poem_tags').insert({ poem_id: poem.id, tag_id: tagId });
-        }
+    for (const tagName of tags) {
+      const { data: existingTag } = await supabase.from('tags').select('id').eq('name', tagName).single();
+      let tagId = existingTag?.id;
+      if (!tagId) {
+        const { data: newTag } = await supabase.from('tags').insert({ name: tagName }).select('id').single();
+        tagId = newTag?.id;
       }
+      if (tagId) await supabase.from('poem_tags').insert({ poem_id: poem.id, tag_id: tagId });
     }
 
     const newInk = profile.ink_balance - INK_PUBLISH_COST;
@@ -302,6 +349,8 @@ export default function WritePage() {
       }),
     ]);
 
+    // Clear local draft
+    localStorage.removeItem(NEW_POEM_KEY);
     await refreshProfile();
     toast.success('Poem published!', { description: `-${INK_PUBLISH_COST} Ink spent` });
     navigate(`/poem/${poem.id}`);
@@ -310,8 +359,10 @@ export default function WritePage() {
 
   const inkAfter = (profile?.ink_balance || 0) - INK_PUBLISH_COST;
   const canPublish = profile && profile.ink_balance >= INK_PUBLISH_COST;
+  const lineCount = content.split('\n').length;
+  const wordCount = content.split(/\s+/).filter(w => w.length > 0).length;
 
-  // ── Credit step — rendered after a revision publishes ──────────────────────
+  // ── Credit step ───────────────────────────────────────────────────────────
   if (publishedPoemId) {
     const filtered = creditSearch.trim()
       ? creditCandidates.filter(c => c.username.toLowerCase().includes(creditSearch.toLowerCase()))
@@ -321,12 +372,9 @@ export default function WritePage() {
       <div className="fixed inset-0 z-50 flex flex-col justify-end">
         <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" />
         <div className="relative bg-surface border-t border-border rounded-t-2xl max-h-[88vh] flex flex-col shadow-2xl z-10">
-          {/* Handle */}
           <div className="flex justify-center pt-3 pb-1 shrink-0">
             <div className="w-10 h-1 rounded-full bg-border" />
           </div>
-
-          {/* Header */}
           <div className="px-5 py-4 border-b border-border shrink-0">
             <div className="flex items-start justify-between gap-4">
               <div>
@@ -335,20 +383,17 @@ export default function WritePage() {
                   Credit Contributors
                 </h2>
                 <p className="text-xs text-foreground-muted mt-1 leading-relaxed">
-                  Did anyone's feedback influence this revision? Select them to appear in{' '}
-                  <span className="font-medium text-foreground">Behind the Poem</span>.
+                  Did anyone's feedback influence this revision? Credit them to appear in{' '}
+                  <span className="font-medium text-foreground">Behind the Poem</span> — they each earn{' '}
+                  <span className="font-semibold text-tella-600 dark:text-tella-400">+2 Tella</span>.
                 </p>
               </div>
-              <button
-                onClick={() => handleSaveCredits(true)}
-                className="text-xs text-foreground-muted hover:text-foreground transition-colors shrink-0 underline underline-offset-2 mt-1"
-              >
+              <button onClick={() => handleSaveCredits(true)} className="text-xs text-foreground-muted hover:text-foreground transition-colors shrink-0 underline underline-offset-2 mt-1">
                 Skip
               </button>
             </div>
           </div>
 
-          {/* Search — only shown when there are enough candidates */}
           {creditCandidates.length > 4 && (
             <div className="px-5 pt-3 shrink-0">
               <input
@@ -361,7 +406,6 @@ export default function WritePage() {
             </div>
           )}
 
-          {/* Candidate list */}
           <div className="flex-1 overflow-y-auto px-5 py-4 space-y-2">
             {creditCandidates.length === 0 ? (
               <div className="py-12 text-center space-y-2">
@@ -369,14 +413,9 @@ export default function WritePage() {
                   <Users size={22} className="text-foreground-muted" />
                 </div>
                 <p className="font-serif italic text-foreground-muted text-sm">No feedback contributors yet.</p>
-                <p className="text-xs text-foreground-muted">
-                  Once readers give feedback, you can credit them here after revisions.
-                </p>
               </div>
             ) : filtered.length === 0 ? (
-              <p className="text-sm text-foreground-muted text-center py-8">
-                No matches for &quot;{creditSearch}&quot;
-              </p>
+              <p className="text-sm text-foreground-muted text-center py-8">No matches for "{creditSearch}"</p>
             ) : (
               filtered.map(contributor => {
                 const level = getLevel(contributor.tella_balance || 0);
@@ -393,12 +432,8 @@ export default function WritePage() {
                         : 'border-border hover:border-border-subtle hover:bg-background-subtle'
                     )}
                   >
-                    {/* Avatar */}
                     <div
-                      className={cn(
-                        'w-9 h-9 rounded-full flex items-center justify-center text-xs font-bold shrink-0 overflow-hidden',
-                        cfg.borderClass
-                      )}
+                      className={cn('w-9 h-9 rounded-full flex items-center justify-center text-xs font-bold shrink-0 overflow-hidden', cfg.borderClass)}
                       style={{ background: cfg.color + '18', color: cfg.color }}
                     >
                       {contributor.avatar_url
@@ -406,24 +441,17 @@ export default function WritePage() {
                         : getInitials(contributor.username)
                       }
                     </div>
-
-                    {/* Info */}
                     <div className="flex-1 min-w-0">
-                      <p className="text-sm font-semibold text-foreground leading-none">
-                        @{contributor.username}
-                      </p>
-                      <p className={cn('text-xs mt-0.5 font-medium', cfg.textClass)}>
-                        {cfg.badgeText}
-                      </p>
+                      <p className="text-sm font-semibold text-foreground leading-none">@{contributor.username}</p>
+                      <p className={cn('text-xs mt-0.5 font-medium', cfg.textClass)}>{cfg.badgeText}</p>
                     </div>
-
-                    {/* Checkbox */}
-                    <div
-                      className={cn(
-                        'w-5 h-5 rounded-full border-2 flex items-center justify-center shrink-0 transition-all',
-                        checked ? 'bg-brand-500 border-brand-500' : 'border-border'
-                      )}
-                    >
+                    {checked && (
+                      <div className="text-[10px] text-tella-600 dark:text-tella-400 font-semibold">+2 Tella</div>
+                    )}
+                    <div className={cn(
+                      'w-5 h-5 rounded-full border-2 flex items-center justify-center shrink-0 transition-all',
+                      checked ? 'bg-brand-500 border-brand-500' : 'border-border'
+                    )}>
                       {checked && <Check size={11} className="text-white" strokeWidth={3} />}
                     </div>
                   </button>
@@ -432,12 +460,11 @@ export default function WritePage() {
             )}
           </div>
 
-          {/* Footer CTA */}
           <div className="px-5 py-4 border-t border-border shrink-0 space-y-2">
             {selectedCredits.size > 0 && (
               <p className="text-xs text-foreground-muted text-center">
-                {selectedCredits.size} contributor{selectedCredits.size !== 1 ? 's' : ''} will appear in{' '}
-                <span className="font-medium text-foreground">Behind the Poem</span>
+                {selectedCredits.size} contributor{selectedCredits.size !== 1 ? 's' : ''} will receive{' '}
+                <span className="text-tella-600 dark:text-tella-400 font-semibold">+2 Tella</span> each
               </p>
             )}
             <button
@@ -446,9 +473,9 @@ export default function WritePage() {
               className="w-full flex items-center justify-center gap-2 bg-brand-500 hover:bg-brand-600 disabled:opacity-50 text-white py-3 rounded-full font-semibold text-sm transition-colors"
             >
               {savingCredits
-                ? 'Saving credits…'
+                ? <><Loader2 size={16} className="animate-spin" /> Saving…</>
                 : selectedCredits.size > 0
-                  ? `Credit ${selectedCredits.size} contributor${selectedCredits.size !== 1 ? 's' : ''} & view poem`
+                  ? `Credit ${selectedCredits.size} & view poem`
                   : 'Continue to poem'
               }
             </button>
@@ -458,7 +485,6 @@ export default function WritePage() {
     );
   }
 
-  // ── Loading skeleton ────────────────────────────────────────────────────────
   if (loadingPoem) {
     return (
       <div className="max-w-2xl mx-auto px-4 py-12">
@@ -472,7 +498,10 @@ export default function WritePage() {
   }
 
   return (
-    <div className="max-w-2xl mx-auto px-4 py-6 pb-24 lg:pb-8">
+    <div className={cn(
+      'max-w-2xl mx-auto px-4 py-6 pb-24 lg:pb-8 transition-all duration-300',
+      editorFocused && 'max-w-3xl'
+    )}>
       {/* Header */}
       <div className="flex items-center justify-between mb-6">
         <div>
@@ -481,20 +510,31 @@ export default function WritePage() {
           </h1>
           {isEditMode && originalPoemData && (
             <p className="text-sm text-foreground-muted mt-0.5 font-serif italic">
-              &quot;{originalPoemData.title}&quot; &middot; Draft {(originalPoemData.revision_count || 0) + 1}
+              "{originalPoemData.title}" · Draft {(originalPoemData.revision_count || 0) + 1}
             </p>
           )}
         </div>
-        <button
-          onClick={() => setPreview(!preview)}
-          className={cn(
-            'flex items-center gap-1.5 text-sm font-medium px-3 py-2 rounded-lg transition-colors',
-            preview ? 'bg-brand-50 dark:bg-brand-900/20 text-brand-500' : 'text-foreground-muted hover:bg-background-subtle'
+        <div className="flex items-center gap-2">
+          {/* Auto-save indicator */}
+          {autoSaved && (
+            <div className="flex items-center gap-1 text-xs text-foreground-muted">
+              {autoSaving
+                ? <><Loader2 size={11} className="animate-spin" /> Saving…</>
+                : <><Save size={11} /> Saved</>
+              }
+            </div>
           )}
-        >
-          <Eye size={14} />
-          {preview ? 'Edit' : 'Preview'}
-        </button>
+          <button
+            onClick={() => setPreview(!preview)}
+            className={cn(
+              'flex items-center gap-1.5 text-sm font-medium px-3 py-2 rounded-lg transition-colors',
+              preview ? 'bg-brand-50 dark:bg-brand-900/20 text-brand-500' : 'text-foreground-muted hover:bg-background-subtle'
+            )}
+          >
+            <Eye size={14} />
+            {preview ? 'Edit' : 'Preview'}
+          </button>
+        </div>
       </div>
 
       {/* Ink balance — new poems only */}
@@ -515,12 +555,11 @@ export default function WritePage() {
                 </strong>
               </span>
             </div>
-            <span className="text-foreground-muted">
+            <span className="text-foreground-muted text-xs">
               Publishing costs <strong className="text-foreground">{INK_PUBLISH_COST} Ink</strong>
               {canPublish && <span className="ml-2 text-ink-600 dark:text-ink-400">→ {inkAfter} remaining</span>}
             </span>
           </div>
-
           {!canPublish && (
             <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-xl p-4 mb-5 text-sm text-red-700 dark:text-red-400">
               You need more Ink. <strong>Give feedback</strong> on poems to earn +2 Ink per feedback.
@@ -529,17 +568,16 @@ export default function WritePage() {
         </>
       )}
 
-      {/* Edit mode notice */}
       {isEditMode && (
         <div className="flex items-center gap-2 p-3 rounded-xl mb-5 text-sm bg-brand-50 dark:bg-brand-900/20 border border-brand-200 dark:border-brand-800">
           <PenLine size={14} className="text-brand-500 shrink-0" />
           <span className="text-brand-700 dark:text-brand-400">
-            Revisions are <strong>free</strong>. After publishing you can credit feedback contributors.
+            Revisions are <strong>free</strong>. After publishing you can credit feedback contributors (+2 Tella each).
           </span>
         </div>
       )}
 
-      {/* Preview / Edit */}
+      {/* Preview */}
       {preview ? (
         <div className="space-y-4">
           <div className="border-b border-border pb-4">
@@ -548,9 +586,9 @@ export default function WritePage() {
             ) : (
               <p className="italic text-foreground-muted text-lg">No title yet…</p>
             )}
-            <p className="text-xs text-foreground-muted">@{user?.username} &middot; Draft preview</p>
+            <p className="text-xs text-foreground-muted">@{user?.username} · Draft preview</p>
           </div>
-          <div className="poem-text text-foreground-secondary leading-[1.85] text-lg min-h-[80px]">
+          <div className="poem-text text-foreground-secondary leading-[1.85] text-lg min-h-[80px] whitespace-pre-wrap">
             {content || <span className="italic text-foreground-muted">Start writing…</span>}
           </div>
           {tags.length > 0 && (
@@ -565,27 +603,53 @@ export default function WritePage() {
           )}
         </div>
       ) : (
-        <div className="space-y-4">
-          {/* Title */}
+        <div className="space-y-5">
+          {/* ── Title ── */}
           <input
             type="text"
             value={title}
             onChange={e => setTitle(e.target.value)}
-            placeholder="poem title (lowercase works well)"
-            className="w-full text-2xl font-serif font-semibold bg-transparent outline-none text-foreground placeholder:text-foreground-muted border-b border-border pb-2 focus:border-brand-400 transition-colors"
+            placeholder="poem title"
+            className="w-full text-2xl sm:text-3xl font-serif font-semibold bg-transparent outline-none text-foreground placeholder:text-foreground-muted/50 border-b-2 border-border pb-3 focus:border-brand-400 transition-colors"
             maxLength={120}
           />
 
-          {/* Content */}
-          <textarea
-            ref={contentRef}
-            value={content}
-            onChange={e => setContent(e.target.value)}
-            placeholder={`write here.\nline breaks are sacred.\ntake your time.`}
-            className="w-full min-h-[280px] bg-transparent outline-none text-foreground placeholder:text-foreground-muted text-base poem-text resize-none leading-[1.85]"
-          />
+          {/* ── Poem content — distraction-free ── */}
+          <div
+            className={cn(
+              'relative rounded-xl transition-all duration-200',
+              editorFocused && 'ring-1 ring-brand-400/30'
+            )}
+          >
+            <textarea
+              ref={contentRef}
+              value={content}
+              onChange={e => {
+                setContent(e.target.value);
+                // Auto resize
+                e.target.style.height = 'auto';
+                e.target.style.height = Math.max(320, e.target.scrollHeight) + 'px';
+              }}
+              onFocus={() => setEditorFocused(true)}
+              onBlur={() => setEditorFocused(false)}
+              placeholder={`write here.\n\nline breaks are sacred.\ntake your time.`}
+              className="w-full bg-transparent outline-none text-foreground placeholder:text-foreground-muted/60 text-base sm:text-lg poem-text resize-none leading-[1.9] px-0 py-2"
+              style={{ minHeight: '320px' }}
+            />
 
-          <div className="border-t border-border pt-4 space-y-4">
+            {/* Floating word / line count — appears on focus */}
+            {editorFocused && content && (
+              <div className="absolute bottom-2 right-0 flex items-center gap-2 text-[10px] text-foreground-muted/70 font-mono pointer-events-none">
+                <span>{lineCount} line{lineCount !== 1 ? 's' : ''}</span>
+                <span>·</span>
+                <span>{wordCount} word{wordCount !== 1 ? 's' : ''}</span>
+              </div>
+            )}
+          </div>
+
+          {/* ── Metadata ── */}
+          <div className="border-t border-border pt-5 space-y-4">
+
             {/* Topic */}
             <div>
               <label className="text-xs font-semibold text-foreground-muted uppercase tracking-wide mb-2 block">Topic</label>
@@ -604,7 +668,7 @@ export default function WritePage() {
 
             {/* Tags */}
             <div>
-              <label className="text-xs font-semibold text-foreground-muted uppercase tracking-wide mb-2 block">Tags (up to 5)</label>
+              <label className="text-xs font-semibold text-foreground-muted uppercase tracking-wide mb-2 block">Tags <span className="normal-case font-normal">(up to 5)</span></label>
               <div className="flex flex-wrap gap-1.5 mb-2">
                 {tags.map(t => (
                   <span key={t} className="flex items-center gap-1 tag-pill pr-1">
@@ -635,7 +699,7 @@ export default function WritePage() {
             {/* Image URL */}
             <div>
               <label className="text-xs font-semibold text-foreground-muted uppercase tracking-wide mb-2 block">
-                Image URL (optional)
+                Image URL <span className="normal-case font-normal">(optional)</span>
               </label>
               <input
                 type="url"
@@ -645,21 +709,35 @@ export default function WritePage() {
                 className="w-full bg-background-subtle border border-border rounded-xl px-3 py-2.5 text-sm text-foreground placeholder:text-foreground-muted outline-none focus:border-brand-400 transition-colors"
               />
               <p className="text-xs text-foreground-muted mt-1">Paste an image URL hosted elsewhere (Unsplash, etc.)</p>
+              {imageUrl && (
+                <div className="mt-2 rounded-lg overflow-hidden max-h-32">
+                  <img src={imageUrl} alt="Preview" className="w-full object-cover" onError={() => {}} />
+                </div>
+              )}
             </div>
 
-            {/* Poet's analysis editor */}
+            {/* ── Analysis / Poet's Note ── */}
             <div>
-              <label className="text-xs font-semibold text-foreground-muted uppercase tracking-wide mb-2 block">
-                {isEditMode ? "Poem analysis for this revision (optional)" : "Poem analysis (optional)"}
-              </label>
+              <div className="flex items-center justify-between mb-2">
+                <label className="text-xs font-semibold text-foreground-muted uppercase tracking-wide">
+                  {isEditMode ? 'Your note for this revision' : "Poet's note"} <span className="normal-case font-normal">(optional)</span>
+                </label>
+                <span className="text-[10px] text-foreground-muted italic">Shown in Behind the Poem</span>
+              </div>
+              <p className="text-xs text-foreground-secondary mb-3 leading-relaxed">
+                {isEditMode
+                  ? 'What changed in your thinking? What drove this revision? This appears in the poem\'s revision history.'
+                  : 'What was happening when you wrote this? What inspired you? What do you want feedback on?'
+                }
+              </p>
               <PoetAnalysisEditor
                 value={poetNote}
                 onChange={setPoetNote}
                 isEditMode={isEditMode}
                 placeholder={
                   isEditMode
-                    ? "What changed in your thinking? What drove this revision?"
-                    : "What was happening when you wrote this? What do you want feedback on?"
+                    ? 'What changed in this revision? What were you trying to fix?'
+                    : 'What was this poem about for you? What would help a reader understand it?'
                 }
               />
             </div>
@@ -668,7 +746,7 @@ export default function WritePage() {
             {isEditMode && (
               <div>
                 <label className="text-xs font-semibold text-foreground-muted uppercase tracking-wide mb-2 block">
-                  What changed? (optional — shown in Behind the Poem)
+                  What changed? <span className="normal-case font-normal">(optional — shown in revision history)</span>
                 </label>
                 <div className="flex flex-wrap gap-1.5 mb-2">
                   {changesList.map(item => (
@@ -687,7 +765,7 @@ export default function WritePage() {
                       value={changesSummaryInput}
                       onChange={e => setChangesSummaryInput(e.target.value)}
                       onKeyDown={e => (e.key === 'Enter' || e.key === ',') && (e.preventDefault(), addChange())}
-                      placeholder='e.g. "Sharpened the ending line", press Enter'
+                      placeholder='e.g. "Sharpened the ending", press Enter'
                       className="flex-1 bg-background-subtle border border-border rounded-lg px-3 py-2 text-sm text-foreground placeholder:text-foreground-muted outline-none focus:border-brand-400 transition-colors"
                     />
                     <button onClick={addChange} className="p-2 bg-background-subtle border border-border rounded-lg hover:border-brand-300 transition-colors">
@@ -702,15 +780,14 @@ export default function WritePage() {
       )}
 
       {/* Action buttons */}
-      <div className="mt-8 flex items-center gap-3">
+      <div className="mt-8 flex items-center gap-3 flex-wrap">
         {isEditMode ? (
           <button
             onClick={handleRevise}
             disabled={submitting || !title.trim() || !content.trim()}
             className="flex items-center gap-2 bg-brand-500 hover:bg-brand-600 disabled:opacity-50 disabled:cursor-not-allowed text-white px-8 py-3 rounded-full font-semibold transition-colors"
           >
-            <PenLine size={16} />
-            {submitting ? 'Saving revision…' : 'Publish Revision'}
+            {submitting ? <><Loader2 size={16} className="animate-spin" /> Saving…</> : <><PenLine size={16} /> Publish Revision</>}
           </button>
         ) : (
           <button
@@ -718,13 +795,17 @@ export default function WritePage() {
             disabled={submitting || !canPublish || !title.trim() || !content.trim()}
             className="flex items-center gap-2 bg-brand-500 hover:bg-brand-600 disabled:opacity-50 disabled:cursor-not-allowed text-white px-8 py-3 rounded-full font-semibold transition-colors"
           >
-            <Feather size={16} />
-            {submitting ? 'Publishing…' : `Publish · ${INK_PUBLISH_COST} Ink`}
+            {submitting ? <><Loader2 size={16} className="animate-spin" /> Publishing…</> : <><Feather size={16} /> Publish · {INK_PUBLISH_COST} Ink</>}
           </button>
         )}
         <button onClick={() => navigate(-1)} className="px-5 py-3 text-sm text-foreground-muted hover:text-foreground transition-colors">
           Cancel
         </button>
+        {autoSaved && !submitting && (
+          <span className="text-xs text-foreground-muted ml-auto flex items-center gap-1">
+            <Save size={11} /> Draft saved locally
+          </span>
+        )}
       </div>
     </div>
   );

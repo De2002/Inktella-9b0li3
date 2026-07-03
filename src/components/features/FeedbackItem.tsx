@@ -1,5 +1,5 @@
-import { useState } from 'react';
-import { ThumbsUp, Star, ArrowDownCircle, MessageCircle, Heart, Send, ChevronDown, ChevronUp, X } from 'lucide-react';
+import { useState, useEffect } from 'react';
+import { ThumbsUp, Star, ArrowDownCircle, MessageCircle, Heart, Send, ChevronDown, ChevronUp, CheckCircle2 } from 'lucide-react';
 import { cn, formatTimeAgo, getInitials } from '@/lib/utils';
 import { getLevel, LEVEL_CONFIG } from '@/constants';
 import type { Feedback, FeedbackReply, UserLevel } from '@/types';
@@ -18,29 +18,22 @@ interface FeedbackItemProps {
 export default function FeedbackItem({ feedback, poemOwnerId, userLevel, onUpdate }: FeedbackItemProps) {
   const { user, profile, refreshProfile } = useAuth();
 
-  // Like state
   const [liked, setLiked] = useState(feedback.is_liked || false);
   const [likeCount, setLikeCount] = useState(feedback.like_count || 0);
-
-  // Helpful state (poem owner only)
   const [helpful, setHelpful] = useState(feedback.is_helpful || false);
   const [helpfulCount, setHelpfulCount] = useState(feedback.helpful_count || 0);
-
-  // Highlight state (Guide only)
   const [highlighted, setHighlighted] = useState(feedback.is_highlighted_by_me || false);
   const [highlightCount, setHighlightCount] = useState(feedback.highlight_count || 0);
   const [highlightUsers, setHighlightUsers] = useState(feedback.highlight_users || []);
-
-  // Downrank state (Critic only)
   const [downranked, setDownranked] = useState(feedback.is_downranked || false);
   const [downrankCount, setDownrankCount] = useState(feedback.downrank_count || 0);
 
-  // Replies
   const [repliesOpen, setRepliesOpen] = useState(false);
   const [replies, setReplies] = useState<FeedbackReply[]>(feedback.replies || []);
   const [repliesLoaded, setRepliesLoaded] = useState(false);
   const [replyContent, setReplyContent] = useState('');
   const [replySubmitting, setReplySubmitting] = useState(false);
+  const [showReplyInput, setShowReplyInput] = useState(false);
 
   const [pending, setPending] = useState(false);
 
@@ -52,10 +45,20 @@ export default function FeedbackItem({ feedback, poemOwnerId, userLevel, onUpdat
   const isFeedbackAuthor = user?.id === feedback.user_id;
   const isGuide = userLevel === 'guide';
   const isCritic = userLevel === 'critic';
-  const isGuideOrCritic = isGuide || isCritic;
+  // Critic can do everything: like, mark helpful, highlight, downrank
+  const canMarkHelpful = (isOwner || isCritic) && !isFeedbackAuthor;
+  const canHighlight = (isGuide || isCritic) && !isFeedbackAuthor;
+  const canDownrank = isCritic && !isFeedbackAuthor;
+  const canLike = !!user && !isFeedbackAuthor;
 
-  // Observers can only like feedback (not own). Owners can like + mark helpful. Guides can like + highlight. Critics can like + downrank.
-  // Nobody can like their own feedback
+  // Check if current user has replied to this feedback
+  const [userHasReplied, setUserHasReplied] = useState(false);
+
+  useEffect(() => {
+    if (user && replies.length > 0) {
+      setUserHasReplied(replies.some(r => r.user_id === user.id));
+    }
+  }, [replies, user]);
 
   async function toggleLike() {
     if (!user) { toast.error('Sign in to like feedback'); return; }
@@ -71,14 +74,49 @@ export default function FeedbackItem({ feedback, poemOwnerId, userLevel, onUpdat
       setLiked(true);
       setLikeCount(c => c + 1);
       await supabase.from('feedback_likes').insert({ feedback_id: feedback.id, user_id: user.id });
+
+      // +1 Ink to feedback author ONLY if liker is poem owner OR a Critic
+      if (isOwner || isCritic) {
+        const { data: fbAuthor } = await supabase
+          .from('user_profiles')
+          .select('ink_balance')
+          .eq('id', feedback.user_id)
+          .single();
+
+        if (fbAuthor) {
+          await Promise.all([
+            supabase.from('ink_transactions').insert({
+              user_id: feedback.user_id,
+              amount: 1,
+              reason: `Feedback liked by ${isOwner ? 'poem owner' : 'Critic'}`,
+              related_id: feedback.id,
+            }),
+            supabase.from('user_profiles').update({
+              ink_balance: (fbAuthor.ink_balance || 0) + 1,
+            }).eq('id', feedback.user_id),
+          ]);
+        }
+      }
+
+      // Notify the feedback author
+      await supabase.from('notifications').insert({
+        user_id: feedback.user_id,
+        type: 'feedback_liked',
+        content: `@${user.username} liked your feedback on "${feedback.poem_id ? 'a poem' : 'a poem'}"`,
+        related_id: feedback.poem_id,
+        actor_id: user.id,
+      });
     }
     setPending(false);
+    onUpdate({ ...feedback, is_liked: !liked, like_count: liked ? likeCount - 1 : likeCount + 1 });
   }
 
   async function toggleHelpful() {
     if (!user) { toast.error('Sign in first'); return; }
-    if (!isOwner) { toast.error('Only the poem author can mark feedback as helpful'); return; }
-    if (isFeedbackAuthor) { toast.error("You can't mark your own feedback as helpful"); return; }
+    if (!canMarkHelpful) {
+      toast.error(isOwner ? "You can't mark your own feedback" : 'Only the poem author or Critics can mark feedback as helpful');
+      return;
+    }
     if (pending) return;
     setPending(true);
 
@@ -109,17 +147,16 @@ export default function FeedbackItem({ feedback, poemOwnerId, userLevel, onUpdat
           supabase.from('user_profiles').update({
             tella_balance: fbAuthorProfile.tella_balance + 3,
           }).eq('id', feedback.user_id),
-          // Notify the feedback author
           supabase.from('notifications').insert({
             user_id: feedback.user_id,
-            type: 'feedback_highlighted',
+            type: 'feedback_helpful',
             content: `@${user.username} marked your feedback as helpful (+3 Tella)`,
             related_id: feedback.poem_id,
             actor_id: user.id,
           }),
         ]);
+        toast.success('Marked as helpful — feedback author earns +3 Tella');
       }
-      toast.success('Marked as helpful — feedback author earns +3 Tella');
     }
     setPending(false);
     onUpdate({ ...feedback, is_helpful: !helpful, helpful_count: helpful ? helpfulCount - 1 : helpfulCount + 1 });
@@ -127,7 +164,7 @@ export default function FeedbackItem({ feedback, poemOwnerId, userLevel, onUpdat
 
   async function toggleHighlight() {
     if (!user) { toast.error('Sign in first'); return; }
-    if (!isGuide) { toast.error('Only Guides can highlight feedback'); return; }
+    if (!canHighlight) { toast.error('Only Guides and Critics can highlight feedback'); return; }
     if (isFeedbackAuthor) { toast.error("You can't highlight your own feedback"); return; }
     if (pending) return;
     setPending(true);
@@ -135,7 +172,7 @@ export default function FeedbackItem({ feedback, poemOwnerId, userLevel, onUpdat
     if (highlighted) {
       setHighlighted(false);
       setHighlightCount(c => c - 1);
-      setHighlightUsers(prev => prev.filter(u => u.username !== user.username));
+      setHighlightUsers(prev => prev.filter((u: any) => u.username !== user.username));
       await supabase.from('feedback_highlights').delete().match({ feedback_id: feedback.id, user_id: user.id });
       toast.success('Highlight removed');
     } else {
@@ -156,7 +193,7 @@ export default function FeedbackItem({ feedback, poemOwnerId, userLevel, onUpdat
           supabase.from('tella_transactions').insert({
             user_id: feedback.user_id,
             amount: 2,
-            reason: 'Feedback highlighted by Guide',
+            reason: 'Feedback highlighted',
             related_id: feedback.id,
           }),
           supabase.from('user_profiles').update({
@@ -170,15 +207,15 @@ export default function FeedbackItem({ feedback, poemOwnerId, userLevel, onUpdat
             actor_id: user.id,
           }),
         ]);
+        toast.success('Feedback highlighted — author earns +2 Tella');
       }
-      toast.success('Feedback highlighted — author earns +2 Tella');
     }
     setPending(false);
   }
 
   async function toggleDownrank() {
     if (!user) { toast.error('Sign in first'); return; }
-    if (!isCritic) { toast.error('Only Critics can downrank feedback'); return; }
+    if (!canDownrank) { toast.error('Only Critics can downrank feedback'); return; }
     if (isFeedbackAuthor) { toast.error("You can't downrank your own feedback"); return; }
     if (pending) return;
     setPending(true);
@@ -194,7 +231,6 @@ export default function FeedbackItem({ feedback, poemOwnerId, userLevel, onUpdat
       setDownrankCount(newCount);
       await supabase.from('feedback_downranks').insert({ feedback_id: feedback.id, user_id: user.id });
 
-      // If threshold crossed (>5 unique critics), deduct Tella equal to critic count from feedback author
       if (newCount > 5) {
         const { data: fbAuthorProfile } = await supabase
           .from('user_profiles')
@@ -203,17 +239,16 @@ export default function FeedbackItem({ feedback, poemOwnerId, userLevel, onUpdat
           .single();
 
         if (fbAuthorProfile) {
-          const newBalance = Math.max(0, fbAuthorProfile.tella_balance - newCount);
+          const deduction = Math.min(newCount, 10);
+          const newBalance = Math.max(0, fbAuthorProfile.tella_balance - deduction);
           await Promise.all([
             supabase.from('tella_transactions').insert({
               user_id: feedback.user_id,
-              amount: -newCount,
-              reason: `Feedback downranked by ${newCount} critics`,
+              amount: -deduction,
+              reason: `Feedback downranked by critics`,
               related_id: feedback.id,
             }),
-            supabase.from('user_profiles').update({
-              tella_balance: newBalance,
-            }).eq('id', feedback.user_id),
+            supabase.from('user_profiles').update({ tella_balance: newBalance }).eq('id', feedback.user_id),
           ]);
         }
       }
@@ -231,15 +266,19 @@ export default function FeedbackItem({ feedback, poemOwnerId, userLevel, onUpdat
       .order('created_at', { ascending: true });
 
     if (data) {
-      // Fetch reply likes
       const withLikes = await Promise.all(data.map(async (reply) => {
         const [likeCountRes, isLikedRes] = await Promise.all([
           supabase.from('feedback_reply_likes').select('*', { count: 'exact', head: true }).eq('reply_id', reply.id),
-          user ? supabase.from('feedback_reply_likes').select('reply_id').match({ reply_id: reply.id, user_id: user.id }).single() : Promise.resolve({ data: null }),
+          user
+            ? supabase.from('feedback_reply_likes').select('reply_id').match({ reply_id: reply.id, user_id: user.id }).maybeSingle()
+            : Promise.resolve({ data: null }),
         ]);
         return { ...reply, like_count: likeCountRes.count || 0, is_liked: !!isLikedRes.data };
       }));
       setReplies(withLikes);
+      if (user) {
+        setUserHasReplied(withLikes.some(r => r.user_id === user.id));
+      }
     }
     setRepliesLoaded(true);
   }
@@ -247,6 +286,13 @@ export default function FeedbackItem({ feedback, poemOwnerId, userLevel, onUpdat
   async function handleToggleReplies() {
     if (!repliesOpen) await loadReplies();
     setRepliesOpen(o => !o);
+    if (!repliesOpen) setShowReplyInput(false);
+  }
+
+  async function openReplyInput() {
+    if (!repliesLoaded) await loadReplies();
+    setRepliesOpen(true);
+    setShowReplyInput(true);
   }
 
   async function handleReply() {
@@ -261,10 +307,23 @@ export default function FeedbackItem({ feedback, poemOwnerId, userLevel, onUpdat
       .single();
 
     if (!error && data) {
-      setReplies(prev => [...prev, { ...data, like_count: 0, is_liked: false }]);
+      const newReply = { ...data, like_count: 0, is_liked: false };
+      setReplies(prev => [...prev, newReply]);
       setReplyContent('');
       setRepliesLoaded(true);
-      if (!repliesOpen) setRepliesOpen(true);
+      setRepliesOpen(true);
+      setUserHasReplied(true);
+
+      // Notify feedback author
+      if (data.user_id !== feedback.user_id) {
+        await supabase.from('notifications').insert({
+          user_id: feedback.user_id,
+          type: 'feedback_reply',
+          content: `@${user.username} replied to your feedback`,
+          related_id: feedback.poem_id,
+          actor_id: user.id,
+        });
+      }
     } else {
       toast.error('Failed to post reply');
     }
@@ -288,13 +347,13 @@ export default function FeedbackItem({ feedback, poemOwnerId, userLevel, onUpdat
     }
   }
 
-  // Is the feedback visually highlighted (has ≥1 guide highlight)?
   const isGuideHighlighted = highlightCount > 0 || feedback.is_highlighted;
+  const replyCount = repliesLoaded ? replies.length : (feedback.replies?.length || 0);
 
   return (
     <div className={cn(
       'py-4 border-b border-border-subtle last:border-0 transition-all',
-      isGuideHighlighted && 'bg-amber-50/40 dark:bg-amber-900/8 -mx-1 px-1 rounded-xl border-l-2 border-l-amber-400 dark:border-l-amber-600 pl-3'
+      isGuideHighlighted && 'bg-amber-50/50 dark:bg-amber-900/10 -mx-1 px-1 rounded-xl border-l-2 border-l-amber-400 dark:border-l-amber-600 pl-3'
     )}>
       <div className="flex items-start gap-2.5">
         {/* Avatar */}
@@ -320,33 +379,51 @@ export default function FeedbackItem({ feedback, poemOwnerId, userLevel, onUpdat
             <span className="text-[10px] text-foreground-muted ml-auto">{formatTimeAgo(feedback.created_at)}</span>
           </div>
 
-          {/* Guide highlight meta — show avatars of who highlighted */}
+          {/* Guide highlight badge */}
           {isGuideHighlighted && highlightCount > 0 && (
             <div className="flex items-center gap-1.5 mb-2">
               <div className="flex -space-x-1.5">
-                {highlightUsers.slice(0, 3).map((gu, i) => (
+                {highlightUsers.slice(0, 3).map((gu: any, i: number) => (
                   <div key={i} className="w-4 h-4 rounded-full border border-amber-300 dark:border-amber-700 overflow-hidden bg-amber-100 dark:bg-amber-900/30 flex items-center justify-center" title={`@${gu.username}`}>
                     {gu.avatar_url
                       ? <img src={gu.avatar_url} alt={gu.username} className="w-full h-full object-cover" />
-                      : <span className="text-[7px] font-bold text-amber-700">{gu.username[0].toUpperCase()}</span>
+                      : <span className="text-[7px] font-bold text-amber-700">{gu.username[0]?.toUpperCase()}</span>
                     }
                   </div>
                 ))}
               </div>
               <span className="text-[10px] text-amber-600 dark:text-amber-400 font-medium">
-                Highlighted by {highlightCount >= 10 ? '10+' : highlightCount} Guide{highlightCount !== 1 ? 's' : ''}
+                ⭐ Highlighted by {highlightCount >= 10 ? '10+' : highlightCount} Guide{highlightCount !== 1 ? 's' : ''}
               </span>
             </div>
           )}
 
+          {/* Helpful badge */}
+          {helpful && (
+            <div className="flex items-center gap-1 mb-2">
+              <CheckCircle2 size={11} className="text-brand-500" />
+              <span className="text-[10px] text-brand-600 dark:text-brand-400 font-semibold">Marked Helpful</span>
+            </div>
+          )}
+
           {/* Feedback content */}
-          <p className="text-sm text-foreground leading-relaxed mb-2">{feedback.content}</p>
+          <p className="text-sm text-foreground leading-relaxed mb-2.5">{feedback.content}</p>
+
+          {/* User replied indicator */}
+          {userHasReplied && user && !isFeedbackAuthor && (
+            <div className="flex items-center gap-1 mb-2">
+              <div className="w-3 h-3 rounded-full bg-brand-100 dark:bg-brand-900/30 flex items-center justify-center">
+                <div className="w-1.5 h-1.5 rounded-full bg-brand-500" />
+              </div>
+              <span className="text-[10px] text-brand-500 font-medium">You replied</span>
+            </div>
+          )}
 
           {/* Action row */}
-          <div className="flex items-center gap-1 flex-wrap">
+          <div className="flex items-center gap-0.5 flex-wrap">
 
-            {/* Like — everyone except feedback author */}
-            {!isFeedbackAuthor && (
+            {/* Like */}
+            {canLike && (
               <button
                 onClick={toggleLike}
                 disabled={pending}
@@ -356,15 +433,15 @@ export default function FeedbackItem({ feedback, poemOwnerId, userLevel, onUpdat
                     ? 'text-red-500 bg-red-50 dark:bg-red-900/20'
                     : 'text-foreground-muted hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20'
                 )}
-                title="Like this feedback"
+                title={isOwner || isCritic ? 'Like (+1 Ink to author)' : 'Like this feedback'}
               >
                 <Heart size={11} className={liked ? 'fill-red-500 text-red-500' : ''} />
                 {likeCount > 0 && <span>{likeCount}</span>}
               </button>
             )}
 
-            {/* Mark Helpful — poem owner only, not on own feedback */}
-            {isOwner && !isFeedbackAuthor && (
+            {/* Mark Helpful — poem owner + Critics */}
+            {canMarkHelpful && (
               <button
                 onClick={toggleHelpful}
                 disabled={pending}
@@ -377,13 +454,13 @@ export default function FeedbackItem({ feedback, poemOwnerId, userLevel, onUpdat
                 title="Mark as helpful (+3 Tella to author)"
               >
                 <ThumbsUp size={11} className={helpful ? 'fill-brand-500 text-brand-500' : ''} />
-                {helpfulCount > 0 && <span>{helpfulCount}</span>}
                 <span>{helpful ? 'Helpful ✔' : 'Helpful'}</span>
+                {helpfulCount > 0 && <span className="opacity-60 ml-0.5">·{helpfulCount}</span>}
               </button>
             )}
 
-            {/* Highlight — Guide only, not own feedback */}
-            {isGuide && !isFeedbackAuthor && (
+            {/* Highlight — Guides + Critics */}
+            {canHighlight && (
               <button
                 onClick={toggleHighlight}
                 disabled={pending}
@@ -400,8 +477,8 @@ export default function FeedbackItem({ feedback, poemOwnerId, userLevel, onUpdat
               </button>
             )}
 
-            {/* Downrank — Critic only, not own feedback */}
-            {isCritic && !isFeedbackAuthor && (
+            {/* Downrank — Critic only */}
+            {canDownrank && (
               <button
                 onClick={toggleDownrank}
                 disabled={pending}
@@ -411,26 +488,52 @@ export default function FeedbackItem({ feedback, poemOwnerId, userLevel, onUpdat
                     ? 'text-red-600 dark:text-red-400 bg-red-50 dark:bg-red-900/20'
                     : 'text-foreground-muted hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20'
                 )}
-                title={downrankCount > 5 ? `Downranked by ${downrankCount} critics — Tella deducted` : 'Downrank low-quality feedback'}
+                title="Downrank low-quality feedback"
               >
                 <ArrowDownCircle size={11} className={downranked ? 'text-red-500' : ''} />
                 <span>{downranked ? 'Downranked' : 'Downrank'}</span>
-                {downrankCount > 0 && <span className="opacity-60">·{downrankCount}</span>}
+                {downrankCount > 0 && <span className="opacity-60 ml-0.5">·{downrankCount}</span>}
               </button>
             )}
 
-            {/* Reply — everyone can reply (poem owner + others) */}
+            {/* Reply — everyone */}
             {user && (
-              <button
-                onClick={handleToggleReplies}
-                className="flex items-center gap-1 text-[11px] font-medium rounded-full px-2 py-1 text-foreground-muted hover:text-brand-500 hover:bg-brand-50 dark:hover:bg-brand-900/20 transition-all min-h-[28px] ml-auto"
-                title="Reply"
-              >
-                <MessageCircle size={11} />
-                {replies.length > 0 && <span>{replies.length}</span>}
-                <span>{repliesOpen ? 'Hide' : 'Reply'}</span>
-                {replies.length > 0 && (repliesOpen ? <ChevronUp size={10} /> : <ChevronDown size={10} />)}
-              </button>
+              <div className="flex items-center gap-0.5 ml-auto">
+                {/* View replies if any */}
+                {replyCount > 0 && (
+                  <button
+                    onClick={handleToggleReplies}
+                    className="flex items-center gap-1 text-[11px] font-medium rounded-full px-2 py-1 text-foreground-muted hover:text-brand-500 hover:bg-brand-50 dark:hover:bg-brand-900/20 transition-all min-h-[28px]"
+                    title="View replies"
+                  >
+                    <MessageCircle size={11} />
+                    <span>{replyCount}</span>
+                    {repliesOpen ? <ChevronUp size={10} /> : <ChevronDown size={10} />}
+                  </button>
+                )}
+                <button
+                  onClick={openReplyInput}
+                  className={cn(
+                    'flex items-center gap-1 text-[11px] font-medium rounded-full px-2 py-1 transition-all min-h-[28px]',
+                    userHasReplied
+                      ? 'text-brand-500 bg-brand-50 dark:bg-brand-900/20'
+                      : 'text-foreground-muted hover:text-brand-500 hover:bg-brand-50 dark:hover:bg-brand-900/20'
+                  )}
+                  title="Write a reply"
+                >
+                  {userHasReplied ? (
+                    <>
+                      <CheckCircle2 size={11} className="text-brand-500" />
+                      <span>Replied</span>
+                    </>
+                  ) : (
+                    <>
+                      <MessageCircle size={11} />
+                      <span>Reply</span>
+                    </>
+                  )}
+                </button>
+              </div>
             )}
           </div>
 
@@ -443,7 +546,7 @@ export default function FeedbackItem({ feedback, poemOwnerId, userLevel, onUpdat
                 const isOwnReply = user?.id === reply.user_id;
 
                 return (
-                  <div key={reply.id} className="flex items-start gap-2">
+                  <div key={reply.id} className={cn('flex items-start gap-2', isOwnReply && 'opacity-90')}>
                     <div
                       className={cn('w-6 h-6 rounded-full flex items-center justify-center text-[9px] font-bold shrink-0 overflow-hidden border', replyLevelCfg.borderClass)}
                       style={{ background: replyLevelCfg.color + '15', color: replyLevelCfg.color }}
@@ -456,10 +559,12 @@ export default function FeedbackItem({ feedback, poemOwnerId, userLevel, onUpdat
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-1.5 mb-0.5">
                         <span className="text-[11px] font-semibold text-foreground">@{reply.author?.username}</span>
+                        {isOwnReply && (
+                          <span className="text-[9px] text-brand-500 font-medium bg-brand-50 dark:bg-brand-900/20 px-1.5 py-0.5 rounded-full">you</span>
+                        )}
                         <span className="text-[10px] text-foreground-muted">{formatTimeAgo(reply.created_at)}</span>
                       </div>
                       <p className="text-xs text-foreground-secondary leading-relaxed">{reply.content}</p>
-                      {/* Reply like */}
                       {!isOwnReply && (
                         <button
                           onClick={() => toggleReplyLike(reply)}
@@ -480,7 +585,7 @@ export default function FeedbackItem({ feedback, poemOwnerId, userLevel, onUpdat
               })}
 
               {/* Reply input */}
-              {user && (
+              {(showReplyInput || (repliesOpen && user)) && user && (
                 <div className="flex items-center gap-2 pt-1">
                   <div
                     className="w-6 h-6 rounded-full flex items-center justify-center text-[9px] font-bold shrink-0 overflow-hidden border border-brand-300"
@@ -491,15 +596,16 @@ export default function FeedbackItem({ feedback, poemOwnerId, userLevel, onUpdat
                       : getInitials(user.username || '?')
                     }
                   </div>
-                  <div className="flex-1 flex items-center gap-1.5 bg-background-subtle border border-border rounded-full px-3 py-1.5">
+                  <div className="flex-1 flex items-center gap-1.5 bg-background-subtle border border-border rounded-full px-3 py-1.5 focus-within:border-brand-400 transition-colors">
                     <input
                       type="text"
                       value={replyContent}
                       onChange={e => setReplyContent(e.target.value)}
                       onKeyDown={e => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); handleReply(); } }}
-                      placeholder="Write a reply..."
+                      placeholder={userHasReplied ? 'Add another reply...' : 'Write a reply...'}
                       maxLength={500}
                       className="flex-1 bg-transparent text-xs text-foreground placeholder:text-foreground-muted outline-none"
+                      autoFocus={showReplyInput}
                     />
                     <button
                       onClick={handleReply}

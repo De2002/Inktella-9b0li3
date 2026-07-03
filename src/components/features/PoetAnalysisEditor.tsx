@@ -4,23 +4,11 @@ import Placeholder from '@tiptap/extension-placeholder';
 import Underline from '@tiptap/extension-underline';
 import Strike from '@tiptap/extension-strike';
 import Link from '@tiptap/extension-link';
-import CodeBlockLowlight from '@tiptap/extension-code-block-lowlight';
-import { common, createLowlight } from 'lowlight';
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import {
-  Bold,
-  Italic,
-  Underline as UnderlineIcon,
-  Strikethrough,
-  List,
-  ListOrdered,
-  Heading2,
-  Heading3,
-  Code2,
-  Quote,
-  Link as LinkIcon,
-  RotateCcw,
-  ChevronDown,
+  Bold, Italic, Underline as UnderlineIcon, Strikethrough,
+  List, ListOrdered, Heading2, Heading3,
+  Quote, Link as LinkIcon, RotateCcw, X,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
@@ -31,8 +19,6 @@ interface PoetAnalysisEditorProps {
   isEditMode?: boolean;
 }
 
-const lowlight = createLowlight(common);
-
 export default function PoetAnalysisEditor({
   value,
   onChange,
@@ -41,262 +27,188 @@ export default function PoetAnalysisEditor({
 }: PoetAnalysisEditorProps) {
   const [linkUrl, setLinkUrl] = useState('');
   const [showLinkInput, setShowLinkInput] = useState(false);
+  const [focused, setFocused] = useState(false);
+  const initRef = useRef(false);
 
   const editor = useEditor({
     extensions: [
       StarterKit.configure({
-        heading: {
-          levels: [2, 3],
-        },
+        heading: { levels: [2, 3] },
         codeBlock: false,
+        strike: false,
       }),
       Underline,
       Strike,
-      Link.configure({
-        openOnClick: true,
-        autolink: true,
-      }),
-      CodeBlockLowlight.configure({
-        lowlight,
-      }),
+      Link.configure({ openOnClick: false, autolink: true }),
       Placeholder.configure({
-        placeholder: placeholder || (isEditMode 
-          ? "What changed in your thinking? What drove this revision?"
-          : "What was happening when you wrote this? What do you want feedback on?"),
+        placeholder: placeholder || (isEditMode
+          ? 'What changed in your thinking? What drove this revision?'
+          : 'What was happening when you wrote this? What do you want feedback on?'),
       }),
     ],
-    content: value,
+    content: value || '',
     onUpdate: ({ editor }) => {
-      onChange(editor.getHTML());
+      const html = editor.getHTML();
+      const isEmpty = editor.isEmpty;
+      onChange(isEmpty ? '' : html);
     },
+    onFocus: () => setFocused(true),
+    onBlur: () => setFocused(false),
   });
 
-  if (!editor) {
-    return null;
-  }
+  // Sync external value changes (e.g. loaded from db)
+  useEffect(() => {
+    if (!editor || initRef.current) return;
+    if (value && value !== editor.getHTML()) {
+      editor.commands.setContent(value, false);
+    }
+    initRef.current = true;
+  }, [editor, value]);
 
-  const buttonClass = (isActive: boolean) =>
-    cn(
-      'p-2 rounded-lg transition-colors flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed',
-      isActive
-        ? 'bg-brand-100 dark:bg-brand-900/30 text-brand-600 dark:text-brand-400'
-        : 'hover:bg-background-subtle text-foreground-muted hover:text-foreground'
-    );
+  if (!editor) return null;
+
+  const btn = (active: boolean) => cn(
+    'p-1.5 rounded-md transition-colors flex items-center justify-center text-sm',
+    active
+      ? 'bg-brand-100 dark:bg-brand-900/40 text-brand-600 dark:text-brand-400'
+      : 'text-foreground-muted hover:bg-background-subtle hover:text-foreground'
+  );
 
   const handleAddLink = () => {
     if (linkUrl.trim()) {
-      editor
-        .chain()
-        .focus()
-        .setLink({ href: linkUrl })
-        .run();
+      editor.chain().focus().setLink({ href: linkUrl.trim().startsWith('http') ? linkUrl.trim() : `https://${linkUrl.trim()}` }).run();
       setLinkUrl('');
       setShowLinkInput(false);
     }
   };
 
   const wordCount = editor.getText().split(/\s+/).filter(w => w.length > 0).length;
+  const charCount = editor.getText().length;
+  const isEmpty = editor.isEmpty;
 
   return (
-    <div className="border border-border rounded-xl overflow-hidden bg-background-subtle focus-within:border-brand-400 transition-colors">
-      {/* Main Toolbar */}
-      <div className="space-y-2 p-3 border-b border-border bg-surface">
-        {/* First Row - Text formatting */}
-        <div className="flex flex-wrap gap-1">
-          <button
-            onClick={() => editor.chain().focus().toggleBold().run()}
-            disabled={!editor.can().chain().focus().toggleBold().run()}
-            className={buttonClass(editor.isActive('bold'))}
-            title="Bold (Ctrl+B)"
-            type="button"
-          >
-            <Bold size={16} />
-          </button>
-          <button
-            onClick={() => editor.chain().focus().toggleItalic().run()}
-            disabled={!editor.can().chain().focus().toggleItalic().run()}
-            className={buttonClass(editor.isActive('italic'))}
-            title="Italic (Ctrl+I)"
-            type="button"
-          >
-            <Italic size={16} />
-          </button>
-          <button
-            onClick={() => editor.chain().focus().toggleUnderline().run()}
-            disabled={!editor.can().chain().focus().toggleUnderline().run()}
-            className={buttonClass(editor.isActive('underline'))}
-            title="Underline (Ctrl+U)"
-            type="button"
-          >
-            <UnderlineIcon size={16} />
-          </button>
-          <button
-            onClick={() => editor.chain().focus().toggleStrike().run()}
-            disabled={!editor.can().chain().focus().toggleStrike().run()}
-            className={buttonClass(editor.isActive('strike'))}
-            title="Strikethrough"
-            type="button"
-          >
-            <Strikethrough size={16} />
-          </button>
+    <div className={cn(
+      'border rounded-xl overflow-hidden bg-surface transition-colors',
+      focused ? 'border-brand-400 ring-1 ring-brand-400/20' : 'border-border'
+    )}>
 
-          <div className="w-px bg-border mx-1" />
+      {/* Toolbar — always visible */}
+      <div className="flex flex-wrap items-center gap-0.5 px-2 py-2 border-b border-border bg-background-subtle/80">
+        <button type="button" onClick={() => editor.chain().focus().toggleBold().run()} className={btn(editor.isActive('bold'))} title="Bold (Ctrl+B)">
+          <Bold size={14} />
+        </button>
+        <button type="button" onClick={() => editor.chain().focus().toggleItalic().run()} className={btn(editor.isActive('italic'))} title="Italic (Ctrl+I)">
+          <Italic size={14} />
+        </button>
+        <button type="button" onClick={() => editor.chain().focus().toggleUnderline().run()} className={btn(editor.isActive('underline'))} title="Underline">
+          <UnderlineIcon size={14} />
+        </button>
+        <button type="button" onClick={() => editor.chain().focus().toggleStrike().run()} className={btn(editor.isActive('strike'))} title="Strikethrough">
+          <Strikethrough size={14} />
+        </button>
 
-          <button
-            onClick={() => editor.chain().focus().toggleHeading({ level: 2 }).run()}
-            className={buttonClass(editor.isActive('heading', { level: 2 }))}
-            title="Heading 2"
-            type="button"
-          >
-            <Heading2 size={16} />
-          </button>
-          <button
-            onClick={() => editor.chain().focus().toggleHeading({ level: 3 }).run()}
-            className={buttonClass(editor.isActive('heading', { level: 3 }))}
-            title="Heading 3"
-            type="button"
-          >
-            <Heading3 size={16} />
-          </button>
+        <div className="w-px h-4 bg-border mx-1" />
 
-          <div className="w-px bg-border mx-1" />
+        <button type="button" onClick={() => editor.chain().focus().toggleHeading({ level: 2 }).run()} className={btn(editor.isActive('heading', { level: 2 }))} title="Section heading">
+          <Heading2 size={14} />
+        </button>
+        <button type="button" onClick={() => editor.chain().focus().toggleHeading({ level: 3 }).run()} className={btn(editor.isActive('heading', { level: 3 }))} title="Sub-heading">
+          <Heading3 size={14} />
+        </button>
 
-          <button
-            onClick={() => editor.chain().focus().toggleBulletList().run()}
-            className={buttonClass(editor.isActive('bulletList'))}
-            title="Bullet List"
-            type="button"
-          >
-            <List size={16} />
-          </button>
-          <button
-            onClick={() => editor.chain().focus().toggleOrderedList().run()}
-            className={buttonClass(editor.isActive('orderedList'))}
-            title="Numbered List"
-            type="button"
-          >
-            <ListOrdered size={16} />
-          </button>
+        <div className="w-px h-4 bg-border mx-1" />
 
-          <div className="w-px bg-border mx-1" />
+        <button type="button" onClick={() => editor.chain().focus().toggleBulletList().run()} className={btn(editor.isActive('bulletList'))} title="Bullet list">
+          <List size={14} />
+        </button>
+        <button type="button" onClick={() => editor.chain().focus().toggleOrderedList().run()} className={btn(editor.isActive('orderedList'))} title="Numbered list">
+          <ListOrdered size={14} />
+        </button>
+        <button type="button" onClick={() => editor.chain().focus().toggleBlockquote().run()} className={btn(editor.isActive('blockquote'))} title="Blockquote">
+          <Quote size={14} />
+        </button>
 
-          <button
-            onClick={() => editor.chain().focus().toggleBlockquote().run()}
-            className={buttonClass(editor.isActive('blockquote'))}
-            title="Quote"
-            type="button"
-          >
-            <Quote size={16} />
-          </button>
-          <button
-            onClick={() => editor.chain().focus().toggleCodeBlock().run()}
-            className={buttonClass(editor.isActive('codeBlock'))}
-            title="Code Block"
-            type="button"
-          >
-            <Code2 size={16} />
-          </button>
+        <div className="w-px h-4 bg-border mx-1" />
 
-          <div className="w-px bg-border mx-1" />
-
-          <button
-            onClick={() => setShowLinkInput(!showLinkInput)}
-            className={buttonClass(editor.isActive('link'))}
-            title="Add Link"
-            type="button"
-          >
-            <LinkIcon size={16} />
-          </button>
-
-          <button
-            onClick={() => editor.chain().focus().clearNodes().run()}
-            className={buttonClass(false)}
-            title="Clear formatting"
-            type="button"
-          >
-            <RotateCcw size={16} />
-          </button>
-        </div>
-
-        {/* Link input */}
-        {showLinkInput && (
-          <div className="flex gap-2 items-center">
-            <input
-              type="url"
-              placeholder="https://example.com"
-              value={linkUrl}
-              onChange={(e) => setLinkUrl(e.target.value)}
-              onKeyDown={(e) => {
-                if (e.key === 'Enter') handleAddLink();
-                if (e.key === 'Escape') {
-                  setShowLinkInput(false);
-                  setLinkUrl('');
-                }
-              }}
-              className="flex-1 px-2 py-1.5 text-sm bg-background border border-border rounded-lg focus:outline-none focus:border-brand-400"
-              autoFocus
-            />
-            <button
-              onClick={handleAddLink}
-              className="px-3 py-1.5 text-sm bg-brand-500 hover:bg-brand-600 text-white rounded-lg transition-colors"
-              type="button"
-            >
-              Add
-            </button>
-            <button
-              onClick={() => {
-                setShowLinkInput(false);
-                setLinkUrl('');
-              }}
-              className="px-2 py-1.5 text-sm bg-background-subtle hover:bg-background-muted text-foreground rounded-lg transition-colors"
-              type="button"
-            >
-              Cancel
-            </button>
-          </div>
-        )}
+        <button
+          type="button"
+          onClick={() => {
+            if (editor.isActive('link')) {
+              editor.chain().focus().unsetLink().run();
+            } else {
+              setShowLinkInput(!showLinkInput);
+            }
+          }}
+          className={btn(editor.isActive('link'))}
+          title={editor.isActive('link') ? 'Remove link' : 'Add link'}
+        >
+          <LinkIcon size={14} />
+        </button>
+        <button
+          type="button"
+          onClick={() => editor.chain().focus().clearNodes().unsetAllMarks().run()}
+          className={btn(false)}
+          title="Clear formatting"
+        >
+          <RotateCcw size={14} />
+        </button>
       </div>
 
-      {/* Editor */}
-      <div className="p-4 prose prose-sm dark:prose-invert max-w-none overflow-hidden">
+      {/* Link input */}
+      {showLinkInput && (
+        <div className="flex gap-2 items-center px-3 py-2 border-b border-border bg-background-subtle/50">
+          <input
+            type="url"
+            placeholder="https://example.com"
+            value={linkUrl}
+            onChange={e => setLinkUrl(e.target.value)}
+            onKeyDown={e => {
+              if (e.key === 'Enter') handleAddLink();
+              if (e.key === 'Escape') { setShowLinkInput(false); setLinkUrl(''); }
+            }}
+            className="flex-1 px-2 py-1 text-sm bg-background border border-border rounded-lg focus:outline-none focus:border-brand-400"
+            autoFocus
+          />
+          <button onClick={handleAddLink} type="button" className="px-3 py-1 text-sm bg-brand-500 hover:bg-brand-600 text-white rounded-lg transition-colors">
+            Add
+          </button>
+          <button onClick={() => { setShowLinkInput(false); setLinkUrl(''); }} type="button" className="p-1 text-foreground-muted hover:text-foreground transition-colors">
+            <X size={14} />
+          </button>
+        </div>
+      )}
+
+      {/* Editor area */}
+      <div
+        className="px-4 py-3 min-h-[140px] cursor-text"
+        onClick={() => editor.commands.focus()}
+      >
         <EditorContent
           editor={editor}
-          className="min-h-[160px] text-sm text-foreground focus:outline-none"
+          className={cn(
+            'prose prose-sm dark:prose-invert max-w-none focus:outline-none',
+            '[&_.ProseMirror]:outline-none [&_.ProseMirror]:min-h-[120px]',
+            '[&_.ProseMirror_p.is-editor-empty:first-child]:before:content-[attr(data-placeholder)]',
+            '[&_.ProseMirror_p.is-editor-empty:first-child]:before:text-foreground-muted',
+            '[&_.ProseMirror_p.is-editor-empty:first-child]:before:italic',
+            '[&_.ProseMirror_p.is-editor-empty:first-child]:before:pointer-events-none',
+            '[&_.ProseMirror_p.is-editor-empty:first-child]:before:float-left',
+            '[&_.ProseMirror_p.is-editor-empty:first-child]:before:h-0',
+          )}
         />
       </div>
 
-      {/* Footer - Stats and hints */}
-      <div className="px-4 py-3 bg-surface border-t border-border space-y-2">
-        <div className="flex justify-between items-center">
-          <p className="text-xs text-foreground-muted">
-            {editor.getText().length > 0 ? (
-              <span>
-                <strong>{wordCount}</strong> words • <strong>{editor.getText().length}</strong> characters
-              </span>
-            ) : (
-              <span className="italic">Start writing your analysis...</span>
-            )}
+      {/* Footer */}
+      {!isEmpty && (
+        <div className="px-4 py-2 border-t border-border bg-background-subtle/50 flex items-center justify-between">
+          <p className="text-[10px] text-foreground-muted">
+            <span className="font-medium">{wordCount}</span> words · <span className="font-medium">{charCount}</span> chars
+          </p>
+          <p className="text-[10px] text-foreground-muted italic">
+            Visible in Behind the Poem
           </p>
         </div>
-        <div className="grid grid-cols-2 gap-2 text-[10px] text-foreground-muted">
-          <div className="flex items-center gap-1">
-            <span className="text-brand-500">✓</span>
-            <span>Bold, italic, underline</span>
-          </div>
-          <div className="flex items-center gap-1">
-            <span className="text-brand-500">✓</span>
-            <span>Lists & quotes</span>
-          </div>
-          <div className="flex items-center gap-1">
-            <span className="text-brand-500">✓</span>
-            <span>Code blocks</span>
-          </div>
-          <div className="flex items-center gap-1">
-            <span className="text-brand-500">✓</span>
-            <span>Links</span>
-          </div>
-        </div>
-      </div>
+      )}
     </div>
   );
 }
