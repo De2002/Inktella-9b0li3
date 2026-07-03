@@ -7,7 +7,7 @@ import type { Topic } from '@/types';
 import { INK_PUBLISH_COST, getLevel, LEVEL_CONFIG } from '@/constants';
 import { cn, getInitials } from '@/lib/utils';
 import { toast } from 'sonner';
-import PoetAnalysisEditor from '@/components/features/PoetAnalysisEditor';
+
 
 const POEM_DRAFT_KEY = (id: string) => `inktella_poem_draft_${id}`;
 const NEW_POEM_KEY = 'inktella_new_poem_draft';
@@ -33,9 +33,17 @@ export default function WritePage() {
   const [topicId, setTopicId] = useState(preselectedTopic || '');
   const [tagInput, setTagInput] = useState('');
   const [tags, setTags] = useState<string[]>([]);
-  const [poetNote, setPoetNote] = useState('');
   const [changesSummaryInput, setChangesSummaryInput] = useState('');
   const [changesList, setChangesList] = useState<string[]>([]);
+
+  // Behind the Poem state
+  const [behindThePoemData, setBehindThePoemData] = useState({
+    spark: '',
+    obsession: '',
+    graveyard: [] as Array<{ type: 'line' | 'word' | 'phrase' | 'stanza'; content: string; eulogy?: string }>,
+    memoryImage: '',
+    vibeDate: new Date().toISOString().split('T')[0],
+  });
   const [originalPoemData, setOriginalPoemData] = useState<any>(null);
   const [topics, setTopics] = useState<Topic[]>([]);
   const [preview, setPreview] = useState(false);
@@ -74,7 +82,13 @@ export default function WritePage() {
           setImageUrl(parsed.imageUrl || '');
           if (parsed.topicId) setTopicId(parsed.topicId);
           setTags(parsed.tags || []);
-          setPoetNote(parsed.poetNote || '');
+          setBehindThePoemData(parsed.behindThePoemData || {
+            spark: '',
+            obsession: '',
+            graveyard: [],
+            memoryImage: '',
+            vibeDate: new Date().toISOString().split('T')[0],
+          });
           setAutoSaved(true);
         } catch { /* ignore */ }
       }
@@ -86,7 +100,7 @@ export default function WritePage() {
     if (autoSaveTimer.current) clearTimeout(autoSaveTimer.current);
     autoSaveTimer.current = setTimeout(() => {
       const data = {
-        title, content, imageUrl, topicId, tags, poetNote,
+        title, content, imageUrl, topicId, tags, behindThePoemData,
         savedAt: new Date().toISOString(),
       };
       localStorage.setItem(draftKey, JSON.stringify(data));
@@ -94,7 +108,7 @@ export default function WritePage() {
       setAutoSaving(false);
     }, 1500);
     setAutoSaving(true);
-  }, [title, content, imageUrl, topicId, tags, poetNote, draftKey]);
+  }, [title, content, imageUrl, topicId, tags, behindThePoemData, draftKey]);
 
   useEffect(() => {
     if (!user || loadingPoem) return;
@@ -104,7 +118,7 @@ export default function WritePage() {
     return () => {
       if (autoSaveTimer.current) clearTimeout(autoSaveTimer.current);
     };
-  }, [title, content, imageUrl, topicId, tags, poetNote]);
+  }, [title, content, imageUrl, topicId, tags, behindThePoemData]);
 
   async function loadPoemForEdit(poemId: string) {
     setLoadingPoem(true);
@@ -131,7 +145,13 @@ export default function WritePage() {
     setImageUrl(localDraft?.imageUrl || data.image_url || '');
     setTopicId(localDraft?.topicId || data.topic_id || '');
     setTags(localDraft?.tags || data.poem_tags?.map((pt: any) => pt.tag?.name).filter(Boolean) || []);
-    setPoetNote(localDraft?.poetNote || '');
+    setBehindThePoemData(localDraft?.behindThePoemData || {
+      spark: '',
+      obsession: '',
+      graveyard: [],
+      memoryImage: '',
+      vibeDate: new Date().toISOString().split('T')[0],
+    });
     setOriginalPoemData(data);
     if (localDraft) setAutoSaved(true);
     setLoadingPoem(false);
@@ -247,7 +267,6 @@ export default function WritePage() {
       poem_id: editPoemId,
       content: content.trim(),
       draft_number: nextDraftNumber,
-      poet_note: poetNote || null,
       changes_summary: changesList.length > 0 ? changesList : [],
     });
 
@@ -325,7 +344,6 @@ export default function WritePage() {
       poem_id: poem.id,
       content: content.trim(),
       draft_number: 1,
-      poet_note: poetNote || null,
     });
 
     for (const tagName of tags) {
@@ -716,30 +734,145 @@ export default function WritePage() {
               )}
             </div>
 
-            {/* ── Analysis / Poet's Note ── */}
+            {/* ── Behind the Poem ── */}
             <div>
-              <div className="flex items-center justify-between mb-2">
-                <label className="text-xs font-semibold text-foreground-muted uppercase tracking-wide">
-                  {isEditMode ? 'Your note for this revision' : "Poet's note"} <span className="normal-case font-normal">(optional)</span>
-                </label>
-                <span className="text-[10px] text-foreground-muted italic">Shown in Behind the Poem</span>
-              </div>
-              <p className="text-xs text-foreground-secondary mb-3 leading-relaxed">
-                {isEditMode
-                  ? 'What changed in your thinking? What drove this revision? This appears in the poem\'s revision history.'
-                  : 'What was happening when you wrote this? What inspired you? What do you want feedback on?'
-                }
+              <label className="text-xs font-semibold text-foreground-muted uppercase tracking-wide mb-3 block">
+                Behind the Poem <span className="normal-case font-normal">(optional)</span>
+              </label>
+              <p className="text-xs text-foreground-secondary mb-4 leading-relaxed">
+                Share the story behind your poem. All these details will appear when readers click the door icon on your poem.
               </p>
-              <PoetAnalysisEditor
-                value={poetNote}
-                onChange={setPoetNote}
-                isEditMode={isEditMode}
-                placeholder={
-                  isEditMode
-                    ? 'What changed in this revision? What were you trying to fix?'
-                    : 'What was this poem about for you? What would help a reader understand it?'
-                }
-              />
+
+              <div className="space-y-4">
+                {/* Spark */}
+                <div>
+                  <label className="text-xs font-semibold text-foreground-muted uppercase tracking-wide mb-2 block">
+                    The Spark <span className="normal-case font-normal">(what started it)</span>
+                  </label>
+                  <input
+                    type="text"
+                    value={behindThePoemData.spark}
+                    onChange={e => setBehindThePoemData(prev => ({ ...prev, spark: e.target.value }))}
+                    placeholder="A moment, image, conversation, or feeling that sparked this poem…"
+                    className="w-full bg-background-subtle border border-border rounded-lg px-3 py-2 text-sm text-foreground placeholder:text-foreground-muted outline-none focus:border-brand-400 transition-colors"
+                  />
+                </div>
+
+                {/* Obsession */}
+                <div>
+                  <label className="text-xs font-semibold text-foreground-muted uppercase tracking-wide mb-2 block">
+                    The Obsession <span className="normal-case font-normal">(what was on your mind)</span>
+                  </label>
+                  <textarea
+                    value={behindThePoemData.obsession}
+                    onChange={e => setBehindThePoemData(prev => ({ ...prev, obsession: e.target.value }))}
+                    placeholder="What were you thinking about? What themes kept circling?"
+                    className="w-full bg-background-subtle border border-border rounded-lg px-3 py-2 text-sm text-foreground placeholder:text-foreground-muted outline-none focus:border-brand-400 transition-colors resize-none"
+                    rows={3}
+                  />
+                </div>
+
+                {/* Graveyard */}
+                <div>
+                  <label className="text-xs font-semibold text-foreground-muted uppercase tracking-wide mb-2 block">
+                    The Graveyard <span className="normal-case font-normal">(what you cut or changed)</span>
+                  </label>
+                  
+                  {behindThePoemData.graveyard.map((item, idx) => (
+                    <div key={idx} className="mb-3 p-3 bg-background-subtle border border-border rounded-lg">
+                      <div className="flex items-center gap-2 mb-2">
+                        <select
+                          value={item.type}
+                          onChange={e => {
+                            const updated = [...behindThePoemData.graveyard];
+                            updated[idx].type = e.target.value as any;
+                            setBehindThePoemData(prev => ({ ...prev, graveyard: updated }));
+                          }}
+                          className="text-xs bg-background border border-border rounded px-2 py-1 text-foreground outline-none focus:border-brand-400"
+                        >
+                          <option value="line">Line</option>
+                          <option value="word">Word</option>
+                          <option value="phrase">Phrase</option>
+                          <option value="stanza">Stanza</option>
+                        </select>
+                        <button
+                          onClick={() => {
+                            const updated = behindThePoemData.graveyard.filter((_, i) => i !== idx);
+                            setBehindThePoemData(prev => ({ ...prev, graveyard: updated }));
+                          }}
+                          className="ml-auto text-xs text-red-500 hover:text-red-600 transition-colors"
+                        >
+                          Remove
+                        </button>
+                      </div>
+                      <textarea
+                        value={item.content}
+                        onChange={e => {
+                          const updated = [...behindThePoemData.graveyard];
+                          updated[idx].content = e.target.value;
+                          setBehindThePoemData(prev => ({ ...prev, graveyard: updated }));
+                        }}
+                        placeholder="The content you removed or changed…"
+                        className="w-full bg-background border border-border rounded px-2 py-1.5 text-xs text-foreground placeholder:text-foreground-muted outline-none focus:border-brand-400 mb-2 resize-none"
+                        rows={2}
+                      />
+                      <textarea
+                        value={item.eulogy || ''}
+                        onChange={e => {
+                          const updated = [...behindThePoemData.graveyard];
+                          updated[idx].eulogy = e.target.value;
+                          setBehindThePoemData(prev => ({ ...prev, graveyard: updated }));
+                        }}
+                        placeholder="Why did you cut it? What was it trying to do?"
+                        className="w-full bg-background border border-border rounded px-2 py-1.5 text-xs text-foreground placeholder:text-foreground-muted outline-none focus:border-brand-400 resize-none"
+                        rows={2}
+                      />
+                    </div>
+                  ))}
+
+                  <button
+                    onClick={() => setBehindThePoemData(prev => ({
+                      ...prev,
+                      graveyard: [...prev.graveyard, { type: 'line', content: '', eulogy: '' }]
+                    }))}
+                    className="text-xs font-semibold text-brand-500 hover:text-brand-600 transition-colors flex items-center gap-1"
+                  >
+                    <Plus size={12} /> Add to graveyard
+                  </button>
+                </div>
+
+                {/* Memory Image */}
+                <div>
+                  <label className="text-xs font-semibold text-foreground-muted uppercase tracking-wide mb-2 block">
+                    Memory Image <span className="normal-case font-normal">(optional — polaroid)</span>
+                  </label>
+                  <input
+                    type="url"
+                    value={behindThePoemData.memoryImage}
+                    onChange={e => setBehindThePoemData(prev => ({ ...prev, memoryImage: e.target.value }))}
+                    placeholder="https://images.unsplash.com/..."
+                    className="w-full bg-background-subtle border border-border rounded-lg px-3 py-2 text-sm text-foreground placeholder:text-foreground-muted outline-none focus:border-brand-400 transition-colors"
+                  />
+                  {behindThePoemData.memoryImage && (
+                    <div className="mt-2 rounded-lg overflow-hidden max-h-32">
+                      <img src={behindThePoemData.memoryImage} alt="Memory" className="w-full object-cover" onError={() => {}} />
+                    </div>
+                  )}
+                </div>
+
+                {/* Vibe Date */}
+                <div>
+                  <label className="text-xs font-semibold text-foreground-muted uppercase tracking-wide mb-2 block">
+                    Vibe Date <span className="normal-case font-normal">(when did you write this)</span>
+                  </label>
+                  <input
+                    type="date"
+                    value={behindThePoemData.vibeDate}
+                    onChange={e => setBehindThePoemData(prev => ({ ...prev, vibeDate: e.target.value }))}
+                    className="w-full bg-background-subtle border border-border rounded-lg px-3 py-2 text-sm text-foreground outline-none focus:border-brand-400 transition-colors"
+                  />
+                </div>
+              </div>
             </div>
 
             {/* What changed — edit mode only */}
