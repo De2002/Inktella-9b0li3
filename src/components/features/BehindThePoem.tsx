@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
-import { X, Users, Feather, BookOpen, GitBranch, Clock, ChevronDown, ChevronUp } from 'lucide-react';
-import { cn, formatTimeAgo, getInitials } from '@/lib/utils';
+import { X, Users, BookOpen, Clock, ChevronDown, ChevronUp, Sparkles } from 'lucide-react';
+import { cn, formatTimeAgo } from '@/lib/utils';
 import { getLevel, LEVEL_CONFIG, LEVEL_BADGE_IMAGES } from '@/constants';
 import type { Poem } from '@/types';
 import { supabase } from '@/lib/supabase';
@@ -11,57 +11,70 @@ interface BehindThePoemProps {
   onClose: () => void;
 }
 
-interface Draft {
+interface BehindThePoemData {
+  spark: string;
+  obsession: string;
+  graveyard: Array<{ type: 'line' | 'word' | 'phrase' | 'stanza'; content: string; eulogy?: string }>;
+  memoryImage: string;
+  vibeDate: string;
+}
+
+interface Credit {
   id: string;
-  draft_number: number;
-  content: string;
-  poet_note: string | null;
-  changes_summary: string[];
-  created_at: string;
+  credited_user: any;
 }
 
 export default function BehindThePoem({ poem, onClose }: BehindThePoemProps) {
-  const [drafts, setDrafts] = useState<Draft[]>([]);
-  const [credits, setCredits] = useState<any[]>([]);
+  const [behindData, setBehindData] = useState<BehindThePoemData | null>(null);
+  const [credits, setCredits] = useState<Credit[]>([]);
   const [loading, setLoading] = useState(true);
-  const [expandedDraft, setExpandedDraft] = useState<string | null>(null);
-  const [activeSection, setActiveSection] = useState<'journey' | 'credits'>('journey');
+  const [activeSection, setActiveSection] = useState<'story' | 'credits'>('story');
+  const [expandedGraveyardIndex, setExpandedGraveyardIndex] = useState<number | null>(null);
 
-  useEffect(() => { fetchData(); }, [poem.id]);
+  useEffect(() => {
+    fetchData();
+  }, [poem.id]);
 
   async function fetchData() {
     setLoading(true);
-    const [draftsRes, creditsRes] = await Promise.all([
-      supabase
-        .from('poem_drafts')
-        .select('id, draft_number, content, poet_note, changes_summary, created_at')
-        .eq('poem_id', poem.id)
-        .order('draft_number', { ascending: false }),
-      supabase
-        .from('feedback_credits')
-        .select('*, credited_user:user_profiles!feedback_credits_credited_user_id_fkey(id, username, avatar_url, tella_balance)')
-        .eq('poem_id', poem.id),
-    ]);
 
-    setDrafts(draftsRes.data || []);
-    setCredits(creditsRes.data || []);
-    setLoading(false);
+    // Fetch behind the poem data from poem record
+    const { data: poemData } = await supabase
+      .from('poems')
+      .select('behind_the_poem')
+      .eq('id', poem.id)
+      .single();
 
-    // Auto-expand the latest draft
-    if (draftsRes.data && draftsRes.data.length > 0) {
-      setExpandedDraft(draftsRes.data[0].id);
+    if (poemData?.behind_the_poem) {
+      try {
+        setBehindData(JSON.parse(poemData.behind_the_poem));
+      } catch {
+        setBehindData(null);
+      }
     }
+
+    // Fetch feedback credits
+    const { data: creditsData } = await supabase
+      .from('feedback_credits')
+      .select('*, credited_user:user_profiles!feedback_credits_credited_user_id_fkey(id, username, avatar_url, tella_balance)')
+      .eq('poem_id', poem.id);
+
+    setCredits(creditsData || []);
+    setLoading(false);
   }
 
-  const latestDraft = drafts[0];
-  const hasPoetNotes = drafts.some(d => d.poet_note);
-  const hasChanges = drafts.some(d => d.changes_summary && d.changes_summary.length > 0);
+  const hasData = behindData && (
+    behindData.spark ||
+    behindData.obsession ||
+    behindData.graveyard.length > 0 ||
+    behindData.memoryImage
+  );
 
   return (
     <>
       <div className="fixed inset-0 bg-black/50 z-50" onClick={onClose} />
-      <div className="fixed inset-0 sm:inset-auto sm:top-0 sm:right-0 sm:w-[500px] sm:h-screen z-50 bg-surface sm:rounded-l-2xl overflow-hidden flex flex-col shadow-2xl feedback-slide-in">
-
+      <div className="fixed inset-0 sm:inset-auto sm:top-0 sm:right-0 sm:w-[520px] sm:h-screen z-50 bg-surface sm:rounded-l-2xl overflow-hidden flex flex-col shadow-2xl feedback-slide-in">
+        
         {/* Header */}
         <div className="flex items-center justify-between px-5 py-4 border-b border-border shrink-0">
           <div className="flex items-center gap-3">
@@ -70,29 +83,24 @@ export default function BehindThePoem({ poem, onClose }: BehindThePoemProps) {
             </button>
             <div>
               <h2 className="font-serif font-semibold text-base text-foreground leading-tight">Behind the Poem</h2>
-              <p className="text-xs text-foreground-muted leading-none mt-0.5 italic truncate max-w-[260px]">"{poem.title}"</p>
+              <p className="text-xs text-foreground-muted leading-none mt-0.5 italic truncate max-w-[280px]">"{poem.title}"</p>
             </div>
-          </div>
-          <div className="flex items-center gap-1.5">
-            <span className="text-xs text-foreground-muted bg-background-subtle border border-border px-2 py-0.5 rounded-full">
-              {drafts.length} draft{drafts.length !== 1 ? 's' : ''}
-            </span>
           </div>
         </div>
 
         {/* Section tabs */}
         <div className="flex border-b border-border shrink-0">
           <button
-            onClick={() => setActiveSection('journey')}
+            onClick={() => setActiveSection('story')}
             className={cn(
               'flex-1 flex items-center justify-center gap-2 py-3 text-sm font-medium border-b-2 transition-all',
-              activeSection === 'journey'
+              activeSection === 'story'
                 ? 'border-brand-500 text-brand-500'
                 : 'border-transparent text-foreground-muted hover:text-foreground'
             )}
           >
-            <GitBranch size={14} />
-            Journey
+            <Sparkles size={14} />
+            The Story
           </button>
           <button
             onClick={() => setActiveSection('credits')}
@@ -116,7 +124,7 @@ export default function BehindThePoem({ poem, onClose }: BehindThePoemProps) {
         <div className="flex-1 overflow-y-auto">
           {loading ? (
             <div className="p-5 space-y-4">
-              {[1, 2].map(i => <div key={i} className="skeleton h-24 w-full rounded-xl" />)}
+              {[1, 2, 3].map(i => <div key={i} className="skeleton h-20 w-full rounded-xl" />)}
             </div>
           ) : activeSection === 'credits' ? (
             /* ─ CREDITS SECTION ─ */
@@ -129,7 +137,7 @@ export default function BehindThePoem({ poem, onClose }: BehindThePoemProps) {
                 <div>
                   <h3 className="font-semibold text-foreground text-sm">Feedback Contributors</h3>
                   <p className="text-xs text-foreground-muted mt-0.5 leading-relaxed">
-                    These poets gave feedback that shaped this poem. The author credited them for their contribution.
+                    These poets gave feedback that helped shape this poem.
                   </p>
                 </div>
               </div>
@@ -140,47 +148,12 @@ export default function BehindThePoem({ poem, onClose }: BehindThePoemProps) {
                     <Users size={20} className="text-foreground-muted opacity-40" />
                   </div>
                   <p className="text-sm font-serif italic text-foreground-muted">No credits yet.</p>
-                  <p className="text-xs text-foreground-muted mt-1">
-                    When poets revise and credit feedback givers, they appear here.
-                  </p>
                 </div>
               ) : (
                 <>
-                  {/* Avatar cluster */}
-                  <div className="flex items-center gap-2 py-3 px-4 bg-background-subtle rounded-xl border border-border">
-                    <div className="flex -space-x-3">
-                      {credits.slice(0, 6).map((c: any, i: number) => {
-                        const level = getLevel(c.credited_user?.tella_balance || 0);
-                        const cfg = LEVEL_CONFIG[level];
-                        return (
-                          <div
-                            key={c.id}
-                            className={cn(
-                              'w-9 h-9 rounded-full flex items-center justify-center text-xs font-bold shrink-0 overflow-hidden border-2 border-background',
-                              cfg.borderClass
-                            )}
-                            style={{ background: cfg.color + '15', color: cfg.color }}
-                            title={`@${c.credited_user?.username}`}
-                          >
-                            {c.credited_user?.avatar_url
-                              ? <img src={c.credited_user.avatar_url} className="w-full h-full object-cover" alt={c.credited_user?.username} />
-                              : getInitials(c.credited_user?.username || '?')
-                            }
-                          </div>
-                        );
-                      })}
-                    </div>
-                    <div className="flex-1 min-w-0 ml-1">
-                      <p className="text-xs font-semibold text-foreground">
-                        {credits.length} {credits.length === 1 ? 'poet' : 'poets'} credited
-                      </p>
-                      <p className="text-[10px] text-foreground-muted">Their feedback helped shape this poem</p>
-                    </div>
-                  </div>
-
                   {/* Credit list */}
                   <div className="space-y-2">
-                    {credits.map((c: any) => {
+                    {credits.map((c: Credit) => {
                       const level = getLevel(c.credited_user?.tella_balance || 0);
                       const cfg = LEVEL_CONFIG[level];
                       return (
@@ -199,8 +172,7 @@ export default function BehindThePoem({ poem, onClose }: BehindThePoemProps) {
                           >
                             {c.credited_user?.avatar_url
                               ? <img src={c.credited_user.avatar_url} className="w-full h-full object-cover" alt={c.credited_user?.username} />
-                              : getInitials(c.credited_user?.username || '?')
-                            }
+                              : c.credited_user?.username?.substring(0, 2).toUpperCase()}
                           </div>
                           <div className="flex-1 min-w-0">
                             <div className="flex items-center gap-1.5">
@@ -226,144 +198,126 @@ export default function BehindThePoem({ poem, onClose }: BehindThePoemProps) {
               )}
             </div>
           ) : (
-            /* ─ JOURNEY SECTION ─ */
-            <div className="p-5 space-y-5">
-
-              {/* Revision overview */}
-              {drafts.length > 0 && (
-                <div className="grid grid-cols-3 gap-3">
-                  <div className="text-center p-3 rounded-xl bg-background-subtle border border-border">
-                    <p className="font-serif font-bold text-xl text-foreground">{drafts.length}</p>
-                    <p className="text-[10px] text-foreground-muted mt-0.5">Draft{drafts.length !== 1 ? 's' : ''}</p>
-                  </div>
-                  <div className="text-center p-3 rounded-xl bg-background-subtle border border-border">
-                    <p className="font-serif font-bold text-xl text-foreground">{drafts.filter(d => d.poet_note).length}</p>
-                    <p className="text-[10px] text-foreground-muted mt-0.5">Note{drafts.filter(d => d.poet_note).length !== 1 ? 's' : ''}</p>
-                  </div>
-                  <div className="text-center p-3 rounded-xl bg-background-subtle border border-border">
-                    <p className="font-serif font-bold text-xl text-foreground">{credits.length}</p>
-                    <p className="text-[10px] text-foreground-muted mt-0.5">Credit{credits.length !== 1 ? 's' : ''}</p>
-                  </div>
-                </div>
-              )}
-
-              {/* No drafts */}
-              {drafts.length === 0 && (
+            /* ─ STORY SECTION ─ */
+            <div className="p-5 space-y-6">
+              {!hasData ? (
                 <div className="py-12 text-center">
                   <div className="w-12 h-12 rounded-full bg-background-subtle flex items-center justify-center mx-auto mb-3">
                     <BookOpen size={20} className="text-foreground-muted opacity-40" />
                   </div>
-                  <p className="text-sm font-serif italic text-foreground-muted">No drafts recorded yet.</p>
-                  <p className="text-xs text-foreground-muted mt-1">The poet hasn't shared any revision history.</p>
+                  <p className="text-sm font-serif italic text-foreground-muted">No story shared yet.</p>
+                  <p className="text-xs text-foreground-muted mt-1">The poet hasn't shared details about this poem.</p>
                 </div>
-              )}
+              ) : (
+                <>
+                  {/* The Spark */}
+                  {behindData.spark && (
+                    <div className="space-y-2">
+                      <div className="flex items-center gap-2">
+                        <Sparkles size={16} className="text-amber-500" />
+                        <h3 className="text-sm font-semibold text-foreground">The Spark</h3>
+                      </div>
+                      <div className="p-4 rounded-xl bg-gradient-to-br from-amber-50 to-orange-50 dark:from-amber-900/20 dark:to-orange-900/20 border border-amber-200 dark:border-amber-800/50">
+                        <p className="text-sm text-foreground-secondary leading-relaxed">{behindData.spark}</p>
+                      </div>
+                    </div>
+                  )}
 
-              {/* Draft timeline */}
-              {drafts.length > 0 && (
-                <div>
-                  <div className="flex items-center gap-2 mb-4">
-                    <GitBranch size={14} className="text-brand-500" />
-                    <h3 className="text-sm font-semibold text-foreground">Revision History</h3>
-                  </div>
-                  <div className="relative">
-                    {/* Timeline spine */}
-                    {drafts.length > 1 && (
-                      <div className="absolute left-[18px] top-5 bottom-5 w-px bg-border-subtle" />
-                    )}
-                    <div className="space-y-3">
-                      {drafts.map((draft, index) => {
-                        const isLatest = index === 0;
-                        const isExpanded = expandedDraft === draft.id;
+                  {/* The Obsession */}
+                  {behindData.obsession && (
+                    <div className="space-y-2">
+                      <div className="flex items-center gap-2">
+                        <BookOpen size={16} className="text-rose-500" />
+                        <h3 className="text-sm font-semibold text-foreground">The Obsession</h3>
+                      </div>
+                      <div className="p-4 rounded-xl bg-gradient-to-br from-rose-50 to-pink-50 dark:from-rose-900/20 dark:to-pink-900/20 border border-rose-200 dark:border-rose-800/50">
+                        <p className="text-sm text-foreground-secondary leading-relaxed whitespace-pre-wrap">{behindData.obsession}</p>
+                      </div>
+                    </div>
+                  )}
 
-                        return (
-                          <div key={draft.id} className="relative flex gap-3">
-                            {/* Timeline dot */}
-                            <div className={cn(
-                              'w-9 h-9 rounded-full shrink-0 flex items-center justify-center text-xs font-bold z-10 border-2',
-                              isLatest
-                                ? 'bg-brand-500 border-brand-500 text-white'
-                                : 'bg-surface border-border text-foreground-muted'
-                            )}>
-                              {draft.draft_number}
-                            </div>
-
-                            {/* Draft card */}
-                            <div className="flex-1 min-w-0">
-                              <button
-                                onClick={() => setExpandedDraft(isExpanded ? null : draft.id)}
-                                className={cn(
-                                  'w-full text-left p-3 rounded-xl border transition-all',
-                                  isLatest
-                                    ? 'border-brand-200 dark:border-brand-800 bg-brand-50/50 dark:bg-brand-900/10'
-                                    : 'border-border bg-surface hover:bg-background-subtle'
-                                )}
-                              >
-                                <div className="flex items-center justify-between gap-2">
-                                  <div className="flex items-center gap-2">
-                                    <span className={cn(
-                                      'text-xs font-semibold',
-                                      isLatest ? 'text-brand-600 dark:text-brand-400' : 'text-foreground-secondary'
-                                    )}>
-                                      Draft {draft.draft_number}
-                                      {isLatest && <span className="ml-1 text-[9px] bg-brand-500 text-white px-1.5 py-0.5 rounded-full font-bold">Latest</span>}
+                  {/* The Graveyard */}
+                  {behindData.graveyard.length > 0 && (
+                    <div className="space-y-2">
+                      <div className="flex items-center gap-2">
+                        <X size={16} className="text-slate-500" />
+                        <h3 className="text-sm font-semibold text-foreground">The Graveyard</h3>
+                      </div>
+                      <div className="space-y-2">
+                        {behindData.graveyard.map((item, idx) => {
+                          const isExpanded = expandedGraveyardIndex === idx;
+                          return (
+                            <button
+                              key={idx}
+                              onClick={() => setExpandedGraveyardIndex(isExpanded ? null : idx)}
+                              className="w-full text-left p-4 rounded-xl bg-slate-50 dark:bg-slate-900/20 border border-slate-200 dark:border-slate-800 hover:border-slate-300 dark:hover:border-slate-700 transition-all group"
+                            >
+                              <div className="flex items-start justify-between gap-3">
+                                <div className="flex-1 min-w-0">
+                                  <div className="flex items-center gap-2 mb-2">
+                                    <span className="text-[10px] font-bold uppercase tracking-widest text-slate-600 dark:text-slate-400 bg-slate-100 dark:bg-slate-800 px-2 py-0.5 rounded">
+                                      {item.type}
                                     </span>
                                   </div>
-                                  <div className="flex items-center gap-1.5">
-                                    <Clock size={11} className="text-foreground-muted" />
-                                    <span className="text-[10px] text-foreground-muted">{formatTimeAgo(draft.created_at)}</span>
-                                    {isExpanded ? <ChevronUp size={12} className="text-foreground-muted" /> : <ChevronDown size={12} className="text-foreground-muted" />}
-                                  </div>
+                                  <p className="text-sm text-foreground-secondary italic line-clamp-2 group-hover:text-foreground transition-colors">
+                                    {`"${item.content}"`}
+                                  </p>
                                 </div>
+                                <div className="shrink-0">
+                                  {isExpanded ? <ChevronUp size={16} className="text-foreground-muted" /> : <ChevronDown size={16} className="text-foreground-muted" />}
+                                </div>
+                              </div>
 
-                                {/* Changes summary (always visible) */}
-                                {draft.changes_summary && draft.changes_summary.length > 0 && (
-                                  <div className="flex flex-wrap gap-1 mt-2">
-                                    {draft.changes_summary.map((change, i) => (
-                                      <span key={i} className="text-[10px] text-green-700 dark:text-green-400 bg-green-50 dark:bg-green-900/20 border border-green-100 dark:border-green-900 px-1.5 py-0.5 rounded-full flex items-center gap-0.5">
-                                        <span>+</span> {change}
-                                      </span>
-                                    ))}
-                                  </div>
-                                )}
-                              </button>
-
-                              {/* Expanded content */}
-                              {isExpanded && (
-                                <div className="mt-2 pl-1 space-y-3">
-                                  {/* Poet's note */}
-                                  {draft.poet_note && (
-                                    <div className="p-3 rounded-xl bg-background-subtle border border-border">
-                                      <div className="flex items-center gap-1.5 mb-2">
-                                        <Feather size={12} className="text-brand-500" />
-                                        <span className="text-[10px] font-bold uppercase tracking-wider text-foreground-muted">Poet's Note</span>
-                                      </div>
-                                      {/* Render HTML from WYSIWYG editor */}
-                                      <div
-                                        className="text-sm text-foreground-secondary leading-relaxed font-serif italic prose prose-sm dark:prose-invert max-w-none"
-                                        dangerouslySetInnerHTML={{ __html: draft.poet_note }}
-                                      />
-                                    </div>
-                                  )}
-
-                                  {/* Draft content preview */}
-                                  <div className="p-3 rounded-xl bg-background-subtle border border-border">
-                                    <div className="flex items-center gap-1.5 mb-2">
-                                      <BookOpen size={12} className="text-foreground-muted" />
-                                      <span className="text-[10px] font-bold uppercase tracking-wider text-foreground-muted">This Draft</span>
-                                    </div>
-                                    <pre className="text-xs text-foreground-secondary leading-relaxed whitespace-pre-wrap font-serif line-clamp-8">
-                                      {draft.content}
-                                    </pre>
-                                  </div>
+                              {/* Expanded eulogy */}
+                              {isExpanded && item.eulogy && (
+                                <div className="mt-3 pt-3 border-t border-slate-200 dark:border-slate-700">
+                                  <p className="text-xs font-semibold text-slate-600 dark:text-slate-400 uppercase tracking-wide mb-2">Eulogy</p>
+                                  <p className="text-sm text-foreground-secondary leading-relaxed">{item.eulogy}</p>
                                 </div>
                               )}
-                            </div>
-                          </div>
-                        );
-                      })}
+                            </button>
+                          );
+                        })}
+                      </div>
                     </div>
-                  </div>
-                </div>
+                  )}
+
+                  {/* Memory Image */}
+                  {behindData.memoryImage && (
+                    <div className="space-y-2">
+                      <div className="flex items-center gap-2">
+                        <BookOpen size={16} className="text-purple-500" />
+                        <h3 className="text-sm font-semibold text-foreground">A Memory</h3>
+                      </div>
+                      <div className="relative">
+                        <div className="relative p-4 bg-white dark:bg-slate-900 border-2 border-slate-300 dark:border-slate-700 rounded-sm shadow-lg transform -rotate-1">
+                          <img src={behindData.memoryImage} alt="Memory" className="w-full aspect-square object-cover rounded-sm" />
+                          <div className="absolute -bottom-2 -right-2 w-3 h-3 bg-slate-400 dark:bg-slate-600 rounded-full" />
+                        </div>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Vibe Date */}
+                  {behindData.vibeDate && (
+                    <div className="space-y-2">
+                      <div className="flex items-center gap-2">
+                        <Clock size={16} className="text-blue-500" />
+                        <h3 className="text-sm font-semibold text-foreground">Vibe Date</h3>
+                      </div>
+                      <div className="p-3 rounded-xl bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800/50">
+                        <p className="text-sm text-foreground-secondary">
+                          {new Date(behindData.vibeDate).toLocaleDateString('en-US', {
+                            weekday: 'long',
+                            month: 'long',
+                            day: 'numeric',
+                            year: 'numeric'
+                          })}
+                        </p>
+                      </div>
+                    </div>
+                  )}
+                </>
               )}
             </div>
           )}
