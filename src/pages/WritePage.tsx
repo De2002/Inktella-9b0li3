@@ -557,32 +557,19 @@ export default function WritePage() {
 
       {/* Ink balance — new poems only */}
       {!isEditMode && (
-        <>
-          <div className={cn(
-            'flex items-center justify-between p-3 rounded-xl mb-5 text-sm',
-            canPublish
-              ? 'bg-ink-50 dark:bg-ink-900/20 border border-ink-200 dark:border-ink-800'
-              : 'bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800'
-          )}>
-            <div className="flex items-center gap-2">
-              <span className="text-lg">💧</span>
-              <span className="text-foreground-secondary">
-                Your Ink:{' '}
-                <strong className={canPublish ? 'text-ink-600 dark:text-ink-400' : 'text-red-500'}>
-                  {profile?.ink_balance || 0}
-                </strong>
-              </span>
-            </div>
-            <span className="text-foreground-muted text-xs">
-              Publishing costs <strong className="text-foreground">{INK_PUBLISH_COST} Ink</strong>
-              {canPublish && <span className="ml-2 text-ink-600 dark:text-ink-400">→ {inkAfter} remaining</span>}
+        <div className="flex items-center justify-end gap-4 mb-5 text-xs text-foreground-muted">
+          {!canPublish && <span className="text-red-600 dark:text-red-400 font-medium">Need more ink</span>}
+          <div className="flex items-center gap-1">
+            <span className="text-lg">💧</span>
+            <span>
+              <strong className={canPublish ? 'text-foreground' : 'text-red-600 dark:text-red-400'}>
+                {profile?.ink_balance || 0}
+              </strong>
             </span>
           </div>
-          {!canPublish && (
-            <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-xl p-4 mb-5 text-sm text-red-700 dark:text-red-400">
-              You need more Ink. <strong>Give feedback</strong> on poems to earn +2 Ink per feedback.
-            </div>
-          )}
+          <span>publishing costs {INK_PUBLISH_COST}</span>
+        </div>
+      )}
         </>
       )}
 
