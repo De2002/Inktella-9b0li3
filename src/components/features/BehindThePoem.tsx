@@ -1,205 +1,10 @@
-'use client';
-
-import React, { useState } from 'react';
-import { X } from 'lucide-react';
-
-interface GraveyardItem {
-  type: 'line' | 'word' | 'phrase' | 'stanza';
-  content: string;
-  eulogy?: string;
-}
-
-interface CreditPerson {
-  name: string;
-  role: string;
-  avatar: string;
-}
-
-interface BehindThePoemData {
-  spark: string;
-  obsession: string;
-  graveyard: GraveyardItem[];
-  memoryImage?: string;
-  vibeDate: string;
-  credits?: CreditPerson[];
-}
-
-interface BehindThePoemProps {
-  isOpen: boolean;
-  onClose: () => void;
-  data: BehindThePoemData;
-}
-
-export default function BehindThePoem({ isOpen, onClose, data }: BehindThePoemProps) {
-  const [isLoaded, setIsLoaded] = useState(false);
-
-  const renderGraveyardItem = (item: GraveyardItem) => {
-    switch (item.type) {
-      case 'word':
-        return (
-          <div key={`${item.type}-${item.content}`} className="flex flex-col gap-0.5 pb-1.5 border-b border-dotted border-[#ede8e3] last:border-b-0 last:pb-0">
-            <span className="inline-block bg-[#f5f0eb] px-2.5 py-0.5 rounded-full text-sm text-[#5a4e4a] border border-[#ede8e3] max-w-fit">
-              <span className="line-through decoration-[#c4b5ac] decoration-2">{item.content}</span>
-            </span>
-            {item.eulogy && <span className="text-xs text-[#8a7e7a] font-light pl-2">— {item.eulogy}</span>}
-          </div>
-        );
-      case 'phrase':
-        return (
-          <div key={`${item.type}-${item.content}`} className="flex flex-col gap-0.5 pb-1.5 border-b border-dotted border-[#ede8e3] last:border-b-0 last:pb-0">
-            <span className="font-playfair italic text-base text-[#5a4e4a]">
-              <span className="line-through decoration-[#c4b5ac] decoration-2">&quot;{item.content}&quot;</span>
-            </span>
-            {item.eulogy && <span className="text-xs text-[#8a7e7a] font-light pl-2">— {item.eulogy}</span>}
-          </div>
-        );
-      case 'stanza':
-        return (
-          <div key={`${item.type}-${item.content}`} className="flex flex-col gap-0.5 pb-1.5 border-b border-dotted border-[#ede8e3] last:border-b-0 last:pb-0">
-            <div className="font-playfair italic text-sm text-[#5a4e4a] p-2.5 bg-[#faf6f2] rounded-lg border-l-4 border-[#e3dad4] leading-relaxed whitespace-pre-wrap">
-              <span className="line-through decoration-[#c4b5ac] decoration-2">{item.content}</span>
-            </div>
-            {item.eulogy && <span className="text-xs text-[#8a7e7a] font-light pl-2">— {item.eulogy}</span>}
-          </div>
-        );
-      case 'line':
-      default:
-        return (
-          <div key={`${item.type}-${item.content}`} className="flex flex-col gap-0.5 pb-1.5 border-b border-dotted border-[#ede8e3] last:border-b-0 last:pb-0">
-            <span className="font-playfair italic text-base text-[#5a4e4a]">
-              <span className="line-through decoration-[#c4b5ac] decoration-2">{item.content}</span>
-            </span>
-            {item.eulogy && <span className="text-xs text-[#8a7e7a] font-light pl-2">— {item.eulogy}</span>}
-          </div>
-        );
-    }
-  };
-
-  if (!isOpen) return null;
-
-  return (
-    <div className="fixed inset-0 bg-black/40 backdrop-blur-sm z-50 flex items-center justify-center p-4 animate-fadeIn">
-      <div className="bg-[#faf8f5] rounded-2xl max-w-2xl w-full max-h-[90vh] overflow-hidden flex flex-col shadow-2xl">
-        {/* Header */}
-        <div className="sticky top-0 bg-[#faf8f5] border-b border-[#f0e9e4] px-6 py-4 flex items-center justify-between shrink-0">
-          <h2 className="text-lg font-playfair font-semibold text-[#1e1b1a]">Behind the Poem</h2>
-          <button
-            onClick={onClose}
-            className="p-1 hover:bg-[#f0e9e4] rounded-lg transition-colors"
-            aria-label="Close modal"
-          >
-            <X size={20} className="text-[#1e1b1a]" />
-          </button>
-        </div>
-
-        {/* Content */}
-        <div className="flex-1 overflow-y-auto p-6 space-y-4">
-          {/* Spark */}
-          <div className="bg-[#fffcf9] rounded-2xl p-7 border border-[#f0e9e4] shadow-[0_2px_12px_rgba(30,27,26,0.04)]">
-            <div className="text-xs uppercase tracking-widest text-[#b5a69e] font-semibold mb-2">
-              <span className="mr-1.5">🌱</span>
-              The Spark
-            </div>
-            <div 
-              className="font-patrick text-xl leading-relaxed text-[#3d322e]"
-              dangerouslySetInnerHTML={{ __html: data.spark }}
-            />
-          </div>
-
-          {/* Obsession */}
-          <div className="bg-[#fffcf9] rounded-2xl p-7 border border-[#f0e9e4] shadow-[0_2px_12px_rgba(30,27,26,0.04)]">
-            <div className="text-xs uppercase tracking-widest text-[#b5a69e] font-semibold mb-2">
-              <span className="mr-1.5">🌀</span>
-              The Obsession
-            </div>
-            <div 
-              className="font-light border-l-3 border-[#e3dad4] pl-5 text-base leading-7 text-[#2b2523]"
-              dangerouslySetInnerHTML={{ __html: data.obsession }}
-            />
-          </div>
-
-          {/* Graveyard */}
-          {data.graveyard && data.graveyard.length > 0 && (
-            <div className="bg-[#fffcf9] rounded-2xl p-7 border border-[#f0e9e4] shadow-[0_2px_12px_rgba(30,27,26,0.04)]">
-              <div className="text-xs uppercase tracking-widest text-[#b5a69e] font-semibold mb-3">
-                <span className="mr-1.5">🪦</span>
-                The Graveyard
-              </div>
-              <div className="space-y-2">
-                {data.graveyard.map((item) => renderGraveyardItem(item))}
-              </div>
-            </div>
-          )}
-
-          {/* Memory Image */}
-          {data.memoryImage && (
-            <div className="flex justify-center py-2">
-              <div className="bg-[#fffcf9] p-2.5 shadow-[0_8px_30px_rgba(30,27,26,0.08)] border border-[#f0e9e4] transform -rotate-1 hover:rotate-0 transition-transform max-w-[240px] rounded">
-                <img
-                  src={data.memoryImage}
-                  alt="Memory"
-                  className="w-full h-auto rounded-sm"
-                  style={{ filter: 'grayscale(20%) contrast(1.05)' }}
-                  loading="lazy"
-                  onError={(e) => {
-                    (e.target as HTMLImageElement).style.display = 'none';
-                  }}
-                />
-                <div className="text-xs text-center mt-3 text-[#8a7e7a] font-light tracking-widest uppercase">
-                  A moment in time
-                </div>
-              </div>
-            </div>
-          )}
-
-          {/* Credits */}
-          {data.credits && data.credits.length > 0 && (
-            <div className="bg-[#fffcf9] rounded-2xl p-7 border border-[#f0e9e4] shadow-[0_2px_12px_rgba(30,27,26,0.04)]">
-              <div className="text-center text-xs uppercase tracking-widest text-[#b5a69e] font-semibold mb-5">
-                <span className="mr-1.5">🙏</span>
-                Grateful for these voices
-              </div>
-              <div className="flex flex-wrap justify-center gap-6">
-                {data.credits.map(person => (
-                  <div 
-                    key={person.name}
-                    className="flex flex-col items-center gap-1 transition-transform hover:translate-y-[-2px] cursor-default"
-                  >
-                    <img 
-                      src={person.avatar}
-                      alt={person.name}
-                      className="w-16 h-16 rounded-full object-cover border-2 border-[#f0e9e4] bg-[#ede8e3]"
-                      loading="lazy"
-                    />
-                    <span className="text-xs font-medium text-[#2b2523] text-center max-w-[80px]">{person.name}</span>
-                    <span className="text-xs text-[#b5a69e] font-light tracking-tight text-center max-w-[80px]">{person.role}</span>
-                  </div>
-                ))}
-              </div>
-            </div>
-          )}
-
-          {/* Footer Vibe */}
-          <div className="text-center pt-2 pb-4 text-xs text-[#c4b5ac]">
-            <div className="text-xl text-[#d4c9c2] mb-1">~~~~</div>
-            {data.vibeDate}
-          </div>
-        </div>
-      </div>
-
-      <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;1,400&family=Patrick+Hand&display=swap');
-        .font-playfair { font-family: 'Playfair Display', serif; }
-        .font-patrick { font-family: 'Patrick Hand', cursive; }
-        @keyframes fadeIn {
-          from { opacity: 0; transform: translateY(20px); }
-          to { opacity: 1; transform: translateY(0); }
-        }
-        .animate-fadeIn { animation: fadeIn 0.5s ease forwards; }
-      `}</style>
-    </div>
-  );
-}
+import { useState, useEffect } from 'react';
+import { X, Sparkles, Users, BookOpen, Clock, ChevronDown, ChevronUp } from 'lucide-react';
+import { Link } from 'react-router-dom';
+import { cn } from '@/lib/utils';
+import { getLevel, LEVEL_CONFIG, LEVEL_BADGE_IMAGES } from '@/constants';
+import { supabase } from '@/lib/supabase';
+import type { Poem } from '@/types';
 
 interface BehindThePoemData {
   spark: string;
@@ -212,6 +17,11 @@ interface BehindThePoemData {
 interface Credit {
   id: string;
   credited_user: any;
+}
+
+interface BehindThePoemProps {
+  poem: Poem;
+  onClose: () => void;
 }
 
 export default function BehindThePoem({ poem, onClose }: BehindThePoemProps) {
@@ -264,7 +74,7 @@ export default function BehindThePoem({ poem, onClose }: BehindThePoemProps) {
     <>
       <div className="fixed inset-0 bg-black/50 z-50" onClick={onClose} />
       <div className="fixed inset-0 sm:inset-auto sm:top-0 sm:right-0 sm:w-[520px] sm:h-screen z-50 bg-surface sm:rounded-l-2xl overflow-hidden flex flex-col shadow-2xl feedback-slide-in">
-        
+
         {/* Header */}
         <div className="flex items-center justify-between px-5 py-4 border-b border-border shrink-0">
           <div className="flex items-center gap-3">
@@ -319,7 +129,6 @@ export default function BehindThePoem({ poem, onClose }: BehindThePoemProps) {
           ) : activeSection === 'credits' ? (
             /* ─ CREDITS SECTION ─ */
             <div className="p-5 space-y-5">
-              {/* Credits header */}
               <div className="flex items-start gap-3">
                 <div className="w-10 h-10 rounded-xl bg-brand-50 dark:bg-brand-900/30 flex items-center justify-center shrink-0">
                   <Users size={18} className="text-brand-500" />
@@ -340,51 +149,48 @@ export default function BehindThePoem({ poem, onClose }: BehindThePoemProps) {
                   <p className="text-sm font-serif italic text-foreground-muted">No credits yet.</p>
                 </div>
               ) : (
-                <>
-                  {/* Credit list */}
-                  <div className="space-y-2">
-                    {credits.map((c: Credit) => {
-                      const level = getLevel(c.credited_user?.tella_balance || 0);
-                      const cfg = LEVEL_CONFIG[level];
-                      return (
-                        <Link
-                          key={c.id}
-                          to={`/profile/${c.credited_user?.username}`}
-                          onClick={onClose}
-                          className="flex items-center gap-3 p-3 rounded-xl border border-border hover:border-brand-300 dark:hover:border-brand-700 hover:bg-background-subtle transition-all group"
+                <div className="space-y-2">
+                  {credits.map((c: Credit) => {
+                    const level = getLevel(c.credited_user?.tella_balance || 0);
+                    const cfg = LEVEL_CONFIG[level];
+                    return (
+                      <Link
+                        key={c.id}
+                        to={`/profile/${c.credited_user?.username}`}
+                        onClick={onClose}
+                        className="flex items-center gap-3 p-3 rounded-xl border border-border hover:border-brand-300 dark:hover:border-brand-700 hover:bg-background-subtle transition-all group"
+                      >
+                        <div
+                          className={cn(
+                            'w-10 h-10 rounded-full flex items-center justify-center text-xs font-bold shrink-0 overflow-hidden border-2',
+                            cfg.borderClass
+                          )}
+                          style={{ background: cfg.color + '15', color: cfg.color }}
                         >
-                          <div
-                            className={cn(
-                              'w-10 h-10 rounded-full flex items-center justify-center text-xs font-bold shrink-0 overflow-hidden border-2',
-                              cfg.borderClass
-                            )}
-                            style={{ background: cfg.color + '15', color: cfg.color }}
-                          >
-                            {c.credited_user?.avatar_url
-                              ? <img src={c.credited_user.avatar_url} className="w-full h-full object-cover" alt={c.credited_user?.username} />
-                              : c.credited_user?.username?.substring(0, 2).toUpperCase()}
+                          {c.credited_user?.avatar_url
+                            ? <img src={c.credited_user.avatar_url} className="w-full h-full object-cover" alt={c.credited_user?.username} />
+                            : c.credited_user?.username?.substring(0, 2).toUpperCase()}
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <div className="flex items-center gap-1.5">
+                            <p className="text-sm font-semibold text-foreground group-hover:text-brand-500 transition-colors truncate">
+                              @{c.credited_user?.username}
+                            </p>
+                            <img
+                              src={LEVEL_BADGE_IMAGES[level]}
+                              alt={level}
+                              className="w-4 h-4 shrink-0"
+                            />
                           </div>
-                          <div className="flex-1 min-w-0">
-                            <div className="flex items-center gap-1.5">
-                              <p className="text-sm font-semibold text-foreground group-hover:text-brand-500 transition-colors truncate">
-                                @{c.credited_user?.username}
-                              </p>
-                              <img
-                                src={LEVEL_BADGE_IMAGES[level]}
-                                alt={level}
-                                className="w-4 h-4 shrink-0"
-                              />
-                            </div>
-                            <p className={cn('text-xs mt-0.5 font-medium', cfg.textClass)}>{cfg.badgeText}</p>
-                          </div>
-                          <div className="shrink-0 flex items-center gap-1 text-xs text-tella-600 dark:text-tella-400 font-semibold bg-tella-50 dark:bg-tella-900/20 border border-tella-200 dark:border-tella-800 px-2 py-0.5 rounded-full">
-                            ✦ +2 Tella
-                          </div>
-                        </Link>
-                      );
-                    })}
-                  </div>
-                </>
+                          <p className={cn('text-xs mt-0.5 font-medium', cfg.textClass)}>{cfg.badgeText}</p>
+                        </div>
+                        <div className="shrink-0 flex items-center gap-1 text-xs text-tella-600 dark:text-tella-400 font-semibold bg-tella-50 dark:bg-tella-900/20 border border-tella-200 dark:border-tella-800 px-2 py-0.5 rounded-full">
+                          ✦ +2 Tella
+                        </div>
+                      </Link>
+                    );
+                  })}
+                </div>
               )}
             </div>
           ) : (
@@ -458,7 +264,6 @@ export default function BehindThePoem({ poem, onClose }: BehindThePoemProps) {
                                 </div>
                               </div>
 
-                              {/* Expanded eulogy */}
                               {isExpanded && item.eulogy && (
                                 <div className="mt-3 pt-3 border-t border-slate-200 dark:border-slate-700">
                                   <p className="text-xs font-semibold text-slate-600 dark:text-slate-400 uppercase tracking-wide mb-2">Eulogy</p>
@@ -479,11 +284,8 @@ export default function BehindThePoem({ poem, onClose }: BehindThePoemProps) {
                         <BookOpen size={16} className="text-purple-500" />
                         <h3 className="text-sm font-semibold text-foreground">A Memory</h3>
                       </div>
-                      <div className="relative">
-                        <div className="relative p-4 bg-white dark:bg-slate-900 border-2 border-slate-300 dark:border-slate-700 rounded-sm shadow-lg transform -rotate-1">
-                          <img src={behindData.memoryImage} alt="Memory" className="w-full aspect-square object-cover rounded-sm" />
-                          <div className="absolute -bottom-2 -right-2 w-3 h-3 bg-slate-400 dark:bg-slate-600 rounded-full" />
-                        </div>
+                      <div className="relative p-4 bg-white dark:bg-slate-900 border-2 border-slate-300 dark:border-slate-700 rounded-sm shadow-lg transform -rotate-1">
+                        <img src={behindData.memoryImage} alt="Memory" className="w-full aspect-square object-cover rounded-sm" />
                       </div>
                     </div>
                   )}
@@ -501,7 +303,7 @@ export default function BehindThePoem({ poem, onClose }: BehindThePoemProps) {
                             weekday: 'long',
                             month: 'long',
                             day: 'numeric',
-                            year: 'numeric'
+                            year: 'numeric',
                           })}
                         </p>
                       </div>
