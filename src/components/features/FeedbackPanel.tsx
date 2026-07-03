@@ -251,7 +251,7 @@ export default function FeedbackPanel({ poem, onClose }: FeedbackPanelProps) {
 
   return (
     <>
-      <div className="fixed inset-0 bg-black/40 z-40 lg:hidden" onClick={onClose} />
+      <div className="fixed inset-0 bg-black/40 backdrop-blur-sm z-40 lg:hidden" onClick={onClose} />
       <div className={cn(
         'fixed z-50 bg-surface flex flex-col',
         'bottom-0 left-0 right-0 rounded-t-2xl max-h-[90vh] sheet-slide-up',
