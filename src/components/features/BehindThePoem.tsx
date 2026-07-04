@@ -64,39 +64,39 @@ export default function BehindThePoem({ poem, onClose }: BehindThePoemProps) {
     switch (item.type) {
       case 'word':
         return (
-          <div key={item._key ?? `${item.type}-${item.content}`} className="flex flex-col gap-0.5 pb-1.5 border-b border-dotted border-[#ede8e3] last:border-b-0 last:pb-0">
-            <span className="inline-block bg-[#f5f0eb] px-2.5 py-0.5 rounded-full text-sm text-[#5a4e4a] border border-[#ede8e3] max-w-fit">
-              <span className="line-through decoration-[#c4b5ac] decoration-2">{item.content}</span>
+          <div key={item._key ?? `${item.type}-${item.content}`} className="flex flex-col gap-0.5 pb-1.5 border-b border-dotted border-[#ede8e3] dark:border-[#2d2620] last:border-b-0 last:pb-0">
+            <span className="inline-block bg-[#f5f0eb] dark:bg-[#2a2620] px-2.5 py-0.5 rounded-full text-sm text-[#5a4e4a] dark:text-[#c4b5ac] border border-[#ede8e3] dark:border-[#5a4e4a] max-w-fit">
+              <span className="line-through decoration-[#c4b5ac] dark:decoration-[#5a4e4a] decoration-2">{item.content}</span>
             </span>
-            {item.eulogy && <span className="text-xs text-[#8a7e7a] font-light pl-2">— {item.eulogy}</span>}
+            {item.eulogy && <span className="text-xs text-[#8a7e7a] dark:text-[#8a7e7a] font-light pl-2">— {item.eulogy}</span>}
           </div>
         );
       case 'phrase':
         return (
-          <div key={item._key ?? `${item.type}-${item.content}`} className="flex flex-col gap-0.5 pb-1.5 border-b border-dotted border-[#ede8e3] last:border-b-0 last:pb-0">
-            <span className="font-playfair italic text-base text-[#5a4e4a]">
-              <span className="line-through decoration-[#c4b5ac] decoration-2">&quot;{item.content}&quot;</span>
+          <div key={item._key ?? `${item.type}-${item.content}`} className="flex flex-col gap-0.5 pb-1.5 border-b border-dotted border-[#ede8e3] dark:border-[#2d2620] last:border-b-0 last:pb-0">
+            <span className="font-playfair italic text-base text-[#5a4e4a] dark:text-[#c4b5ac]">
+              <span className="line-through decoration-[#c4b5ac] dark:decoration-[#5a4e4a] decoration-2">&quot;{item.content}&quot;</span>
             </span>
-            {item.eulogy && <span className="text-xs text-[#8a7e7a] font-light pl-2">— {item.eulogy}</span>}
+            {item.eulogy && <span className="text-xs text-[#8a7e7a] dark:text-[#8a7e7a] font-light pl-2">— {item.eulogy}</span>}
           </div>
         );
       case 'stanza':
         return (
-          <div key={item._key ?? `${item.type}-${item.content}`} className="flex flex-col gap-0.5 pb-1.5 border-b border-dotted border-[#ede8e3] last:border-b-0 last:pb-0">
-            <div className="font-playfair italic text-sm text-[#5a4e4a] p-2.5 bg-[#faf6f2] rounded-lg border-l-4 border-[#e3dad4] leading-relaxed whitespace-pre-wrap">
-              <span className="line-through decoration-[#c4b5ac] decoration-2">{item.content}</span>
+          <div key={item._key ?? `${item.type}-${item.content}`} className="flex flex-col gap-0.5 pb-1.5 border-b border-dotted border-[#ede8e3] dark:border-[#2d2620] last:border-b-0 last:pb-0">
+            <div className="font-playfair italic text-sm text-[#5a4e4a] dark:text-[#c4b5ac] p-2.5 bg-[#faf6f2] dark:bg-[#2a2620] rounded-lg border-l-4 border-[#e3dad4] dark:border-[#5a4e4a] leading-relaxed whitespace-pre-wrap">
+              <span className="line-through decoration-[#c4b5ac] dark:decoration-[#5a4e4a] decoration-2">{item.content}</span>
             </div>
-            {item.eulogy && <span className="text-xs text-[#8a7e7a] font-light pl-2">— {item.eulogy}</span>}
+            {item.eulogy && <span className="text-xs text-[#8a7e7a] dark:text-[#8a7e7a] font-light pl-2">— {item.eulogy}</span>}
           </div>
         );
       case 'line':
       default:
         return (
-          <div key={item._key ?? `${item.type}-${item.content}`} className="flex flex-col gap-0.5 pb-1.5 border-b border-dotted border-[#ede8e3] last:border-b-0 last:pb-0">
-            <span className="font-playfair italic text-base text-[#5a4e4a]">
-              <span className="line-through decoration-[#c4b5ac] decoration-2">{item.content}</span>
+          <div key={item._key ?? `${item.type}-${item.content}`} className="flex flex-col gap-0.5 pb-1.5 border-b border-dotted border-[#ede8e3] dark:border-[#2d2620] last:border-b-0 last:pb-0">
+            <span className="font-playfair italic text-base text-[#5a4e4a] dark:text-[#c4b5ac]">
+              <span className="line-through decoration-[#c4b5ac] dark:decoration-[#5a4e4a] decoration-2">{item.content}</span>
             </span>
-            {item.eulogy && <span className="text-xs text-[#8a7e7a] font-light pl-2">— {item.eulogy}</span>}
+            {item.eulogy && <span className="text-xs text-[#8a7e7a] dark:text-[#8a7e7a] font-light pl-2">— {item.eulogy}</span>}
           </div>
         );
     }
@@ -114,7 +114,7 @@ export default function BehindThePoem({ poem, onClose }: BehindThePoemProps) {
       {/* Bottom Sheet */}
       <div className="fixed inset-x-0 bottom-0 z-50 flex flex-col h-[90vh] max-h-[90vh] animate-slideUp rounded-t-3xl">
         {/* Header - Dark background */}
-        <div className="bg-[#1e1b1a] text-white px-6 py-5 flex items-center justify-between shrink-0 rounded-t-3xl">
+        <div className="bg-[#1e1b1a] dark:bg-[#2a2624] text-white px-6 py-5 flex items-center justify-between shrink-0 rounded-t-3xl">
           <h2 className="text-lg font-playfair font-semibold">Behind the Poem + Credits</h2>
           <button
             onClick={onClose}
@@ -126,49 +126,49 @@ export default function BehindThePoem({ poem, onClose }: BehindThePoemProps) {
         </div>
 
         {/* Content Scrollable Area */}
-        <div className="flex-1 overflow-y-auto bg-[#f5f0eb]">
+        <div className="flex-1 overflow-y-auto bg-[#f5f0eb] dark:bg-[#1a1512]">
           {loading ? (
             <div className="flex flex-col items-center justify-center py-16 gap-3">
               <Loader2 size={28} className="animate-spin text-[#6C4EF6]" />
-              <p className="text-sm text-[#b5a69e]">Loading the story…</p>
+              <p className="text-sm text-[#b5a69e] dark:text-[#8a7e7a]">Loading the story…</p>
             </div>
           ) : !data ? (
             <div className="text-center py-12 px-6">
               <div className="text-4xl mb-3">🚪</div>
-              <p className="font-playfair italic text-[#8a7e7a]">The poet hasn&apos;t opened this door yet.</p>
-              <p className="text-xs text-[#b5a69e] mt-2">No story behind this poem has been shared.</p>
+              <p className="font-playfair italic text-[#8a7e7a] dark:text-[#8a7e7a]">The poet hasn&apos;t opened this door yet.</p>
+              <p className="text-xs text-[#b5a69e] dark:text-[#8a7e7a] mt-2">No story behind this poem has been shared.</p>
             </div>
           ) : (
             <div className="space-y-0 pb-8">
               {/* Spark Slide */}
               {data.spark && (
-                <div className="w-full px-6 py-8 bg-[#f5f0eb] border-b border-[#e3dad4] animate-slideInUp" style={{ animationDelay: '0.1s' }}>
+                <div className="w-full px-6 py-8 bg-[#f5f0eb] dark:bg-[#1a1512] border-b border-[#e3dad4] dark:border-[#2d2620] animate-slideInUp" style={{ animationDelay: '0.1s' }}>
                   <div className="max-w-2xl mx-auto">
-                    <div className="text-xs uppercase tracking-widest text-[#8a7e7a] font-semibold mb-3 flex items-center gap-1.5">
+                    <div className="text-xs uppercase tracking-widest text-[#8a7e7a] dark:text-[#8a7e7a] font-semibold mb-3 flex items-center gap-1.5">
                       <span>🌱</span>THE SPARK
                     </div>
-                    <p className="font-patrick text-lg leading-relaxed text-[#3d322e]">{data.spark}</p>
+                    <p className="font-patrick text-lg leading-relaxed text-[#3d322e] dark:text-[#e8dcd4]">{data.spark}</p>
                   </div>
                 </div>
               )}
 
               {/* Obsession Slide */}
               {data.obsession && (
-                <div className="w-full px-6 py-8 bg-[#f5f0eb] border-b border-[#e3dad4] animate-slideInUp" style={{ animationDelay: '0.2s' }}>
+                <div className="w-full px-6 py-8 bg-[#f5f0eb] dark:bg-[#1a1512] border-b border-[#e3dad4] dark:border-[#2d2620] animate-slideInUp" style={{ animationDelay: '0.2s' }}>
                   <div className="max-w-2xl mx-auto">
-                    <div className="text-xs uppercase tracking-widest text-[#8a7e7a] font-semibold mb-3 flex items-center gap-1.5">
+                    <div className="text-xs uppercase tracking-widest text-[#8a7e7a] dark:text-[#8a7e7a] font-semibold mb-3 flex items-center gap-1.5">
                       <span>🌀</span>THE OBSESSION
                     </div>
-                    <p className="border-l-4 border-[#c4b5ac] pl-5 text-base leading-7 text-[#2b2523] font-light">{data.obsession}</p>
+                    <p className="border-l-4 border-[#c4b5ac] dark:border-[#5a4e4a] pl-5 text-base leading-7 text-[#2b2523] dark:text-[#e8dcd4] font-light">{data.obsession}</p>
                   </div>
                 </div>
               )}
 
               {/* Graveyard Slide */}
               {data.graveyard && data.graveyard.length > 0 && (
-                <div className="w-full px-6 py-8 bg-[#f5f0eb] border-b border-[#e3dad4] animate-slideInUp" style={{ animationDelay: '0.3s' }}>
+                <div className="w-full px-6 py-8 bg-[#f5f0eb] dark:bg-[#1a1512] border-b border-[#e3dad4] dark:border-[#2d2620] animate-slideInUp" style={{ animationDelay: '0.3s' }}>
                   <div className="max-w-2xl mx-auto">
-                    <div className="text-xs uppercase tracking-widest text-[#8a7e7a] font-semibold mb-4 flex items-center gap-1.5">
+                    <div className="text-xs uppercase tracking-widest text-[#8a7e7a] dark:text-[#8a7e7a] font-semibold mb-4 flex items-center gap-1.5">
                       <span>🪦</span>THE GRAVEYARD
                     </div>
                     <div className="space-y-2">
@@ -180,8 +180,8 @@ export default function BehindThePoem({ poem, onClose }: BehindThePoemProps) {
 
               {/* Memory Image Slide */}
               {data.memoryImage && (
-                <div className="w-full px-6 py-8 bg-[#f5f0eb] border-b border-[#e3dad4] animate-slideInUp flex justify-center" style={{ animationDelay: '0.4s' }}>
-                  <div className="bg-white p-2.5 shadow-[0_8px_30px_rgba(30,27,26,0.08)] border border-[#e3dad4] transform -rotate-1 hover:rotate-0 transition-transform max-w-[240px] rounded">
+                <div className="w-full px-6 py-8 bg-[#f5f0eb] dark:bg-[#1a1512] border-b border-[#e3dad4] dark:border-[#2d2620] animate-slideInUp flex justify-center" style={{ animationDelay: '0.4s' }}>
+                  <div className="bg-white dark:bg-[#2a2620] p-2.5 shadow-[0_8px_30px_rgba(30,27,26,0.08)] dark:shadow-[0_8px_30px_rgba(0,0,0,0.4)] border border-[#e3dad4] dark:border-[#5a4e4a] transform -rotate-1 hover:rotate-0 transition-transform max-w-[240px] rounded">
                     <img
                       src={data.memoryImage}
                       alt="Memory"
@@ -190,34 +190,34 @@ export default function BehindThePoem({ poem, onClose }: BehindThePoemProps) {
                       loading="lazy"
                       onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }}
                     />
-                    <div className="text-xs text-center mt-3 text-[#8a7e7a] font-light tracking-widest uppercase">A moment in time</div>
+                    <div className="text-xs text-center mt-3 text-[#8a7e7a] dark:text-[#8a7e7a] font-light tracking-widest uppercase">A moment in time</div>
                   </div>
                 </div>
               )}
 
               {/* Vibe Date Slide */}
               {data.vibeDate && (
-                <div className="w-full px-6 py-8 bg-[#f5f0eb] border-b border-[#e3dad4] animate-slideInUp text-center" style={{ animationDelay: '0.5s' }}>
-                  <div className="text-xl text-[#d4c9c2] mb-2">~~~~</div>
-                  <p className="text-xs text-[#c4b5ac]">{data.vibeDate}</p>
+                <div className="w-full px-6 py-8 bg-[#f5f0eb] dark:bg-[#1a1512] border-b border-[#e3dad4] dark:border-[#2d2620] animate-slideInUp text-center" style={{ animationDelay: '0.5s' }}>
+                  <div className="text-xl text-[#d4c9c2] dark:text-[#5a4e4a] mb-2">~~~~</div>
+                  <p className="text-xs text-[#c4b5ac] dark:text-[#8a7e7a]">{data.vibeDate}</p>
                 </div>
               )}
 
               {/* Credits Slide */}
-              <div className="w-full px-6 py-8 bg-[#f5f0eb] animate-slideInUp" style={{ animationDelay: '0.6s' }}>
+              <div className="w-full px-6 py-8 bg-[#f5f0eb] dark:bg-[#1a1512] animate-slideInUp" style={{ animationDelay: '0.6s' }}>
                 <div className="max-w-2xl mx-auto">
-                  <div className="text-xs uppercase tracking-widest text-[#8a7e7a] font-semibold mb-6 flex items-center gap-1.5">
+                  <div className="text-xs uppercase tracking-widest text-[#8a7e7a] dark:text-[#8a7e7a] font-semibold mb-6 flex items-center gap-1.5">
                     <span>🙏</span>CREDITS
                   </div>
                   {contributors.length === 0 ? (
                     <div className="text-center py-8">
                       <div className="text-3xl mb-2">🌱</div>
-                      <p className="font-playfair italic text-[#8a7e7a] text-sm">No contributors credited yet.</p>
-                      <p className="text-xs text-[#b5a69e] mt-1">The poet credits feedback givers after each revision.</p>
+                      <p className="font-playfair italic text-[#8a7e7a] dark:text-[#8a7e7a] text-sm">No contributors credited yet.</p>
+                      <p className="text-xs text-[#b5a69e] dark:text-[#8a7e7a] mt-1">The poet credits feedback givers after each revision.</p>
                     </div>
                   ) : (
                     <>
-                      <div className="text-center text-xs uppercase tracking-widest text-[#8a7e7a] font-semibold mb-6">
+                      <div className="text-center text-xs uppercase tracking-widest text-[#8a7e7a] dark:text-[#8a7e7a] font-semibold mb-6">
                         Grateful for these voices
                       </div>
                       <div className="flex flex-wrap justify-center gap-6">
@@ -235,7 +235,7 @@ export default function BehindThePoem({ poem, onClose }: BehindThePoemProps) {
                                   : getInitials(person.username)
                                 }
                               </div>
-                              <span className="text-xs font-medium text-[#2b2523] text-center max-w-[80px]">@{person.username}</span>
+                              <span className="text-xs font-medium text-[#2b2523] dark:text-[#e8dcd4] text-center max-w-[80px]">@{person.username}</span>
                               <span className={cn('text-[10px] font-semibold text-center', cfg.textClass)}>{cfg.badgeText}</span>
                             </div>
                           );
@@ -250,7 +250,7 @@ export default function BehindThePoem({ poem, onClose }: BehindThePoemProps) {
               {!data.spark && !data.obsession && (!data.graveyard || data.graveyard.length === 0) && !data.memoryImage && (
                 <div className="text-center py-12 px-6">
                   <div className="text-4xl mb-3">🚪</div>
-                  <p className="font-playfair italic text-[#8a7e7a]">The poet hasn&apos;t opened this door yet.</p>
+                  <p className="font-playfair italic text-[#8a7e7a] dark:text-[#8a7e7a]">The poet hasn&apos;t opened this door yet.</p>
                 </div>
               )}
             </div>
