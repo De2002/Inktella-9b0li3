@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { Search, SlidersHorizontal, Check } from 'lucide-react';
 import { useSearchParams } from 'react-router-dom';
+import { setMetadata } from '@/lib/metadata';
 import TopicCard from '@/components/features/TopicCard';
 import { supabase } from '@/lib/supabase';
 import type { Topic } from '@/types';
@@ -23,6 +24,14 @@ export default function ExplorePage() {
   const [sort, setSort] = useState<SortOption>('az');
   const [menuOpen, setMenuOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    setMetadata({
+      title: 'Explore',
+      description: 'Explore poetry topics and themes on Inktella. Discover poems by category and connect with poets in your interests.',
+      url: 'https://inktella.onspace.app/explore',
+    });
+  }, []);
 
   useEffect(() => {
     fetchTopics();

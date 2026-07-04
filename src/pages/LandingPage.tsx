@@ -2,6 +2,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useEffect } from 'react';
 import { ArrowRight, Feather, MessageSquare, BookOpen, Pen, Users } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
+import { setMetadata } from '@/lib/metadata';
 import logoSrc from '@/assets/logo.png';
 
 const HOW_IT_WORKS = [
@@ -61,6 +62,13 @@ const POET_TYPES = [
 export default function LandingPage() {
   const { user } = useAuth();
   const navigate = useNavigate();
+
+  useEffect(() => {
+    setMetadata({
+      title: 'Inktella',
+      description: 'A feedback-driven poetry platform where giving meaningful critique earns Ink, the currency of publishing. Improve your craft in a community that takes writing seriously.',
+    });
+  }, []);
 
   useEffect(() => {
     if (user) {

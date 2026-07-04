@@ -1,6 +1,7 @@
 import { useEffect, useState, useCallback } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
+import { setMetadata } from '@/lib/metadata';
 import {
   Heart, Users, Eye, BookOpen, PenTool, X, UserPlus, UserCheck,
   ChevronRight, Bell, Loader2,
@@ -294,6 +295,14 @@ export default function DashboardPage() {
   const { user, profile, isAuthenticated } = useAuth();
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    setMetadata({
+      title: 'Dashboard',
+      description: 'Your personal dashboard on Inktella. Track your poems, engagement, and growth as a poet.',
+      url: 'https://inktella.onspace.app/dashboard',
+    });
+  }, []);
 
   // Sheets
   const [poemsSheetOpen, setPoemsSheetOpen] = useState(false);

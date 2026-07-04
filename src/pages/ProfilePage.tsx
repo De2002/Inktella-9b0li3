@@ -7,6 +7,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import type { UserProfile, Poem } from '@/types';
 import { getLevel, LEVEL_CONFIG } from '@/constants';
 import { cn, formatTimeAgo, getInitials, tellaToNextLevel } from '@/lib/utils';
+import { setProfileMetadata, resetMetadata } from '@/lib/metadata';
 import PoemCard from '@/components/features/PoemCard';
 import FeedbackPanel from '@/components/features/FeedbackPanel';
 import { LevelBadgeImage } from '@/components/features/LevelBadge';
@@ -30,6 +31,17 @@ export default function ProfilePage() {
   useEffect(() => {
     if (username) fetchProfile();
   }, [username, user]);
+
+  useEffect(() => {
+    if (profile) {
+      setProfileMetadata({
+        username: profile.username,
+        bio: profile.bio,
+        avatar_url: profile.avatar_url,
+      });
+    }
+    return () => resetMetadata();
+  }, [profile]);
 
   async function fetchProfile() {
     setLoading(true);

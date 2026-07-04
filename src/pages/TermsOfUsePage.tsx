@@ -1,7 +1,16 @@
 import { Link } from 'react-router-dom';
+import { useEffect } from 'react';
 import { ArrowLeft } from 'lucide-react';
+import { setMetadata } from '@/lib/metadata';
 
 export default function TermsOfUsePage() {
+  useEffect(() => {
+    setMetadata({
+      title: 'Terms of Use',
+      description: 'Read the terms and conditions for using Inktella platform. Understand your rights and responsibilities as a member of our poetry community.',
+      url: 'https://inktella.onspace.app/terms',
+    });
+  }, []);
   return (
     <div className="min-h-screen bg-background">
       {/* Header */}
