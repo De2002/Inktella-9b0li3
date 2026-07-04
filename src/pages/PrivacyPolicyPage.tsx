@@ -1,7 +1,16 @@
 import { Link } from 'react-router-dom';
+import { useEffect } from 'react';
 import { ArrowLeft } from 'lucide-react';
+import { setMetadata } from '@/lib/metadata';
 
 export default function PrivacyPolicyPage() {
+  useEffect(() => {
+    setMetadata({
+      title: 'Privacy Policy',
+      description: 'Learn how Inktella protects your personal information and privacy. Review our data practices and privacy standards for our poetry platform.',
+      url: 'https://inktella.onspace.app/privacy',
+    });
+  }, []);
   return (
     <div className="min-h-screen bg-background">
       {/* Header */}

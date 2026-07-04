@@ -1,7 +1,16 @@
 import { Link } from 'react-router-dom';
+import { useEffect } from 'react';
 import { ArrowLeft, Mail, MessageSquare } from 'lucide-react';
+import { setMetadata } from '@/lib/metadata';
 
 export default function ContactPage() {
+  useEffect(() => {
+    setMetadata({
+      title: 'Contact Us',
+      description: 'Get in touch with the Inktella team. Send us your questions, feedback, or concerns about our poetry community platform.',
+      url: 'https://inktella.onspace.app/contact',
+    });
+  }, []);
   return (
     <div className="min-h-screen bg-background">
       {/* Header */}

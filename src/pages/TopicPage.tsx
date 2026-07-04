@@ -3,6 +3,7 @@ import { useParams, Link } from 'react-router-dom';
 import { PenLine, Plus } from 'lucide-react';
 import { supabase } from '@/lib/supabase';
 import type { Topic, Poem, FeedTab } from '@/types';
+import { setTopicMetadata, resetMetadata } from '@/lib/metadata';
 import FeedTabs from '@/components/features/FeedTabs';
 import PoemCard from '@/components/features/PoemCard';
 import FeedbackPanel from '@/components/features/FeedbackPanel';
@@ -25,6 +26,17 @@ export default function TopicPage() {
   useEffect(() => {
     if (topic) fetchPoems();
   }, [topic, activeTab]);
+
+  useEffect(() => {
+    if (topic) {
+      setTopicMetadata({
+        name: topic.name,
+        slug: topic.slug,
+        description: `Explore ${topic.name} poetry on Inktella. Read and give feedback on ${topic.name} poems from our community.`,
+      });
+    }
+    return () => resetMetadata();
+  }, [topic]);
 
   async function fetchTopic() {
     const { data } = await supabase.from('topics').select('*').eq('slug', slug).single();

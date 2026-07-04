@@ -17,6 +17,7 @@ import { LevelBadgeImage } from '@/components/features/LevelBadge';
 import { toast } from 'sonner';
 import { FunctionsHttpError } from '@supabase/supabase-js';
 import { shareContent } from '@/lib/share';
+import { setPoemMetadata, resetMetadata } from '@/lib/metadata';
 
 // ─── AI Analysis helpers ───────────────────────────────────────────────────────
 function RenderAnalysis({ text }: { text: string }) {
@@ -52,6 +53,19 @@ function usePoemData(id: string | undefined, user: any) {
   useEffect(() => {
     if (id) fetchPoem();
   }, [id, user]);
+
+  useEffect(() => {
+    if (poem) {
+      setPoemMetadata({
+        id: poem.id,
+        title: poem.title,
+        content: poem.content,
+        image_url: poem.image_url,
+        author: poem.author,
+      });
+    }
+    return () => resetMetadata();
+  }, [poem]);
 
   async function fetchPoem() {
     setLoading(true);
@@ -336,7 +350,7 @@ function ClassicPoemPage({ id }: { id: string }) {
   );
 }
 
-// ═══���════════════════════════���══════════════════════��═══════════════════════════
+// ═══���════════���═══════════════���══════════════════════��═══════════════════════════
 // Modern Poem Page
 // ═════════════════════════════════════════════���═════════════════════════════════
 function ModernPoemPage({ id }: { id: string }) {

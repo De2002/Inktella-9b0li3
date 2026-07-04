@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
+import { setMetadata } from '@/lib/metadata';
 import FeedTabs from '@/components/features/FeedTabs';
 import PoemCard from '@/components/features/PoemCard';
 import ClassicPoemCard from '@/components/features/ClassicPoemCard';
@@ -61,6 +62,14 @@ const POEM_SELECT = `
 export default function FeedPage() {
   const { user, profile } = useAuth();
   const navigate = useNavigate();
+
+  useEffect(() => {
+    setMetadata({
+      title: 'Feed',
+      description: 'Discover poems, give meaningful feedback, and grow as a poet. Your personal feed on Inktella.',
+      url: 'https://inktella.onspace.app/feed',
+    });
+  }, []);
 
   const [mode, setMode] = useState<Mode>('modern');
   const [activeTab, setActiveTab] = useState<FeedTab>('picks');
@@ -182,7 +191,7 @@ export default function FeedPage() {
     if (mode === 'modern') {
       switch (activeTab) {
 
-        // ── PICKS ─────────────────────────────────────────────────────────────
+        // ── PICKS ──────────────────────────────────────────���──────────────────
         // Only poems that have earned ≥10 distinct Critic approvals via poem_boosts.
         // Ranked: critic Tella weight → feedback vs like ratio → 48h freshness.
         // No fallback — empty state is informative, not misleading.
