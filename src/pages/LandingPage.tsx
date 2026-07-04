@@ -399,6 +399,11 @@ export default function LandingPage() {
                   </Link>
                 </li>
                 <li>
+                  <Link to="/about" className="text-foreground-secondary hover:text-foreground text-sm transition-colors">
+                    About
+                  </Link>
+                </li>
+                <li>
                   <Link to="/auth" className="text-foreground-secondary hover:text-foreground text-sm transition-colors">
                     Join Free
                   </Link>
