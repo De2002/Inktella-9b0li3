@@ -61,7 +61,8 @@ function usePoemData(id: string | undefined, user: any) {
         *,
         author:user_id(id, username, avatar_url, tella_balance, bio),
         topic:topics(id, name, slug, color),
-        poem_tags(tag:tags(id, name))
+        poem_tags(tag:tags(id, name)),
+        behind_the_poem
       `)
       .eq('id', id)
       .single();
@@ -570,7 +571,7 @@ function ModernPoemPage({ id }: { id: string }) {
         <FeedbackPanel poem={{ ...poem, feedback_count: feedbackCount }} onClose={() => setFeedbackOpen(false)} />
       )}
       {behindOpen && poem && (
-        <BehindThePoem poem={poem} onClose={() => setBehindOpen(false)} />
+        <BehindThePoem poem={{ id: poem.id, title: poem.title, behind_the_poem: (poem as any).behind_the_poem }} onClose={() => setBehindOpen(false)} />
       )}
     </div>
   );
