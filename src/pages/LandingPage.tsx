@@ -403,9 +403,14 @@ export default function LandingPage() {
               <h4 className="font-semibold text-foreground text-sm uppercase tracking-wide mb-4">Support</h4>
               <ul className="space-y-3">
                 <li>
-                  <Link to="/premium" className="text-foreground-secondary hover:text-foreground text-sm transition-colors">
-                    Go Premium
-                  </Link>
+                  <a 
+                    href="https://blog.inktella.cyou" 
+                    target="_blank" 
+                    rel="noopener noreferrer"
+                    className="text-foreground-secondary hover:text-foreground text-sm transition-colors"
+                  >
+                    Blog
+                  </a>
                 </li>
                 <li>
                   <Link to="/contact" className="text-foreground-secondary hover:text-foreground text-sm transition-colors">
