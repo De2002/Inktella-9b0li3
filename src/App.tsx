@@ -13,7 +13,7 @@ import WritePage from '@/pages/WritePage';
 import ProfilePage from '@/pages/ProfilePage';
 import DashboardPage from '@/pages/DashboardPage';
 
-import PremiumPage from '@/pages/PremiumPage';
+
 import InkPage from '@/pages/InkPage';
 import NotificationsPage from '@/pages/NotificationsPage';
 import CriticNotesPage from '@/pages/CriticNotesPage';
@@ -35,8 +35,7 @@ export default function App() {
               <Route path="/" element={<LandingPage />} />
               <Route path="/feed" element={<FeedPage />} />
               <Route path="/dashboard" element={<DashboardPage />} />
-              <Route path="/premium" element={<PremiumPage />} />
-              <Route path="/love-inktella" element={<PremiumPage />} />
+
               <Route path="/explore" element={<ExplorePage />} />
               <Route path="/topic/:slug" element={<TopicPage />} />
               <Route path="/poem/:id" element={<PoemPage />} />
