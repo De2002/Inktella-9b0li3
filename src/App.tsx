@@ -20,7 +20,7 @@ import CriticNotesPage from '@/pages/CriticNotesPage';
 import SettingsPage from '@/pages/SettingsPage';
 import TermsOfUsePage from '@/pages/TermsOfUsePage';
 import PrivacyPolicyPage from '@/pages/PrivacyPolicyPage';
-import RefundPolicyPage from '@/pages/RefundPolicyPage';
+
 import ContactPage from '@/pages/ContactPage';
 import NotFoundPage from '@/pages/NotFoundPage';
 
@@ -47,7 +47,7 @@ export default function App() {
               <Route path="/settings" element={<SettingsPage />} />
               <Route path="/terms" element={<TermsOfUsePage />} />
               <Route path="/privacy" element={<PrivacyPolicyPage />} />
-              <Route path="/refund-policy" element={<RefundPolicyPage />} />
+
               <Route path="/contact" element={<ContactPage />} />
               <Route path="*" element={<NotFoundPage />} />
             </Route>

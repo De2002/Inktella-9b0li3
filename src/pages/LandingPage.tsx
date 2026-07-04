@@ -434,11 +434,7 @@ export default function LandingPage() {
                     Privacy Policy
                   </Link>
                 </li>
-                <li>
-                  <Link to="/refund-policy" className="text-foreground-secondary hover:text-foreground text-sm transition-colors">
-                    Refund Policy
-                  </Link>
-                </li>
+
               </ul>
             </div>
 
