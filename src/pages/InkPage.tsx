@@ -36,14 +36,14 @@ export default function InkPage() {
   const progress = profile ? tellaToNextLevel(profile.tella_balance) : { progress: 0, needed: 200, current: 'observer', next: 'guide' as any };
 
   const HOW_TO_EARN = [
-    { icon: MessageSquare, label: 'Give feedback on a poem', ink: `+${INK_PER_FEEDBACK}`, tella: `+${TELLA_PER_FEEDBACK}`, color: 'text-brand-500' },
-    { icon: Heart, label: 'Receive a like on your poem', ink: '+1', tella: null, color: 'text-red-500' },
-    { icon: Heart, label: 'Feedback liked by poem owner or Critic', ink: '+1', tella: null, color: 'text-pink-500' },
-    { icon: Zap, label: 'Feedback marked helpful (poem owner/Critic)', ink: null, tella: '+3', color: 'text-brand-500' },
-    { icon: Zap, label: 'Feedback highlighted by a Guide', ink: null, tella: '+2', color: 'text-amber-500' },
-    { icon: Zap, label: 'Get credited by a poet after revision', ink: null, tella: '+2', color: 'text-tella-500' },
     { icon: TrendingUp, label: 'Sign up welcome bonus', ink: '+100', tella: null, color: 'text-ink-500' },
     { icon: Feather, label: 'Publish a poem', ink: `−${INK_PUBLISH_COST}`, tella: null, color: 'text-foreground-muted' },
+    { icon: MessageSquare, label: 'Give feedback on a poem', ink: '+2', tella: null, color: 'text-brand-500' },
+    { icon: Heart, label: 'Receive a like on your poem', ink: '+1', tella: null, color: 'text-red-500' },
+    { icon: Heart, label: 'Receive a like on your feedback', ink: '+1', tella: null, color: 'text-pink-500' },
+    { icon: Zap, label: 'Feedback marked Helpful by the poet or a Critic', ink: null, tella: '+3', color: 'text-brand-500' },
+    { icon: Zap, label: 'Feedback highlighted by a Guide', ink: null, tella: '+2', color: 'text-amber-500' },
+    { icon: Zap, label: 'Poet credits your feedback after revising their poem', ink: null, tella: '+2', color: 'text-tella-500' },
   ];
 
   return (
