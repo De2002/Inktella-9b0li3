@@ -13,9 +13,10 @@ export const LEVEL_BADGE_IMAGES: Record<string, string> = {
 export const INK_PUBLISH_COST = 10;
 export const INK_SIGNUP_BONUS = 100;
 export const INK_PER_FEEDBACK = 2;
-export const TELLA_PER_FEEDBACK = 3;
-export const TELLA_PER_CREDIT = 2;
 export const INK_PER_LIKE_RECEIVED = 1;
+export const TELLA_PER_FEEDBACK_HELPFUL = 3;
+export const TELLA_PER_FEEDBACK_HIGHLIGHTED = 2;
+export const TELLA_PER_CREDIT = 3;
 
 export const LEVEL_THRESHOLDS = {
   observer: { min: 0, max: 199 },

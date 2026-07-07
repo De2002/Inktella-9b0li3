@@ -4,7 +4,7 @@ import { Feather, X, ChevronDown, Plus, PenLine, Check, Users, Save, Loader2 } f
 import { supabase } from '@/lib/supabase';
 import { useAuth } from '@/contexts/AuthContext';
 import type { Topic } from '@/types';
-import { INK_PUBLISH_COST, getLevel, LEVEL_CONFIG } from '@/constants';
+import { INK_PUBLISH_COST, getLevel, LEVEL_CONFIG, TELLA_PER_CREDIT } from '@/constants';
 import { cn, getInitials } from '@/lib/utils';
 import { toast } from 'sonner';
 
@@ -164,10 +164,10 @@ export default function WritePage() {
       await supabase.from('feedback_credits').upsert(inserts, { onConflict: 'poem_id,credited_user_id' });
       await Promise.all([...selectedCredits].map(async uid => {
         const { data: creditedProfile } = await supabase.from('user_profiles').select('tella_balance').eq('id', uid).single();
-        if (creditedProfile) {
-          await Promise.all([
-            supabase.from('tella_transactions').insert({ user_id: uid, amount: 2, reason: 'Credited for feedback contribution', related_id: publishedPoemId }),
-            supabase.from('user_profiles').update({ tella_balance: creditedProfile.tella_balance + 2 }).eq('id', uid),
+    if (creditedProfile) {
+    await Promise.all([
+    supabase.from('tella_transactions').insert({ user_id: uid, amount: TELLA_PER_CREDIT, reason: 'Credited for feedback contribution', related_id: publishedPoemId }),
+    supabase.from('user_profiles').update({ tella_balance: creditedProfile.tella_balance + TELLA_PER_CREDIT }).eq('id', uid),
             supabase.from('notifications').insert({ user_id: uid, type: 'feedback_credited', content: `@${profile?.username} credited your feedback contribution (+2 Tella)`, related_id: publishedPoemId, actor_id: user!.id }),
           ]);
         }
