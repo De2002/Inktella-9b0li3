@@ -174,10 +174,10 @@ export default function ProfilePage() {
 
           <div className="flex items-center gap-2">
             {isOwn ? (
-              <button className="flex items-center gap-1.5 px-4 py-2 border border-border rounded-full text-sm font-medium text-foreground hover:bg-background-subtle transition-colors">
+              <Link to="/settings" className="flex items-center gap-1.5 px-4 py-2 border border-border rounded-full text-sm font-medium text-foreground hover:bg-background-subtle transition-colors">
                 <Settings size={13} />
                 Edit profile
-              </button>
+              </Link>
             ) : (
               <button
                 onClick={handleFollow}
