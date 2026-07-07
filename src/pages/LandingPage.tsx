@@ -91,12 +91,6 @@ export default function LandingPage() {
         </div>
 
         <div className="relative z-10 text-center max-w-3xl mx-auto">
-          {/* Badge */}
-          <div className="inline-flex items-center gap-2 text-xs font-semibold tracking-widest uppercase text-brand-500 border border-brand-200 dark:border-brand-800 bg-brand-50 dark:bg-brand-900/20 rounded-full px-4 py-1.5 mb-8">
-            <span className="w-1.5 h-1.5 rounded-full bg-brand-500 animate-pulse" />
-            A contribution platform for poets
-          </div>
-
           {/* Headline */}
           <h1 className="font-serif font-bold text-5xl sm:text-6xl lg:text-7xl text-foreground leading-[1.1] tracking-tight mb-6">
             Poetry grows<br />
