@@ -3,14 +3,14 @@
 import { useState, useMemo } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { 
-  Home, FileText, Bookmark, Heart, Users, UserCheck, Activity, Zap, DollarSign, Settings, 
+  Newspaper, FileText, Bookmark, Heart, Users, UserCheck, Activity, Zap, DollarSign, Settings, 
   ChevronLeft, ChevronRight 
 } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import { cn } from '@/lib/utils';
 
 const navigationItems = [
-  { id: 'dashboard', label: 'Dashboard', icon: Home, path: '/dashboard' },
+  { id: 'feed', label: 'Feed', icon: Newspaper, path: '/feed' },
   { id: 'poems', label: 'My Poems', icon: FileText, path: '/my-poems' },
   { id: 'bookmarks', label: 'Bookmarks', icon: Bookmark, path: '/bookmarks' },
   { id: 'likes', label: 'Likes & Feedback', icon: Heart, path: '/likes-feedback' },

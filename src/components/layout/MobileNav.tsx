@@ -1,5 +1,5 @@
 import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { Home, Compass, Droplets, User } from 'lucide-react';
+import { Newspaper, Compass, Droplets, User } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import quillIcon from '@/assets/quill-icon.png';
 
@@ -9,7 +9,7 @@ export default function MobileNav() {
   const navigate = useNavigate();
 
   const navItems = [
-    { to: '/feed', icon: Home, label: 'Home' },
+    { to: '/feed', icon: Newspaper, label: 'Feed' },
     { to: '/explore', icon: Compass, label: 'Explore' },
     { to: '/write', icon: null, label: 'Write', fab: true },
     { to: '/ink', icon: Droplets, label: 'Ink' },
