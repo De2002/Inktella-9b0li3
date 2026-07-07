@@ -75,7 +75,8 @@ function PoemsSheet({ userId, onClose }: { userId: string; onClose: () => void }
         return;
       }
 
-      let allPoems = data || [];
+      // Ensure only unpublished poems appear in drafts
+      let allPoems = (data || []).filter((p: any) => p.published === false);
 
       // If showing drafts, also include localStorage drafts
       if (filter === 'drafts') {
@@ -210,7 +211,15 @@ function PoemsSheet({ userId, onClose }: { userId: string; onClose: () => void }
               {poems.map(poem => (
                 <button
                   key={poem.id}
-                  onClick={() => { navigate(`/poem/${poem.id}`); onClose(); }}
+                  onClick={() => {
+                    // localStorage drafts navigate to WritePage for editing, database drafts go to PoemPage
+                    if (poem.isLocalDraft) {
+                      navigate(`/write${poem.id.startsWith('local_new_') ? '' : `?edit=${poem.id}`}`);
+                    } else {
+                      navigate(`/poem/${poem.id}`);
+                    }
+                    onClose();
+                  }}
                   className="w-full text-left p-4 rounded-xl border border-border hover:border-brand-300 dark:hover:border-brand-700 hover:bg-background-subtle transition-all group"
                 >
                   <div className="flex items-start justify-between gap-3">
@@ -221,7 +230,7 @@ function PoemsSheet({ userId, onClose }: { userId: string; onClose: () => void }
                     {poem.published ? (
                       <span className="text-[10px] font-bold uppercase tracking-wider text-green-600 dark:text-green-400 bg-green-50 dark:bg-green-900/20 px-2 py-0.5 rounded-full shrink-0">Published</span>
                     ) : (
-                      <span className="text-[10px] font-bold uppercase tracking-wider text-amber-600 dark:text-amber-400 bg-amber-50 dark:bg-amber-900/20 px-2 py-0.5 rounded-full shrink-0">Draft</span>
+                      <span className="text-[10px] font-bold uppercase tracking-wider text-amber-600 dark:text-amber-400 bg-amber-50 dark:bg-amber-900/20 px-2 py-0.5 rounded-full shrink-0">{poem.isLocalDraft ? 'Local Draft' : 'Draft'}</span>
                     )}
                   </div>
                   {poem.published && (
