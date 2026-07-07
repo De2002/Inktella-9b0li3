@@ -75,21 +75,86 @@ function PoemsSheet({ userId, onClose }: { userId: string; onClose: () => void }
         return;
       }
 
+      let allPoems = data || [];
+
+      // If showing drafts, also include localStorage drafts
+      if (filter === 'drafts') {
+        const localStorageDrafts: any[] = [];
+        const NEW_POEM_KEY = 'inktella_new_poem_draft';
+        const newDraft = localStorage.getItem(NEW_POEM_KEY);
+        
+        // Check for new poem draft
+        if (newDraft) {
+          try {
+            const parsed = JSON.parse(newDraft);
+            if (parsed.title || parsed.content) {
+              localStorageDrafts.push({
+                id: `local_new_${Date.now()}`,
+                title: parsed.title || '(Untitled Draft)',
+                created_at: parsed.savedAt || new Date().toISOString(),
+                updated_at: parsed.savedAt || new Date().toISOString(),
+                published: false,
+                view_count: 0,
+                like_count: 0,
+                feedback_count: 0,
+                isLocalDraft: true,
+              });
+            }
+          } catch { /* ignore */ }
+        }
+
+        // Check for edit mode drafts (POEM_DRAFT_KEY pattern)
+        for (let i = 0; i < localStorage.length; i++) {
+          const key = localStorage.key(i);
+          if (key && key.startsWith('inktella_poem_draft_')) {
+            try {
+              const parsed = JSON.parse(localStorage.getItem(key) || '{}');
+              if (parsed.title || parsed.content) {
+                const poemId = key.replace('inktella_poem_draft_', '');
+                // Only add if not already in database drafts
+                if (!allPoems.find((p: any) => p.id === poemId)) {
+                  localStorageDrafts.push({
+                    id: poemId,
+                    title: parsed.title || '(Untitled Draft)',
+                    created_at: parsed.savedAt || new Date().toISOString(),
+                    updated_at: parsed.savedAt || new Date().toISOString(),
+                    published: false,
+                    view_count: 0,
+                    like_count: 0,
+                    feedback_count: 0,
+                    isLocalDraft: true,
+                  });
+                }
+              }
+            } catch { /* ignore */ }
+          }
+        }
+
+        // Merge and sort by updated_at (most recent first)
+        allPoems = [...allPoems, ...localStorageDrafts].sort((a: any, b: any) => 
+          new Date(b.updated_at).getTime() - new Date(a.updated_at).getTime()
+        );
+      }
+
       // For published poems only, get like + feedback counts
-      if (data && data.length > 0 && filter !== 'drafts') {
-        const ids = data.map((p: any) => p.id);
-        const [likesRes, feedbackRes] = await Promise.all([
-          supabase.from('poem_likes').select('poem_id').in('poem_id', ids),
-          supabase.from('feedback').select('poem_id').in('poem_id', ids),
-        ]);
-        const likeCounts: Record<string, number> = {};
-        const fbCounts: Record<string, number> = {};
-        (likesRes.data || []).forEach((l: any) => { likeCounts[l.poem_id] = (likeCounts[l.poem_id] || 0) + 1; });
-        (feedbackRes.data || []).forEach((f: any) => { fbCounts[f.poem_id] = (fbCounts[f.poem_id] || 0) + 1; });
-        setPoems(data.map((p: any) => ({ ...p, like_count: likeCounts[p.id] || 0, feedback_count: fbCounts[p.id] || 0 })));
-      } else if (data) {
+      if (allPoems.length > 0 && filter !== 'drafts') {
+        const ids = allPoems.map((p: any) => p.id).filter((id: string) => !id.startsWith('local_'));
+        if (ids.length > 0) {
+          const [likesRes, feedbackRes] = await Promise.all([
+            supabase.from('poem_likes').select('poem_id').in('poem_id', ids),
+            supabase.from('feedback').select('poem_id').in('poem_id', ids),
+          ]);
+          const likeCounts: Record<string, number> = {};
+          const fbCounts: Record<string, number> = {};
+          (likesRes.data || []).forEach((l: any) => { likeCounts[l.poem_id] = (likeCounts[l.poem_id] || 0) + 1; });
+          (feedbackRes.data || []).forEach((f: any) => { fbCounts[f.poem_id] = (fbCounts[f.poem_id] || 0) + 1; });
+          setPoems(allPoems.map((p: any) => ({ ...p, like_count: likeCounts[p.id] || 0, feedback_count: fbCounts[p.id] || 0 })));
+        } else {
+          setPoems(allPoems);
+        }
+      } else if (allPoems.length > 0) {
         // For drafts, just set them without engagement counts
-        setPoems(data.map((p: any) => ({ ...p, like_count: 0, feedback_count: 0 })));
+        setPoems(allPoems.map((p: any) => ({ ...p, like_count: 0, feedback_count: 0 })));
       } else {
         setPoems([]);
       }
