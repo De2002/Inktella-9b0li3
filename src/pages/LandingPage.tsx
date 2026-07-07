@@ -117,15 +117,17 @@ export default function LandingPage() {
               to="/auth"
               className="flex items-center gap-2 bg-brand-500 hover:bg-brand-600 text-white px-8 py-3.5 rounded-full font-semibold text-base transition-all hover:shadow-lg hover:shadow-brand-500/25 active:scale-95"
             >
-              Earn Your First Ink
+              Join Inktella
               <ArrowRight size={18} />
             </Link>
-            <Link
-              to="/explore"
+            <a
+              href="https://blog.inktella.cyou"
+              target="_blank"
+              rel="noopener noreferrer"
               className="flex items-center gap-2 bg-background-subtle border border-border hover:border-brand-300 dark:hover:border-brand-700 text-foreground px-8 py-3.5 rounded-full font-medium text-base transition-colors"
             >
-              Explore Poems
-            </Link>
+              Read our Blog
+            </a>
           </div>
 
           {/* Sub-note */}
