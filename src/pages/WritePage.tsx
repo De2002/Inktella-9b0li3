@@ -194,16 +194,17 @@ export default function WritePage() {
 
     const { error: updateError } = await supabase.from('poems').update({
       title: title.trim(), content: content.trim(), image_url: imageUrl.trim() || null,
-      topic_id: topicId || null, revision_count: (originalPoemData.revision_count || 0) + 1,
+      topic_id: topicId || null,
       updated_at: new Date().toISOString(), behind_the_poem: behindPayload(),
     }).eq('id', editPoemId);
 
     if (updateError) { toast.error('Failed to save revision'); setSubmitting(false); return; }
 
-    const { data: existingDrafts } = await supabase.from('poem_drafts').select('draft_number').eq('poem_id', editPoemId).order('draft_number', { ascending: false }).limit(1);
-    const nextDraftNumber = (existingDrafts?.[0]?.draft_number || 0) + 1;
-
-    await supabase.from('poem_drafts').insert({ poem_id: editPoemId, content: content.trim(), draft_number: nextDraftNumber, changes_summary: changesList.length > 0 ? changesList : [] });
+    // Keep only one draft per unpublished poem (upsert: delete old and insert new)
+    if (!originalPoemData.published) {
+      await supabase.from('poem_drafts').delete().eq('poem_id', editPoemId);
+      await supabase.from('poem_drafts').insert({ poem_id: editPoemId, content: content.trim(), draft_number: 1, changes_summary: changesList.length > 0 ? changesList : [] });
+    }
 
     await supabase.from('poem_tags').delete().eq('poem_id', editPoemId);
     for (const tagName of tags) {
@@ -369,7 +370,7 @@ export default function WritePage() {
                 <PenLine size={18} className="text-brand-500" />
                 {originalPoemData.title}
               </p>
-              <p className="text-xs text-foreground-muted mt-0.5">Draft {(originalPoemData.revision_count || 0) + 1}</p>
+              <p className="text-xs text-foreground-muted mt-0.5">Draft (unsaved changes will be discarded on close)</p>
             </>
           ) : (
             <p className="text-sm text-foreground-muted font-serif italic">New poem</p>
