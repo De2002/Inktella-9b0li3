@@ -71,40 +71,14 @@ export default function InkPage() {
         </div>
       </div>
 
-      {/* Level progress */}
-      <div className="bg-surface-raised border border-border rounded-2xl p-4 mb-6">
-        <div className="flex items-center justify-between mb-2">
-          <span className={cn('text-sm font-semibold', levelCfg.textClass)}>{levelCfg.badgeText}</span>
-          {progress.next && (
-            <span className="text-xs text-foreground-muted">{progress.needed} Tella to {progress.next}</span>
-          )}
-        </div>
-        <div className="h-2 bg-border rounded-full overflow-hidden mb-2">
-          <div
-            className="h-full rounded-full transition-all duration-700"
-            style={{ width: `${progress.progress}%`, background: levelCfg.color }}
-          />
-        </div>
-        <p className="text-xs text-foreground-muted">{levelCfg.description}</p>
-        <Link to={`/profile/${user?.username}`} className="text-xs text-brand-500 hover:text-brand-600 font-medium mt-1 inline-block">
-          View profile →
-        </Link>
-      </div>
-
       {/* How to earn */}
       <div className="mb-6">
         <h2 className="font-semibold text-sm text-foreground uppercase tracking-wide mb-3">How to earn</h2>
         <div className="space-y-1">
-          {HOW_TO_EARN.map(({ icon: Icon, label, ink, tella, color }) => (
-            <div key={label} className="flex items-center justify-between py-2.5 border-b border-border-subtle last:border-0">
-              <div className="flex items-center gap-2.5">
-                <Icon size={15} className={color} />
-                <span className="text-sm text-foreground-secondary">{label}</span>
-              </div>
-              <div className="flex items-center gap-2">
-                {ink && <span className={cn('text-xs font-semibold', ink.startsWith('+') ? 'text-ink-600 dark:text-ink-400' : 'text-red-500')}>💧 {ink}</span>}
-                {tella && <span className="text-xs font-semibold text-tella-600 dark:text-tella-400">✦ {tella}</span>}
-              </div>
+          {HOW_TO_EARN.map(({ icon: Icon, label, color }) => (
+            <div key={label} className="flex items-center gap-2.5 py-2.5 border-b border-border-subtle last:border-0">
+              <Icon size={15} className={color} />
+              <span className="text-sm text-foreground-secondary">{label}</span>
             </div>
           ))}
         </div>
@@ -112,19 +86,32 @@ export default function InkPage() {
 
       {/* Transaction history */}
       <div>
-        <div className="flex border-b border-border mb-4">
+        <h2 className="font-semibold text-sm text-foreground uppercase tracking-wide mb-3">History</h2>
+        
+        {/* Mobile: Tab buttons with divider */}
+        <div className="lg:hidden grid grid-cols-2 gap-3 mb-4">
           <button
             onClick={() => setActiveTab('ink')}
-            className={cn('px-4 py-2.5 text-sm font-medium border-b-2 transition-all', activeTab === 'ink' ? 'text-ink-600 dark:text-ink-400 border-ink-400' : 'text-foreground-muted border-transparent')}
+            className={cn('px-4 py-2.5 text-sm font-medium rounded-lg transition-all', activeTab === 'ink' ? 'bg-ink-50 dark:bg-ink-900/20 border border-ink-200 dark:border-ink-800 text-ink-600 dark:text-ink-400' : 'bg-background-subtle border border-border text-foreground-muted')}
           >
-            💧 Ink history
+            💧 Ink
           </button>
           <button
             onClick={() => setActiveTab('tella')}
-            className={cn('px-4 py-2.5 text-sm font-medium border-b-2 transition-all', activeTab === 'tella' ? 'text-tella-600 dark:text-tella-400 border-tella-400' : 'text-foreground-muted border-transparent')}
+            className={cn('px-4 py-2.5 text-sm font-medium rounded-lg transition-all', activeTab === 'tella' ? 'bg-tella-50 dark:bg-tella-900/20 border border-tella-200 dark:border-tella-800 text-tella-600 dark:text-tella-400' : 'bg-background-subtle border border-border text-foreground-muted')}
           >
-            ✦ Tella history
+            ✦ Tella
           </button>
+        </div>
+
+        {/* Desktop: Divided tabs */}
+        <div className="hidden lg:grid grid-cols-2 gap-3 mb-4">
+          <div className={cn('px-4 py-2.5 text-sm font-medium text-center rounded-l-lg border-l border-t border-b', activeTab === 'ink' ? 'bg-ink-50 dark:bg-ink-900/20 border-ink-200 dark:border-ink-800 text-ink-600 dark:text-ink-400' : 'bg-background-subtle border-border text-foreground-muted')}>
+            💧 Ink
+          </div>
+          <div className={cn('px-4 py-2.5 text-sm font-medium text-center rounded-r-lg border-r border-t border-b', activeTab === 'tella' ? 'bg-tella-50 dark:bg-tella-900/20 border-tella-200 dark:border-tella-800 text-tella-600 dark:text-tella-400' : 'bg-background-subtle border-border text-foreground-muted')}>
+            ✦ Tella
+          </div>
         </div>
 
         {loading ? (
