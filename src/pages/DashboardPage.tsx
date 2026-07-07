@@ -48,38 +48,53 @@ function PoemsSheet({ userId, onClose }: { userId: string; onClose: () => void }
 
   async function fetchPoems() {
     setLoading(true);
-    let query = supabase
-      .from('poems')
-      .select(`*, topic:topics(name, slug)`)
-      .eq('user_id', userId);
+    try {
+      let query = supabase
+        .from('poems')
+        .select('id, title, created_at, updated_at, published, view_count')
+        .eq('user_id', userId);
 
-    if (filter === 'drafts') {
-      query = query.eq('published', false);
-    } else {
-      query = query.eq('published', true);
-    }
+      if (filter === 'drafts') {
+        query = query.eq('published', false);
+      } else {
+        query = query.eq('published', true);
+      }
 
-    if (filter === 'recent' || filter === 'drafts') {
-      query = query.order('created_at', { ascending: false });
-    } else {
-      query = query.order('view_count', { ascending: false });
-    }
+      if (filter === 'recent' || filter === 'drafts') {
+        query = query.order('created_at', { ascending: false });
+      } else {
+        query = query.order('view_count', { ascending: false });
+      }
 
-    const { data } = await query.limit(30);
+      const { data, error } = await query.limit(30);
 
-    // Get like + feedback counts
-    if (data && data.length > 0) {
-      const ids = data.map((p: any) => p.id);
-      const [likesRes, feedbackRes] = await Promise.all([
-        supabase.from('poem_likes').select('poem_id').in('poem_id', ids),
-        supabase.from('feedback').select('poem_id').in('poem_id', ids),
-      ]);
-      const likeCounts: Record<string, number> = {};
-      const fbCounts: Record<string, number> = {};
-      (likesRes.data || []).forEach((l: any) => { likeCounts[l.poem_id] = (likeCounts[l.poem_id] || 0) + 1; });
-      (feedbackRes.data || []).forEach((f: any) => { fbCounts[f.poem_id] = (fbCounts[f.poem_id] || 0) + 1; });
-      setPoems(data.map((p: any) => ({ ...p, like_count: likeCounts[p.id] || 0, feedback_count: fbCounts[p.id] || 0 })));
-    } else {
+      if (error) {
+        console.error('[v0] Error fetching poems:', error);
+        setPoems([]);
+        setLoading(false);
+        return;
+      }
+
+      // For published poems only, get like + feedback counts
+      if (data && data.length > 0 && filter !== 'drafts') {
+        const ids = data.map((p: any) => p.id);
+        const [likesRes, feedbackRes] = await Promise.all([
+          supabase.from('poem_likes').select('poem_id').in('poem_id', ids),
+          supabase.from('feedback').select('poem_id').in('poem_id', ids),
+        ]);
+        const likeCounts: Record<string, number> = {};
+        const fbCounts: Record<string, number> = {};
+        (likesRes.data || []).forEach((l: any) => { likeCounts[l.poem_id] = (likeCounts[l.poem_id] || 0) + 1; });
+        (feedbackRes.data || []).forEach((f: any) => { fbCounts[f.poem_id] = (fbCounts[f.poem_id] || 0) + 1; });
+        setPoems(data.map((p: any) => ({ ...p, like_count: likeCounts[p.id] || 0, feedback_count: fbCounts[p.id] || 0 })));
+      } else if (data) {
+        // For drafts, just set them without engagement counts
+        setPoems(data.map((p: any) => ({ ...p, like_count: 0, feedback_count: 0 })));
+      } else {
+        setPoems([]);
+      }
+    } catch (err) {
+      console.error('[v0] Exception fetching poems:', err);
       setPoems([]);
     }
     setLoading(false);
