@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { ThumbsUp, Star, ArrowDownCircle, MessageCircle, Heart, Send, ChevronDown, ChevronUp, CheckCircle2 } from 'lucide-react';
 import { cn, formatTimeAgo, getInitials } from '@/lib/utils';
-import { getLevel, LEVEL_CONFIG } from '@/constants';
+import { getLevel, LEVEL_CONFIG, TELLA_PER_FEEDBACK_HELPFUL, TELLA_PER_FEEDBACK_HIGHLIGHTED } from '@/constants';
 import type { Feedback, FeedbackReply, UserLevel } from '@/types';
 import { supabase } from '@/lib/supabase';
 import { useAuth } from '@/contexts/AuthContext';
@@ -129,7 +129,7 @@ export default function FeedbackItem({ feedback, poemOwnerId, userLevel, onUpdat
       setHelpfulCount(c => c + 1);
       await supabase.from('feedback_helpful').insert({ feedback_id: feedback.id, user_id: user.id });
 
-      // Award 3 Tella to feedback author
+      // Award Tella to feedback author
       const { data: fbAuthorProfile } = await supabase
         .from('user_profiles')
         .select('tella_balance')
@@ -140,22 +140,22 @@ export default function FeedbackItem({ feedback, poemOwnerId, userLevel, onUpdat
         await Promise.all([
           supabase.from('tella_transactions').insert({
             user_id: feedback.user_id,
-            amount: 3,
+            amount: TELLA_PER_FEEDBACK_HELPFUL,
             reason: 'Feedback marked helpful',
             related_id: feedback.id,
           }),
           supabase.from('user_profiles').update({
-            tella_balance: fbAuthorProfile.tella_balance + 3,
+            tella_balance: fbAuthorProfile.tella_balance + TELLA_PER_FEEDBACK_HELPFUL,
           }).eq('id', feedback.user_id),
           supabase.from('notifications').insert({
             user_id: feedback.user_id,
             type: 'feedback_helpful',
-            content: `@${user.username} marked your feedback as helpful (+3 Tella)`,
+            content: `@${user.username} marked your feedback as helpful (+${TELLA_PER_FEEDBACK_HELPFUL} Tella)`,
             related_id: feedback.poem_id,
             actor_id: user.id,
           }),
         ]);
-        toast.success('Marked as helpful — feedback author earns +3 Tella');
+        toast.success(`Marked as helpful — feedback author earns +${TELLA_PER_FEEDBACK_HELPFUL} Tella`);
       }
     }
     setPending(false);
@@ -181,7 +181,7 @@ export default function FeedbackItem({ feedback, poemOwnerId, userLevel, onUpdat
       setHighlightUsers(prev => [{ username: user.username, avatar_url: profile?.avatar_url }, ...prev].slice(0, 5));
       await supabase.from('feedback_highlights').insert({ feedback_id: feedback.id, user_id: user.id });
 
-      // Award 2 Tella to feedback author
+      // Award Tella to feedback author
       const { data: fbAuthorProfile } = await supabase
         .from('user_profiles')
         .select('tella_balance')
@@ -192,12 +192,12 @@ export default function FeedbackItem({ feedback, poemOwnerId, userLevel, onUpdat
         await Promise.all([
           supabase.from('tella_transactions').insert({
             user_id: feedback.user_id,
-            amount: 2,
+            amount: TELLA_PER_FEEDBACK_HIGHLIGHTED,
             reason: 'Feedback highlighted',
             related_id: feedback.id,
           }),
           supabase.from('user_profiles').update({
-            tella_balance: fbAuthorProfile.tella_balance + 2,
+            tella_balance: fbAuthorProfile.tella_balance + TELLA_PER_FEEDBACK_HIGHLIGHTED,
           }).eq('id', feedback.user_id),
           supabase.from('notifications').insert({
             user_id: feedback.user_id,
