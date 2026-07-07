@@ -181,19 +181,14 @@ export default function FeedbackPanel({ poem, onClose }: FeedbackPanelProps) {
       return;
     }
 
-    // +2 Ink + Tella for giving feedback
+    // +2 Ink for giving feedback
     const currentInk = profile?.ink_balance || 0;
-    const currentTella = profile?.tella_balance || 0;
     await Promise.all([
       supabase.from('ink_transactions').insert({
         user_id: user.id, amount: 2, reason: 'Gave feedback', related_id: poem!.id,
       }),
-      supabase.from('tella_transactions').insert({
-        user_id: user.id, amount: 3, reason: 'Gave feedback', related_id: poem!.id,
-      }),
       supabase.from('user_profiles').update({
         ink_balance: currentInk + 2,
-        tella_balance: currentTella + 3,
       }).eq('id', user.id),
     ]);
 
