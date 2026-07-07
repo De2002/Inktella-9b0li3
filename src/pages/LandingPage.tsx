@@ -410,9 +410,9 @@ export default function LandingPage() {
                 <img src={logoSrc} alt="Inktella" className="w-6 h-6 object-contain" />
                 <span className="font-serif font-bold text-lg text-foreground">Inktella</span>
               </Link>
-  <p className="text-foreground-secondary text-sm leading-relaxed">
-> A feedback-driven platform. Free, open, and community-powered.
-  </p>
+              <p className="text-foreground-secondary text-sm leading-relaxed">
+                A feedback-driven platform. Free, open, and community-powered.
+              </p>
             </div>
 
             {/* Product Column */}
