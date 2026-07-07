@@ -234,7 +234,7 @@ export default function Navbar() {
             </>
           ) : (
             <Link to="/auth" className="bg-brand-500 hover:bg-brand-600 text-white px-4 py-2 rounded-full text-sm font-medium transition-colors">
-              Join Inktella
+              Get Started
             </Link>
           )}
         </div>
