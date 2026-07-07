@@ -10,6 +10,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { getLevel, LEVEL_CONFIG } from '@/constants';
 import { cn, getInitials } from '@/lib/utils';
 import { toast } from 'sonner';
+import { LevelBadgeImage } from '@/components/features/LevelBadge';
 
 // ─── OTP password change flow states ─────────────────────────────────────────
 type PasswordStep = 'idle' | 'sending' | 'verify' | 'verifying' | 'set' | 'saving';
@@ -884,8 +885,9 @@ export default function SettingsPage() {
           <div className="flex items-center gap-2 text-xs text-foreground-muted">
             <Shield size={12} />
             <span>Signed in as <strong className="text-foreground">{user.email}</strong></span>
-            <span className="ml-auto font-medium text-foreground-muted">·</span>
-            <span className={cn('font-medium', levelCfg.textClass)}>{levelCfg.badgeText}</span>
+            <span className="ml-auto">
+              <LevelBadgeImage level={level} size={24} showTooltip={true} />
+            </span>
           </div>
         </div>
       </section>
