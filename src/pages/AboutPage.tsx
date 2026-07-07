@@ -1,5 +1,6 @@
 import { useEffect } from 'react';
 import { setMetadata } from '@/lib/metadata';
+import { LevelBadgeImage } from '@/components/features/LevelBadge';
 
 export default function AboutPage() {
   useEffect(() => {
@@ -148,23 +149,38 @@ export default function AboutPage() {
               Inktella is built around three levels of participation:
             </p>
             <div className="space-y-6">
-              <div className="bg-background-subtle border border-border rounded-lg p-6">
-                <h3 className="font-serif font-bold text-xl text-foreground mb-3">Observer</h3>
-                <p className="text-lg text-foreground-secondary leading-relaxed">
-                  Everyone begins here. Observers can read, write, give feedback, and participate freely.
-                </p>
+              <div className="bg-background-subtle border border-border rounded-lg p-6 flex items-start gap-4 sm:gap-6">
+                <div className="shrink-0">
+                  <LevelBadgeImage level="observer" size={80} />
+                </div>
+                <div className="flex-1 min-w-0">
+                  <h3 className="font-serif font-bold text-xl text-foreground mb-3">Observer</h3>
+                  <p className="text-lg text-foreground-secondary leading-relaxed">
+                    Everyone begins here. Observers can read, write, give feedback, and participate freely.
+                  </p>
+                </div>
               </div>
-              <div className="bg-background-subtle border border-border rounded-lg p-6">
-                <h3 className="font-serif font-bold text-xl text-foreground mb-3">Guide</h3>
-                <p className="text-lg text-foreground-secondary leading-relaxed">
-                  Guides are trusted members who can highlight valuable feedback and support the growth of others.
-                </p>
+              <div className="bg-background-subtle border border-border rounded-lg p-6 flex items-start gap-4 sm:gap-6">
+                <div className="shrink-0">
+                  <LevelBadgeImage level="guide" size={80} />
+                </div>
+                <div className="flex-1 min-w-0">
+                  <h3 className="font-serif font-bold text-xl text-foreground mb-3">Guide</h3>
+                  <p className="text-lg text-foreground-secondary leading-relaxed">
+                    Guides are trusted members who can highlight valuable feedback and support the growth of others.
+                  </p>
+                </div>
               </div>
-              <div className="bg-background-subtle border border-border rounded-lg p-6">
-                <h3 className="font-serif font-bold text-xl text-foreground mb-3">Critic</h3>
-                <p className="text-lg text-foreground-secondary leading-relaxed">
-                  Critics are experienced members who help maintain quality by marking feedback, down-ranking unhelpful content, and supporting featured poetry selection through collective agreement.
-                </p>
+              <div className="bg-background-subtle border border-border rounded-lg p-6 flex items-start gap-4 sm:gap-6">
+                <div className="shrink-0">
+                  <LevelBadgeImage level="critic" size={80} />
+                </div>
+                <div className="flex-1 min-w-0">
+                  <h3 className="font-serif font-bold text-xl text-foreground mb-3">Critic</h3>
+                  <p className="text-lg text-foreground-secondary leading-relaxed">
+                    Critics are experienced members who help maintain quality by marking feedback, down-ranking unhelpful content, and supporting featured poetry selection through collective agreement.
+                  </p>
+                </div>
               </div>
             </div>
             <p className="text-lg text-foreground-secondary leading-relaxed mt-6">
