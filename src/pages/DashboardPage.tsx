@@ -75,8 +75,10 @@ function PoemsSheet({ userId, onClose }: { userId: string; onClose: () => void }
         return;
       }
 
-      // Ensure only unpublished poems appear in drafts
-      let allPoems = (data || []).filter((p: any) => p.published === false);
+      // Filter based on tab: drafts show unpublished, recent/popular show published
+      let allPoems = filter === 'drafts' 
+        ? (data || []).filter((p: any) => p.published === false)
+        : (data || []).filter((p: any) => p.published === true);
 
       // If showing drafts, also include localStorage drafts
       if (filter === 'drafts') {
