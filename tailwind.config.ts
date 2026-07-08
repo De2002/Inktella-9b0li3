@@ -13,6 +13,7 @@ const config: Config = {
       fontFamily: {
         serif: ['Playfair Display', 'Georgia', 'serif'],
         sans: ['Inter', 'system-ui', 'sans-serif'],
+        literata: ['Literata', 'Merriweather', 'Georgia', 'serif'],
       },
       colors: {
         brand: {
