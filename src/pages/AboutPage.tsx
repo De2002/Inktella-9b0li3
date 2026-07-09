@@ -15,7 +15,7 @@ export default function AboutPage() {
       {/* Hero Section */}
       <section className="relative py-16 sm:py-24 lg:py-32 px-4 sm:px-6 lg:px-8">
         <div className="max-w-3xl mx-auto">
-          <h1 className="font-serif font-bold text-3xl sm:text-4xl text-foreground mb-6 leading-[1.1]">
+          <h1 className="font-serif font-bold text-2xl sm:text-3xl text-foreground mb-6 leading-[1.1]">
             About Inktella
           </h1>
           <p className="text-base text-foreground-secondary leading-relaxed">
@@ -29,7 +29,7 @@ export default function AboutPage() {
         <div className="max-w-3xl mx-auto space-y-16">
           {/* Belief Section */}
           <div>
-            <h2 className="font-serif font-bold text-2xl sm:text-3xl text-foreground mb-6">
+            <h2 className="font-serif font-bold text-lg sm:text-xl text-foreground mb-6">
               Our Belief
             </h2>
             <p className="text-base text-foreground-secondary leading-relaxed mb-4">
@@ -42,7 +42,7 @@ export default function AboutPage() {
 
           {/* Vision Section */}
           <div>
-            <h2 className="font-serif font-bold text-2xl sm:text-3xl text-foreground mb-6">
+            <h2 className="font-serif font-bold text-lg sm:text-xl text-foreground mb-6">
               Our Vision
             </h2>
             <p className="text-base text-foreground-secondary leading-relaxed mb-6">
@@ -76,26 +76,38 @@ export default function AboutPage() {
 
           {/* Why Inktella Section */}
           <div>
-            <h2 className="font-serif font-bold text-2xl sm:text-3xl text-foreground mb-6">
-              Why Inktella Exists
+            <h2 className="font-serif font-bold text-lg sm:text-xl text-foreground mb-6">
+              What We Offer
             </h2>
             <p className="text-base text-foreground-secondary leading-relaxed mb-6">
               Many writers struggle alone, unsure if their work is improving or being seen.
             </p>
-            <p className="text-lg text-foreground-secondary leading-relaxed mb-6">
+            <p className="text-base text-foreground-secondary leading-relaxed mb-6">
               Inktella exists to change that.
             </p>
-            <p className="text-lg text-foreground-secondary leading-relaxed mb-4">
+            <p className="text-base text-foreground-secondary leading-relaxed mb-4">
               We created a space where:
             </p>
             <ul className="space-y-3 ml-6">
-              <li className="text-lg text-foreground-secondary leading-relaxed flex items-start gap-3">
+              <li className="text-base text-foreground-secondary leading-relaxed flex items-start gap-3">
                 <span className="text-brand-500 font-bold mt-0.5">•</span>
                 <span>Writing is shared</span>
               </li>
-              <li className="text-lg text-foreground-secondary leading-relaxed flex items-start gap-3">
+              <li className="text-base text-foreground-secondary leading-relaxed flex items-start gap-3">
+                <span className="text-brand-500 font-bold mt-0.5">•</span>
+                <span>Writing is shared</span>
+              </li>
+              <li className="text-base text-foreground-secondary leading-relaxed flex items-start gap-3">
                 <span className="text-brand-500 font-bold mt-0.5">•</span>
                 <span>Feedback is encouraged</span>
+              </li>
+              <li className="text-base text-foreground-secondary leading-relaxed flex items-start gap-3">
+                <span className="text-brand-500 font-bold mt-0.5">•</span>
+                <span>Improvement is visible</span>
+              </li>
+              <li className="text-base text-foreground-secondary leading-relaxed flex items-start gap-3">
+                <span className="text-brand-500 font-bold mt-0.5">•</span>
+                <span>Every voice has a place</span>
               </li>
               <li className="text-lg text-foreground-secondary leading-relaxed flex items-start gap-3">
                 <span className="text-brand-500 font-bold mt-0.5">•</span>
@@ -110,10 +122,10 @@ export default function AboutPage() {
 
           {/* Call to Action Section */}
           <div className="bg-brand-50 dark:bg-brand-900/20 border border-brand-200 dark:border-brand-800 rounded-lg p-8 sm:p-12 text-center">
-            <h2 className="font-serif font-bold text-3xl sm:text-4xl text-foreground mb-4">
+            <h2 className="font-serif font-bold text-lg sm:text-xl text-foreground mb-4">
               Join the Movement
             </h2>
-            <p className="text-lg text-foreground-secondary leading-relaxed mb-6">
+            <p className="text-base text-foreground-secondary leading-relaxed mb-6">
               Inktella is still growing, and every new writer helps shape it.
             </p>
             <p className="text-base text-foreground-secondary leading-relaxed mb-6">
@@ -147,7 +159,7 @@ export default function AboutPage() {
 
           {/* Call to Action Section */}
           <div className="bg-brand-50 dark:bg-brand-900/20 border border-brand-200 dark:border-brand-800 rounded-lg p-8 sm:p-12 text-center">
-            <h2 className="font-serif font-bold text-2xl sm:text-3xl text-foreground mb-4">
+            <h2 className="font-serif font-bold text-lg sm:text-xl text-foreground mb-4">
               Join the Movement
             </h2>
             <p className="text-base text-foreground-secondary leading-relaxed mb-6">
@@ -156,7 +168,7 @@ export default function AboutPage() {
             <p className="text-base text-foreground-secondary leading-relaxed mb-6">
               Whether you are writing your first poem or your hundredth, there is space for you here.
             </p>
-            <p className="text-lg font-serif italic text-foreground">
+            <p className="text-base font-serif italic text-foreground">
               Write. Share. Improve. Grow.
             </p>
             <p className="text-base text-foreground-secondary leading-relaxed mt-4">
