@@ -529,8 +529,8 @@ export default function FeedPage() {
             )}>
               MODERN
             </h2>
-            <p className="text-sm text-foreground-muted leading-relaxed group-hover:text-foreground transition-colors">
-              {MODE_DESCRIPTIONS.modern}
+            <p className="text-xs text-foreground-muted leading-relaxed group-hover:text-foreground transition-colors">
+              Modern poems are poems written in recent times that reflect the experiences, thoughts, and challenges of the modern world. They often break away from traditional rules and use more personal, experimental, and conversational styles.
             </p>
           </button>
 
@@ -544,8 +544,8 @@ export default function FeedPage() {
             <h2 className="text-5xl font-bold mb-4 transition-colors text-foreground-muted">
               CLASSICS
             </h2>
-            <p className="text-sm text-foreground-muted leading-relaxed">
-              {MODE_DESCRIPTIONS.classics}
+            <p className="text-xs text-foreground-muted leading-relaxed">
+              Classic poems are poems from earlier periods that have remained important because of their powerful ideas, beautiful language, and lasting influence. They often explore universal themes like love, death, nature, identity, war, faith, and human emotions.
             </p>
             <div className="mt-3">
               <span className="inline-block px-2 py-1 bg-background-subtle rounded text-xs font-medium text-foreground-muted">
@@ -557,7 +557,7 @@ export default function FeedPage() {
       </div>
 
       {/* Second Left Column: Fixed - Feed Tabs Menu */}
-      <div className="w-48 flex-none border-r border-border bg-background/50 flex flex-col overflow-hidden">
+      <div className="w-40 flex-none border-r border-border bg-background/50 flex flex-col overflow-hidden">
         <div className="flex-1 overflow-y-auto p-4">
           <div className="space-y-2">
             {mode === 'modern' ? (
