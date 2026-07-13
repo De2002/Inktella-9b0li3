@@ -7,6 +7,7 @@ import type { Topic } from '@/types';
 import { INK_PUBLISH_COST, getLevel, LEVEL_CONFIG, TELLA_PER_CREDIT } from '@/constants';
 import { cn, getInitials } from '@/lib/utils';
 import { toast } from 'sonner';
+import { getRandomDivider } from '@/components/features/DecorativeDividers';
 
 const POEM_DRAFT_KEY = (id: string) => `inktella_poem_draft_${id}`;
 const NEW_POEM_KEY = 'inktella_new_poem_draft';
@@ -238,10 +239,12 @@ export default function WritePage() {
     if (profile.ink_balance < INK_PUBLISH_COST) { toast.error(`You need ${INK_PUBLISH_COST} Ink to publish. Give feedback to earn more.`); return; }
     setSubmitting(true);
 
+    const randomDivider = getRandomDivider();
     const { data: poem, error } = await supabase.from('poems').insert({
       user_id: user.id, title: title.trim(), content: content.trim(),
       image_url: imageUrl.trim() || null, topic_id: topicId || null,
       ink_spent: INK_PUBLISH_COST, published: true, behind_the_poem: behindPayload(),
+      decorative_divider: randomDivider.id,
     }).select().single();
 
     if (error) { toast.error('Failed to publish poem'); setSubmitting(false); return; }

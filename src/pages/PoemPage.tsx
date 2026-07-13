@@ -10,6 +10,7 @@ import FeedbackPanel from '@/components/features/FeedbackPanel';
 import BehindThePoem from '@/components/features/BehindThePoem';
 import BoostButton from '@/components/features/BoostButton';
 import ClassicCommentSheet from '@/components/features/ClassicCommentSheet';
+import { DecorativeDivider } from '@/components/features/DecorativeDividers';
 import { useAuth } from '@/contexts/AuthContext';
 import { formatTimeAgo, cn, getInitials } from '@/lib/utils';
 import { getLevel, LEVEL_CONFIG, LEVEL_BADGE_IMAGES } from '@/constants';
@@ -366,8 +367,28 @@ function ModernPoemPage({ id }: { id: string }) {
   const [feedbackOpen, setFeedbackOpen] = useState(searchParams.get('tab') === 'feedback');
   const [behindOpen, setBehindOpen] = useState(searchParams.get('tab') === 'journey');
   const [menuOpen, setMenuOpen] = useState(false);
+  const [poetNewPoems, setPoetNewPoems] = useState<Poem[]>([]);
+  const [loadingNewPoems, setLoadingNewPoems] = useState(false);
 
   const isOwner = user?.id === poem?.user_id;
+
+  // Load new poems from poet
+  useEffect(() => {
+    if (poem?.author) fetchPoetNewPoems();
+  }, [poem?.user_id]);
+
+  async function fetchPoetNewPoems() {
+    setLoadingNewPoems(true);
+    const { data } = await supabase
+      .from('poems')
+      .select('id, title, created_at')
+      .eq('user_id', poem?.user_id)
+      .neq('id', poem?.id)
+      .order('created_at', { ascending: false })
+      .limit(3);
+    setPoetNewPoems(data || []);
+    setLoadingNewPoems(false);
+  }
 
   async function handleLike() {
     if (!user) { navigate('/auth'); return; }
@@ -413,7 +434,8 @@ function ModernPoemPage({ id }: { id: string }) {
   const authorLevel = author ? getLevel(author.tella_balance || 0) : 'observer';
   const levelCfg = LEVEL_CONFIG[authorLevel];
 
-  return (
+  // Mobile/Tablet Layout
+  const mobileLayout = (
     <div className="max-w-2xl mx-auto px-4 py-6 pb-24 lg:pb-8">
       {/* Header */}
       <div className="flex items-center justify-between gap-4 mb-6">
@@ -499,6 +521,8 @@ function ModernPoemPage({ id }: { id: string }) {
           <img src={poem.image_url} alt={poem.title} className="w-full h-full object-cover" />
         </div>
       )}
+
+      <DecorativeDivider dividerId={poem.decorative_divider} />
 
       <div className="poem-text text-foreground leading-[1.9] text-lg mb-8">{poem.content}</div>
 
@@ -588,6 +612,292 @@ function ModernPoemPage({ id }: { id: string }) {
         <BehindThePoem poem={{ id: poem.id, title: poem.title, behind_the_poem: (poem as any).behind_the_poem }} onClose={() => setBehindOpen(false)} />
       )}
     </div>
+  );
+
+  // Desktop Layout (3-column)
+  const desktopLayout = (
+    <div className="hidden lg:flex h-screen">
+      {/* Left Column: Fixed - Poem Cover/Title + Engagement */}
+      <div className="w-72 flex-none border-r border-border flex flex-col overflow-hidden bg-gradient-to-br from-brand-500/20 to-brand-600/10">
+        {/* Poem Image/Cover */}
+        <div className="flex-1 overflow-hidden relative">
+          {poem.image_url ? (
+            <img 
+              src={poem.image_url} 
+              alt={poem.title}
+              className="w-full h-full object-cover"
+            />
+          ) : (
+            <div className="w-full h-full bg-gradient-to-br from-brand-400/30 to-brand-600/30 flex items-center justify-center">
+              <div className="text-6xl opacity-20">✦</div>
+            </div>
+          )}
+          
+          {/* Back Button Overlay */}
+          <button
+            onClick={() => navigate(-1)}
+            className="absolute top-4 left-4 inline-flex items-center justify-center w-10 h-10 rounded-lg bg-background/80 backdrop-blur-sm border border-border text-foreground-muted hover:text-foreground hover:bg-background transition-all z-10"
+          >
+            <ArrowLeft size={18} />
+          </button>
+
+          {/* Poem Title Overlay on Bottom */}
+          <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-background to-transparent p-6 pt-12">
+            <h1 className="poem-title text-xl font-semibold text-foreground leading-tight">{poem.title}</h1>
+          </div>
+        </div>
+
+        {/* Left Column Footer: Published Info + Engagement */}
+        <div className="flex-none border-t border-border bg-background p-5 space-y-4 overflow-y-auto max-h-[40%]">
+          {/* Published under topic */}
+          {poem.topic && (
+            <div>
+              <p className="text-xs text-foreground-muted tracking-wider uppercase mb-2">Published under</p>
+              <Link 
+                to={`/topic/${poem.topic.slug}`}
+                className="text-sm font-medium text-foreground hover:text-brand-500 transition-colors"
+              >
+                {poem.topic.name}
+              </Link>
+              <Link
+                to={`/topic/${poem.topic.slug}`}
+                className="text-xs text-brand-500 hover:text-brand-600 mt-2 inline-block"
+              >
+                See more poems under {poem.topic.name} →
+              </Link>
+            </div>
+          )}
+
+          <div className="border-t border-border pt-4">
+            {/* Engagement Options with Labels */}
+            <div className="space-y-3">
+              <button
+                onClick={handleLike}
+                className="w-full flex items-center justify-between text-sm font-medium text-foreground-secondary hover:text-foreground transition-colors group"
+              >
+                <span className="flex items-center gap-2">
+                  <Heart size={16} className={liked ? 'fill-red-500 text-red-500' : ''} />
+                  Like this poem
+                </span>
+                <span className="text-xs text-foreground-muted">{likeCount}</span>
+              </button>
+
+              <button
+                onClick={() => setFeedbackOpen(true)}
+                className="w-full flex items-center justify-between text-sm font-medium text-foreground-secondary hover:text-foreground transition-colors"
+              >
+                <span className="flex items-center gap-2">
+                  <MessageSquare size={16} />
+                  Give feedback
+                </span>
+                <span className="text-xs text-foreground-muted">{feedbackCount}</span>
+              </button>
+
+              <button
+                onClick={handleBookmark}
+                className="w-full flex items-center justify-between text-sm font-medium text-foreground-secondary hover:text-foreground transition-colors"
+              >
+                <span className="flex items-center gap-2">
+                  <Bookmark size={16} className={bookmarked ? 'fill-brand-500' : ''} />
+                  Save poem
+                </span>
+              </button>
+
+              <button
+                onClick={handleShare}
+                className="w-full flex items-center justify-between text-sm font-medium text-foreground-secondary hover:text-foreground transition-colors"
+              >
+                <span className="flex items-center gap-2">
+                  <Share2 size={16} />
+                  Share
+                </span>
+              </button>
+
+              <button
+                onClick={() => setBehindOpen(true)}
+                className="w-full flex items-center justify-between text-sm font-medium text-foreground-secondary hover:text-foreground transition-colors"
+              >
+                <span className="flex items-center gap-2">
+                  <DoorOpen size={16} />
+                  Behind the poem
+                </span>
+              </button>
+
+              {isOwner && (
+                <Link
+                  to={`/write?edit=${poem?.id}`}
+                  className="w-full flex items-center justify-between text-sm font-medium text-brand-500 hover:text-brand-600 transition-colors"
+                >
+                  <span className="flex items-center gap-2">
+                    <PenLine size={16} />
+                    Edit this poem
+                  </span>
+                </Link>
+              )}
+
+              {!isOwner && (
+                <button
+                  onClick={() => setMenuOpen(!menuOpen)}
+                  className="w-full flex items-center justify-between text-sm font-medium text-red-600 hover:text-red-700 transition-colors relative"
+                >
+                  <span className="flex items-center gap-2">
+                    <MoreHorizontal size={16} />
+                    Report poem
+                  </span>
+                </button>
+              )}
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Center Column: Scrollable Poem Content */}
+      <div className="flex-1 flex flex-col overflow-hidden border-r border-border">
+        {/* Poet Card Header */}
+        <div className="flex-none border-b border-border p-6 flex items-center gap-4">
+          <Link to={`/profile/${author?.username}`}>
+            <div
+              className={cn('w-12 h-12 rounded-full overflow-hidden flex items-center justify-center text-sm font-bold shrink-0', levelCfg.borderClass)}
+              style={{ background: levelCfg.color + '15', color: levelCfg.color }}
+            >
+              {author?.avatar_url
+                ? <img src={author.avatar_url} alt={author?.username} className="w-full h-full object-cover" />
+                : getInitials(author?.username || '?')
+              }
+            </div>
+          </Link>
+          <Link to={`/profile/${author?.username}`} className="flex-1 group">
+            <div className="flex items-center gap-2 mb-0.5">
+              <p className="font-semibold text-sm text-foreground group-hover:text-brand-500 transition-colors">{author?.username}</p>
+              <img src={LEVEL_BADGE_IMAGES[authorLevel]} alt={authorLevel} className="w-5 h-5 shrink-0" />
+            </div>
+            <p className="text-xs text-foreground-muted">{formatTimeAgo(poem.created_at)}</p>
+          </Link>
+        </div>
+
+        {/* Scrollable Poem Content */}
+        <div className="flex-1 overflow-y-auto">
+          <div className="px-8 py-8 max-w-2xl mx-auto">
+            <DecorativeDivider dividerId={poem.decorative_divider} />
+            
+            <div className="poem-text text-foreground leading-[1.9] text-lg mb-8">{poem.content}</div>
+
+            {poem.tags && poem.tags.length > 0 && (
+              <div className="flex flex-wrap gap-2 mb-8">
+                {poem.tags.map(tag => <span key={tag.id} className="tag-pill">{tag.name}</span>)}
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
+
+      {/* Right Column: Fixed - Meatball Menu + Poet Card + New Poems */}
+      <div className="w-72 flex-none border-l border-border bg-background flex flex-col overflow-y-auto">
+        {/* Meatball Menu */}
+        <div className="flex-none border-b border-border p-4">
+          {!isOwner && (
+            <div className="relative">
+              <button
+                onClick={() => setMenuOpen(!menuOpen)}
+                className="inline-flex items-center justify-center w-full px-4 py-2 rounded-lg border border-border text-foreground-muted hover:text-foreground hover:bg-background-subtle transition-colors"
+              >
+                <MoreHorizontal size={18} />
+              </button>
+              {menuOpen && (
+                <>
+                  <div className="fixed inset-0 z-40" onClick={() => setMenuOpen(false)} />
+                  <div className="absolute right-4 top-12 z-50 min-w-40 bg-surface border border-border rounded-lg shadow-lg overflow-hidden">
+                    <button className="w-full text-left px-4 py-2.5 text-sm text-foreground hover:bg-background-subtle transition-colors">Report poem</button>
+                    <button className="w-full text-left px-4 py-2.5 text-sm text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors">Block poet</button>
+                  </div>
+                </>
+              )}
+            </div>
+          )}
+        </div>
+
+        {/* Poet Card */}
+        <div className="flex-none border-b border-border p-6">
+          <div className="text-center mb-4">
+            <Link to={`/profile/${author?.username}`}>
+              <div
+                className={cn('w-16 h-16 rounded-full overflow-hidden flex items-center justify-center text-lg font-bold mx-auto mb-3', levelCfg.borderClass)}
+                style={{ background: levelCfg.color + '15', color: levelCfg.color }}
+              >
+                {author?.avatar_url
+                  ? <img src={author.avatar_url} alt={author?.username} className="w-full h-full object-cover" />
+                  : getInitials(author?.username || '?')
+                }
+              </div>
+            </Link>
+            <Link to={`/profile/${author?.username}`} className="group">
+              <p className="font-semibold text-foreground group-hover:text-brand-500 transition-colors">{author?.username}</p>
+              <p className="text-xs text-foreground-muted mt-0.5">{author?.bio || 'No bio yet'}</p>
+            </Link>
+          </div>
+          <div className="space-y-2">
+            <Link
+              to={`/profile/${author?.username}`}
+              className="w-full block text-center px-4 py-2 rounded-lg border border-brand-200 dark:border-brand-800 text-brand-600 dark:text-brand-400 hover:bg-brand-100 dark:hover:bg-brand-900/30 transition-colors text-sm font-medium"
+            >
+              Follow me
+            </Link>
+            <button
+              onClick={() => {
+                shareContent({ 
+                  title: `Check out ${author?.username} on Inktella`, 
+                  url: `${window.location.origin}/profile/${author?.username}` 
+                });
+              }}
+              className="w-full px-4 py-2 rounded-lg border border-border text-foreground-muted hover:text-foreground hover:bg-background-subtle transition-colors text-sm font-medium"
+            >
+              Share profile
+            </button>
+          </div>
+        </div>
+
+        {/* New Poems from Poet */}
+        <div className="flex-1 overflow-y-auto p-6">
+          <h3 className="text-xs font-bold tracking-widest uppercase text-foreground-muted mb-4">New poems from me</h3>
+          {loadingNewPoems ? (
+            <div className="space-y-3">
+              {[1, 2, 3].map(i => (
+                <div key={i} className="skeleton h-4 w-full rounded" />
+              ))}
+            </div>
+          ) : poetNewPoems.length > 0 ? (
+            <div className="space-y-3">
+              {poetNewPoems.map(p => (
+                <Link
+                  key={p.id}
+                  to={`/poem/${p.id}`}
+                  className="block text-sm font-medium text-foreground-secondary hover:text-foreground transition-colors line-clamp-2"
+                >
+                  {p.title}
+                </Link>
+              ))}
+            </div>
+          ) : (
+            <p className="text-xs text-foreground-muted italic">No other poems yet</p>
+          )}
+        </div>
+      </div>
+
+      {feedbackOpen && (
+        <FeedbackPanel poem={{ ...poem, feedback_count: feedbackCount }} onClose={() => setFeedbackOpen(false)} />
+      )}
+      {behindOpen && poem && (
+        <BehindThePoem poem={{ id: poem.id, title: poem.title, behind_the_poem: (poem as any).behind_the_poem }} onClose={() => setBehindOpen(false)} />
+      )}
+    </div>
+  );
+
+  return (
+    <>
+      {!loading && mobileLayout}
+      {!loading && desktopLayout}
+      {loading && <PoemSkeleton />}
+    </>
   );
 }
 

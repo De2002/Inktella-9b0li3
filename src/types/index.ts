@@ -55,6 +55,7 @@ export interface Poem {
   view_count: number;
   created_at: string;
   updated_at: string;
+  decorative_divider?: string;
   // Joined
   author?: UserProfile;
   topic?: Topic;
