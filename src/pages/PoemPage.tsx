@@ -753,28 +753,6 @@ function ModernPoemPage({ id }: { id: string }) {
 
       {/* Center Column: Scrollable Poem Content */}
       <div className="flex-1 flex flex-col overflow-hidden border-r border-border">
-        {/* Poet Card Header */}
-        <div className="flex-none border-b border-border p-6 flex items-center gap-4">
-          <Link to={`/profile/${author?.username}`}>
-            <div
-              className={cn('w-12 h-12 rounded-full overflow-hidden flex items-center justify-center text-sm font-bold shrink-0', levelCfg.borderClass)}
-              style={{ background: levelCfg.color + '15', color: levelCfg.color }}
-            >
-              {author?.avatar_url
-                ? <img src={author.avatar_url} alt={author?.username} className="w-full h-full object-cover" />
-                : getInitials(author?.username || '?')
-              }
-            </div>
-          </Link>
-          <Link to={`/profile/${author?.username}`} className="flex-1 group">
-            <div className="flex items-center gap-2 mb-0.5">
-              <p className="font-semibold text-sm text-foreground group-hover:text-brand-500 transition-colors">{author?.username}</p>
-              <img src={LEVEL_BADGE_IMAGES[authorLevel]} alt={authorLevel} className="w-5 h-5 shrink-0" />
-            </div>
-            <p className="text-xs text-foreground-muted">{formatTimeAgo(poem.created_at)}</p>
-          </Link>
-        </div>
-
         {/* Scrollable Poem Content */}
         <div className="flex-1 overflow-y-auto">
           <div className="px-8 py-8 max-w-2xl mx-auto">
