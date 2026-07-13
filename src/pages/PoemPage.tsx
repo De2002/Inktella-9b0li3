@@ -728,8 +728,8 @@ function ModernPoemPage({ id }: { id: string }) {
                   Report poem
                 </span>
               </button>
-            )}
-          </div>
+              )}
+            </div>
 
           {/* Published under topic - at bottom */}
           {poem.topic && (
