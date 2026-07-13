@@ -642,8 +642,11 @@ function ModernPoemPage({ id }: { id: string }) {
           </button>
 
           {/* Poem Title Overlay on Bottom */}
-          <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-background to-transparent p-6 pt-12">
-            <h1 className="poem-title text-xl font-semibold text-foreground leading-tight">{poem.title}</h1>
+          <div 
+            className="absolute bottom-0 left-0 right-0 p-6 pt-8"
+            style={{ backgroundColor: poem.topic?.color || '#6C4EF6' }}
+          >
+            <h1 className="poem-title text-xl font-semibold text-white leading-tight">{poem.title}</h1>
           </div>
         </div>
 
