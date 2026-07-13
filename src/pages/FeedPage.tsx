@@ -119,7 +119,7 @@ export default function FeedPage() {
     } else {
       fetchPoems(true);
     }
-  }, [user, activeTab, classicsTab, mode, fetchPoems]);
+  }, [user, activeTab, classicsTab, mode]);
 
   // ── Following tab ─────────────────────────────────────────────────────────
   async function loadFollowingTab() {
@@ -328,10 +328,10 @@ export default function FeedPage() {
     const enriched = await enrichPoems(data, user?.id);
     setPoems(reset ? enriched : prev => [...prev, ...enriched]);
     setHasMore(data.length === PAGE_SIZE);
-    if (reset) setPage(1);
+    if (reset) setPage(0);
     else setPage(p => p + 1);
     setLoading(false);
-  }, [activeTab, classicsTab, mode, user?.id, page]);
+  }, [activeTab, classicsTab, mode, user?.id]);
 
   function handleModeSwitch(m: Mode) {
     if (m === mode) return;
