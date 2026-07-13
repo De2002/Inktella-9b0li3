@@ -431,9 +431,9 @@ export default function FeedPage() {
 
         {/* Feed tabs */}
         <div className={cn(
-          'md:sticky md:top-0 md:z-20 bg-background/80 backdrop-blur-sm border-b border-border transition-all duration-300 ease-out',
+          'sticky top-0 z-20 bg-background/80 backdrop-blur-sm border-b border-border transition-all duration-300 ease-out transform',
           'flex justify-center',
-          !headerVisible && 'md:-translate-y-full md:opacity-0 md:pointer-events-none'
+          !headerVisible && '-translate-y-full opacity-0 pointer-events-none'
         )}>
           {mode === 'modern' ? (
             <FeedTabs active={activeTab} onChange={handleTabChange} />
