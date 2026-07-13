@@ -557,7 +557,7 @@ export default function FeedPage() {
       </div>
 
       {/* Second Left Column: Fixed - Feed Tabs Menu */}
-      <div className="w-40 flex-none border-r border-border bg-background/50 flex flex-col overflow-hidden">
+      <div className="w-28 flex-none border-r border-border bg-background/50 flex flex-col overflow-hidden">
         <div className="flex-1 overflow-y-auto p-4">
           <div className="space-y-2">
             {mode === 'modern' ? (
