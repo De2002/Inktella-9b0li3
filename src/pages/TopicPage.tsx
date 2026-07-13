@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
-import { PenLine, Plus, ChevronLeft } from 'lucide-react';
+import { PenLine, Plus } from 'lucide-react';
 import { supabase } from '@/lib/supabase';
 import type { Topic, Poem, FeedTab } from '@/types';
 import { setTopicMetadata, resetMetadata } from '@/lib/metadata';
@@ -251,10 +251,10 @@ export default function TopicPage() {
       {/* Desktop Layout (lg and up) */}
       {topic && (
         <div className="hidden lg:flex h-screen">
-          {/* Left Column: Fixed Cover Image */}
-          <div className="w-80 flex-none border-r border-border flex flex-col overflow-hidden bg-gradient-to-br from-brand-500/20 to-brand-600/10">
+          {/* Left Column: Fixed Cover Image with Description Overlay */}
+          <div className="w-80 flex-none border-r border-border flex flex-col overflow-hidden bg-gradient-to-br from-brand-500/20 to-brand-600/10 relative">
             {/* Cover Image */}
-            <div className="flex-1 overflow-hidden">
+            <div className="flex-1 overflow-hidden relative">
               {topic.image_url ? (
                 <img 
                   src={topic.image_url} 
@@ -267,40 +267,31 @@ export default function TopicPage() {
                   style={{ backgroundColor: topic.color || '#6C4EF6' }}
                 />
               )}
-            </div>
-
-            {/* Left Column Footer: Back to Explore & Topic Label */}
-            <div className="flex-none border-t border-border bg-background p-4 space-y-3">
-              <Link
-                to="/explore"
-                className="flex items-center gap-2 text-sm font-medium text-foreground-secondary hover:text-foreground transition-colors group"
-              >
-                <ChevronLeft size={16} className="group-hover:text-brand-500 transition-colors" />
-                Back to Explore
-              </Link>
-              <div className="pt-2 border-t border-border">
-                <p 
-                  className="text-xs font-bold tracking-widest uppercase"
-                  style={{ color: topic.color || '#6C4EF6' }}
-                >
-                  {topic.name}
+              
+              {/* Description Overlay on Bottom of Cover Image */}
+              <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-background to-transparent p-6 pt-12">
+                <p className="text-foreground text-sm leading-relaxed">
+                  {topic.description
+                    ? topic.description
+                    : `A space for poems about ${topic.name.toLowerCase()} — where language meets feeling, and writers push each other toward clarity.`}
                 </p>
               </div>
+            </div>
+
+            {/* Left Column Footer: Topic Label */}
+            <div className="flex-none border-t border-border bg-background p-4">
+              <p 
+                className="text-xs font-bold tracking-widest uppercase"
+                style={{ color: topic.color || '#6C4EF6' }}
+              >
+                {topic.name}
+              </p>
             </div>
           </div>
 
           {/* Center Column: Scrollable Feed Area */}
           <div className="flex-1 flex flex-col overflow-hidden border-r border-border">
-            {/* Topic Description Header */}
-            <div className="flex-none border-b border-border p-8 flex flex-col items-center justify-center text-center">
-              <p className="text-foreground text-sm leading-relaxed max-w-xl">
-                {topic.description
-                  ? topic.description
-                  : `A space for poems about ${topic.name.toLowerCase()} — where language meets feeling, and writers push each other toward clarity.`}
-              </p>
-            </div>
-
-            {/* Feed Tabs (Centered) */}
+            {/* Feed Tabs (Centered Header) */}
             <div className="flex-none border-b border-border bg-background/50 backdrop-blur-sm">
               <div className="flex justify-center">
                 <FeedTabs active={activeTab} onChange={setActiveTab} />
