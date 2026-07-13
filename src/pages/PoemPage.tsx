@@ -436,7 +436,7 @@ function ModernPoemPage({ id }: { id: string }) {
 
   // Mobile/Tablet Layout
   const mobileLayout = (
-    <div className="max-w-2xl mx-auto px-4 py-6 pb-24 lg:pb-8">
+    <div className="block lg:hidden max-w-2xl mx-auto px-4 py-6 pb-24 lg:pb-8">
       {/* Header */}
       <div className="flex items-center justify-between gap-4 mb-6">
         <button
