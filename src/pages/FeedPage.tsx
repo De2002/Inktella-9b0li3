@@ -605,16 +605,8 @@ export default function FeedPage() {
         </div>
       </div>
 
-      {/* Right Column: Scrollable - Tab Info + Poems */}
+      {/* Right Column: Scrollable - Poems */}
       <div className="flex-1 flex flex-col overflow-hidden border-l border-border">
-        {/* Tab Description Header */}
-        <div className="flex-none border-b border-border bg-background/50 backdrop-blur-sm p-6">
-          <p className="text-xs text-foreground-muted tracking-widest uppercase mb-2">Current feed</p>
-          <h3 className="text-lg font-semibold text-foreground capitalize">
-            {mode === 'modern' ? activeTab : classicsTab}
-          </h3>
-        </div>
-
         {/* Scrollable Poems Area */}
         <div className="flex-1 overflow-y-auto">
           <div className="px-8 py-6 max-w-3xl">
