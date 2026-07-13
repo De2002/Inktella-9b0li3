@@ -694,7 +694,6 @@ export default function FeedPage() {
       {desktopLayout}
     </>
   );
-};
 }
 
 // ── Per-tab empty states ─────────────────────────────────────────────────────
