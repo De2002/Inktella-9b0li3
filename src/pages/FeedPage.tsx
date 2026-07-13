@@ -11,6 +11,7 @@ import type { Poem, FeedTab, UserProfile } from '@/types';
 import { getLevel, LEVEL_CONFIG } from '@/constants';
 import { cn, getInitials } from '@/lib/utils';
 import { Users, UserPlus, Check } from 'lucide-react';
+import { toast } from 'sonner';
 
 type Mode = 'modern' | 'classics';
 type ClassicsTab = 'recent' | 'hearted' | 'discussed';
@@ -694,7 +695,6 @@ export default function FeedPage() {
       {desktopLayout}
     </>
   );
-};
 }
 
 // ── Per-tab empty states ─────────────────────────────────────────────────────
