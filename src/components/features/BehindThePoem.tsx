@@ -28,9 +28,10 @@ interface Contributor {
 interface BehindThePoemProps {
   poem: { id: string; title?: string; behind_the_poem?: BehindThePoemData | null };
   onClose: () => void;
+  isDesktopConstrained?: boolean;
 }
 
-export default function BehindThePoem({ poem, onClose }: BehindThePoemProps) {
+export default function BehindThePoem({ poem, onClose, isDesktopConstrained }: BehindThePoemProps) {
   const [data, setData] = useState<BehindThePoemData | null>(poem.behind_the_poem || null);
   const [contributors, setContributors] = useState<Contributor[]>([]);
   const [loading, setLoading] = useState(!poem.behind_the_poem);
@@ -102,17 +103,25 @@ export default function BehindThePoem({ poem, onClose }: BehindThePoemProps) {
     }
   };
 
+  const backdropClass = isDesktopConstrained
+    ? "fixed inset-0 bg-black/40 backdrop-blur-sm z-40 animate-fadeIn hidden lg:block"
+    : "fixed inset-0 bg-black/40 backdrop-blur-sm z-40 animate-fadeIn";
+
+  const sheetContainerClass = isDesktopConstrained
+    ? "hidden lg:flex fixed bottom-0 left-1/2 -translate-x-1/2 z-50 flex-col h-[90vh] max-h-[90vh] animate-slideUp rounded-t-3xl max-w-2xl w-full"
+    : "fixed inset-x-0 bottom-0 z-50 flex flex-col h-[90vh] max-h-[90vh] animate-slideUp rounded-t-3xl";
+
   return (
     <>
       {/* Backdrop */}
       <div
-        className="fixed inset-0 bg-black/40 backdrop-blur-sm z-40 animate-fadeIn"
+        className={backdropClass}
         onClick={onClose}
         aria-hidden="true"
       />
 
       {/* Bottom Sheet */}
-      <div className="fixed inset-x-0 bottom-0 z-50 flex flex-col h-[90vh] max-h-[90vh] animate-slideUp rounded-t-3xl">
+      <div className={sheetContainerClass}>
         {/* Header - Dark background */}
         <div className="bg-[#1e1b1a] dark:bg-[#2a2624] text-white px-6 py-5 flex items-center justify-between shrink-0 rounded-t-3xl">
           <h2 className="text-lg font-playfair font-semibold">Behind the Poem + Credits</h2>

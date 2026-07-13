@@ -849,7 +849,7 @@ function ModernPoemPage({ id }: { id: string }) {
         <FeedbackPanel poem={{ ...poem, feedback_count: feedbackCount }} onClose={() => setFeedbackOpen(false)} />
       )}
       {behindOpen && poem && (
-        <BehindThePoem poem={{ id: poem.id, title: poem.title, behind_the_poem: (poem as any).behind_the_poem }} onClose={() => setBehindOpen(false)} />
+        <BehindThePoem poem={{ id: poem.id, title: poem.title, behind_the_poem: (poem as any).behind_the_poem }} onClose={() => setBehindOpen(false)} isDesktopConstrained />
       )}
     </div>
   );
