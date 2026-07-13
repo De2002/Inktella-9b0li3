@@ -119,7 +119,7 @@ export default function FeedPage() {
     } else {
       fetchPoems(true);
     }
-  }, [user, activeTab, classicsTab, mode]);
+  }, [user, activeTab, classicsTab, mode, fetchPoems]);
 
   // ── Following tab ─────────────────────────────────────────────────────────
   async function loadFollowingTab() {
