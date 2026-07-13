@@ -474,47 +474,8 @@ function ModernPoemPage({ id }: { id: string }) {
         )}
       </div>
 
-      {/* Title + Poet frame */}
-      <div className="flex mb-6">
-        <div className="flex-1 min-w-0">
-          {/* Title row */}
-          <div className="flex border-b border-border">
-            <div className="flex-1 px-3 sm:px-6 py-2 sm:py-3 flex items-center">
-              <h1 className="poem-title text-xl sm:text-2xl lg:text-3xl text-foreground leading-snug">{poem.title}</h1>
-            </div>
-            <div className="flex-none w-8 sm:w-9 flex items-center justify-center border-l border-border">
-              <span className="text-[9px] sm:text-[10px] font-bold tracking-[0.22em] uppercase select-none" style={{ writingMode: 'vertical-rl', color: '#3b82f6' }}>TITLE</span>
-            </div>
-          </div>
-
-          {/* Poet row — badge before name */}
-          <div className="flex border-b border-border">
-            <div className="flex-1 px-3 sm:px-6 py-2 sm:py-3 flex items-center">
-              <Link to={`/profile/${author?.username}`} className="flex items-center gap-2 sm:gap-3 group">
-                <div
-                  className={cn('w-8 sm:w-10 h-8 sm:h-10 rounded-full overflow-hidden flex items-center justify-center text-xs sm:text-sm font-bold shrink-0', levelCfg.borderClass)}
-                  style={{ background: levelCfg.color + '15', color: levelCfg.color }}
-                >
-                  {author?.avatar_url
-                    ? <img src={author.avatar_url} alt={author?.username} className="w-full h-full object-cover" />
-                    : getInitials(author?.username || '?')
-                  }
-                </div>
-                <div className="min-w-0 text-center flex-1">
-                  <div className="flex items-center justify-center gap-1.5">
-                    <p className="font-semibold text-xs sm:text-sm text-foreground group-hover:text-brand-500 transition-colors">{author?.username}</p>
-                    <img src={LEVEL_BADGE_IMAGES[authorLevel]} alt={authorLevel} className="w-4 h-4 sm:w-5 sm:h-5 shrink-0" />
-                  </div>
-                </div>
-              </Link>
-            </div>
-            <div className="flex-none w-8 sm:w-9 flex items-center justify-center border-l border-border relative">
-              <div className="absolute top-0 bottom-0 left-1/2 transform -translate-x-1/2 w-px bg-border" />
-              <span className="text-[9px] sm:text-[10px] font-bold tracking-[0.22em] uppercase select-none relative z-10" style={{ writingMode: 'vertical-rl', color: '#ec4899' }}>POET</span>
-            </div>
-          </div>
-        </div>
-      </div>
+      {/* Poem Title */}
+      <h1 className="poem-title text-xl sm:text-2xl lg:text-3xl text-foreground leading-snug mb-6">{poem.title}</h1>
 
       {poem.image_url && (
         <div className="rounded-2xl overflow-hidden mb-6 max-h-72">
@@ -531,6 +492,28 @@ function ModernPoemPage({ id }: { id: string }) {
           {poem.tags.map(tag => <span key={tag.id} className="tag-pill">{tag.name}</span>)}
         </div>
       )}
+
+      {/* Poet Info - before engagement bar */}
+      <div className="mb-6 pb-4 border-b border-border">
+        <Link to={`/profile/${author?.username}`} className="flex items-center gap-3 group">
+          <div
+            className={cn('w-10 h-10 rounded-full overflow-hidden flex items-center justify-center text-sm font-bold shrink-0', levelCfg.borderClass)}
+            style={{ background: levelCfg.color + '15', color: levelCfg.color }}
+          >
+            {author?.avatar_url
+              ? <img src={author.avatar_url} alt={author?.username} className="w-full h-full object-cover" />
+              : getInitials(author?.username || '?')
+            }
+          </div>
+          <div className="flex-1 min-w-0">
+            <div className="flex items-center gap-1.5 mb-0.5">
+              <p className="font-semibold text-sm text-foreground group-hover:text-brand-500 transition-colors">{author?.username}</p>
+              <img src={LEVEL_BADGE_IMAGES[authorLevel]} alt={authorLevel} className="w-4 h-4 shrink-0" />
+            </div>
+            <p className="text-xs text-foreground-muted">{formatTimeAgo(poem.created_at)}</p>
+          </div>
+        </Link>
+      </div>
 
       {/* Actions */}
       <div className="flex items-center justify-center gap-0 py-4 border-t border-b border-border mb-6">
