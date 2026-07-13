@@ -13,6 +13,7 @@ import TopPoemsTable from '@/components/dashboard/TopPoemsTable';
 import CriticPushesCard from '@/components/dashboard/CriticPushesCard';
 import LevelPrivilegesSection from '@/components/dashboard/LevelPrivilegesSection';
 import LevelBadgeCard from '@/components/dashboard/LevelBadgeCard';
+import { WhatsAppBanner } from '@/components/WhatsAppChannel';
 import type { Poem, Notification } from '@/types';
 
 // ─── Types ─────────────────────────────────────────────────────────────────────
@@ -711,6 +712,11 @@ export default function DashboardPage() {
               </div>
             )}
           </div>
+        </div>
+
+        {/* Platform Updates / WhatsApp Channel */}
+        <div className="mb-8 sm:mb-12">
+          <WhatsAppBanner variant="card" />
         </div>
 
         {/* Writing Section */}

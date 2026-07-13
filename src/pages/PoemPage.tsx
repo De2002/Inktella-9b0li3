@@ -19,6 +19,7 @@ import { toast } from 'sonner';
 import { FunctionsHttpError } from '@supabase/supabase-js';
 import { shareContent } from '@/lib/share';
 import { setPoemMetadata, resetMetadata } from '@/lib/metadata';
+import { WhatsAppBanner } from '@/components/WhatsAppChannel';
 
 // ─── AI Analysis helpers ───────────────────────────────────────────────────────
 function RenderAnalysis({ text }: { text: string }) {
@@ -573,6 +574,12 @@ function ModernPoemPage({ id }: { id: string }) {
       </div>
 
       <div className="border-t border-border pt-5">
+        {/* WhatsApp Channel Banner - Mobile Only */}
+        <div className="mb-6">
+          <WhatsAppBanner variant="banner" />
+        </div>
+
+        {/* Top Feedback Section */}
         <div className="flex items-center justify-between mb-4">
           <h3 className="font-semibold text-sm text-foreground uppercase tracking-wide">Top Feedback</h3>
           <button onClick={() => setFeedbackOpen(true)} className="text-xs text-brand-500 hover:text-brand-600 font-medium">View all</button>
