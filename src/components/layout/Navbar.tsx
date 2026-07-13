@@ -1,5 +1,5 @@
 import { Link, useNavigate, useLocation } from 'react-router-dom';
-import { Bell, Sun, Moon, Search, Settings, User, Droplet, Compass, Newspaper } from 'lucide-react';
+import { Bell, Sun, Moon, Search, Settings, User, Droplet, Compass, Newspaper, LayoutGrid } from 'lucide-react';
 import logoSrc from '@/assets/logo.png';
 import quillIcon from '@/assets/quill-icon.png';
 import { useAuth } from '@/contexts/AuthContext';
@@ -97,6 +97,17 @@ export default function Navbar() {
                 <Compass size={18} />
                 <span className="text-sm font-medium">Explore</span>
               </Link>
+              <Link
+                to="/dashboard"
+                className={`flex items-center gap-2 px-3 py-2 rounded-lg transition-colors ${
+                  location.pathname === '/dashboard'
+                    ? 'text-brand-500 bg-brand-500/10'
+                    : 'text-foreground-secondary hover:text-foreground hover:bg-background-subtle'
+                }`}
+              >
+                <LayoutGrid size={18} />
+                <span className="text-sm font-medium">Dashboard</span>
+              </Link>
             </div>
           </>
         )}
@@ -157,7 +168,7 @@ export default function Navbar() {
                       </div>
                     </div>
 
-                    {/* Icon row for Profile, Ink, Write, Settings */}
+                    {/* Icon row for Profile, Dashboard, Ink, Write, Settings */}
                     <div className="px-3 py-3 flex items-center justify-center gap-4 border-b border-border">
                       <Link 
                         to={`/profile/${user.username}`} 
@@ -166,6 +177,14 @@ export default function Navbar() {
                         title="Profile"
                       >
                         <User size={18} />
+                      </Link>
+                      <Link 
+                        to="/dashboard" 
+                        onClick={() => setProfileOpen(false)} 
+                        className="flex items-center justify-center w-8 h-8 rounded-lg text-foreground-secondary hover:text-foreground hover:bg-background-subtle transition-colors"
+                        title="Dashboard"
+                      >
+                        <LayoutGrid size={18} />
                       </Link>
                       <Link 
                         to="/ink" 
@@ -223,6 +242,14 @@ export default function Navbar() {
                       title="Profile"
                     >
                       <User size={18} />
+                    </Link>
+                    <Link
+                      to="/dashboard"
+                      onClick={() => setProfileOpen(false)}
+                      className="w-9 h-9 rounded-full flex items-center justify-center bg-teal-500 hover:bg-teal-600 text-white shadow-lg transition-all transform hover:scale-110"
+                      title="Dashboard"
+                    >
+                      <LayoutGrid size={18} />
                     </Link>
                     <Link
                       to="/ink"
