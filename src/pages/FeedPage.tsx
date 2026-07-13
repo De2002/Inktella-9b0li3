@@ -331,7 +331,7 @@ export default function FeedPage() {
     if (reset) setPage(1);
     else setPage(p => p + 1);
     setLoading(false);
-  }, [activeTab, classicsTab, mode, user, page]);
+  }, [activeTab, classicsTab, mode, user?.id, page]);
 
   function handleModeSwitch(m: Mode) {
     if (m === mode) return;
