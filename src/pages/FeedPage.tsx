@@ -502,10 +502,9 @@ export default function FeedPage() {
         )}
       </div>
 
-        {activeFeedback && (
-          <FeedbackPanel poem={activeFeedback} onClose={() => setActiveFeedback(null)} />
-        )}
-      </div>
+      {activeFeedback && (
+        <FeedbackPanel poem={activeFeedback} onClose={() => setActiveFeedback(null)} />
+      )}
     </div>
   );
 
