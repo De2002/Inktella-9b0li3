@@ -435,7 +435,9 @@ export default function FeedPage() {
 
         {/* Feed tabs */}
         {mode === 'modern' ? (
-          <FeedTabs active={activeTab} onChange={handleTabChange} className="px-4" />
+          <div className="flex justify-center">
+            <FeedTabs active={activeTab} onChange={handleTabChange} />
+          </div>
         ) : (
           <ClassicsTabs active={classicsTab} onChange={handleClassicsTabChange} />
         )}
