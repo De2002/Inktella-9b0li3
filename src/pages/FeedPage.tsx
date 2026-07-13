@@ -430,13 +430,17 @@ export default function FeedPage() {
         </div>
 
         {/* Feed tabs */}
-        {mode === 'modern' ? (
-          <div className="flex justify-center">
+        <div className={cn(
+          'md:sticky md:top-0 md:z-20 bg-background/80 backdrop-blur-sm border-b border-border transition-all duration-300 ease-out',
+          'flex justify-center',
+          !headerVisible && 'md:-translate-y-full md:opacity-0 md:pointer-events-none'
+        )}>
+          {mode === 'modern' ? (
             <FeedTabs active={activeTab} onChange={handleTabChange} />
-          </div>
-        ) : (
-          <ClassicsTabs active={classicsTab} onChange={handleClassicsTabChange} />
-        )}
+          ) : (
+            <ClassicsTabs active={classicsTab} onChange={handleClassicsTabChange} />
+          )}
+        </div>
       </div>
 
       {/* Content */}
