@@ -1,5 +1,5 @@
-import { Link, useNavigate } from 'react-router-dom';
-import { Bell, Sun, Moon, Search, Settings, User, Droplet } from 'lucide-react';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
+import { Bell, Sun, Moon, Search, Settings, User, Droplet, Compass, Newspaper } from 'lucide-react';
 import logoSrc from '@/assets/logo.png';
 import quillIcon from '@/assets/quill-icon.png';
 import { useAuth } from '@/contexts/AuthContext';
@@ -13,6 +13,7 @@ export default function Navbar() {
   const { user, profile, logout } = useAuth();
   const { theme, toggleTheme } = useTheme();
   const navigate = useNavigate();
+  const location = useLocation();
   const [searchOpen, setSearchOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [profileOpen, setProfileOpen] = useState(false);
@@ -57,19 +58,47 @@ export default function Navbar() {
           <span className="font-serif font-bold text-xl text-foreground tracking-tight">Inktella</span>
         </Link>
 
-        {/* Search bar - desktop */}
+        {/* Search bar and nav buttons - desktop */}
         {user && (
-          <form onSubmit={handleSearch} className="hidden md:flex flex-1 max-w-sm items-center gap-2 bg-background-subtle border border-border rounded-full px-3.5 py-2">
-            <Search size={14} className="text-foreground-muted shrink-0" />
-            <input
-              type="text"
-              placeholder="Search poems, poets, topics..."
-              value={searchQuery}
-              onChange={e => setSearchQuery(e.target.value)}
-              className="flex-1 bg-transparent text-sm outline-none text-foreground placeholder:text-foreground-muted"
-            />
-            <kbd className="hidden sm:inline text-[10px] text-foreground-muted font-mono bg-surface px-1.5 py-0.5 rounded border border-border">⌘K</kbd>
-          </form>
+          <>
+            <form onSubmit={handleSearch} className="hidden md:flex flex-1 max-w-sm items-center gap-2 bg-background-subtle border border-border rounded-full px-3.5 py-2">
+              <Search size={14} className="text-foreground-muted shrink-0" />
+              <input
+                type="text"
+                placeholder="Search poems, poets, topics..."
+                value={searchQuery}
+                onChange={e => setSearchQuery(e.target.value)}
+                className="flex-1 bg-transparent text-sm outline-none text-foreground placeholder:text-foreground-muted"
+              />
+              <kbd className="hidden sm:inline text-[10px] text-foreground-muted font-mono bg-surface px-1.5 py-0.5 rounded border border-border">⌘K</kbd>
+            </form>
+
+            {/* Desktop nav buttons */}
+            <div className="hidden md:flex items-center gap-2">
+              <Link
+                to="/feed"
+                className={`flex items-center gap-2 px-3 py-2 rounded-lg transition-colors ${
+                  location.pathname === '/feed'
+                    ? 'text-brand-500 bg-brand-500/10'
+                    : 'text-foreground-secondary hover:text-foreground hover:bg-background-subtle'
+                }`}
+              >
+                <Newspaper size={18} />
+                <span className="text-sm font-medium">Feed</span>
+              </Link>
+              <Link
+                to="/explore"
+                className={`flex items-center gap-2 px-3 py-2 rounded-lg transition-colors ${
+                  location.pathname === '/explore'
+                    ? 'text-brand-500 bg-brand-500/10'
+                    : 'text-foreground-secondary hover:text-foreground hover:bg-background-subtle'
+                }`}
+              >
+                <Compass size={18} />
+                <span className="text-sm font-medium">Explore</span>
+              </Link>
+            </div>
+          </>
         )}
 
         <div className="ml-auto flex items-center gap-2">
