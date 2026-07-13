@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
-import { PenLine, Plus } from 'lucide-react';
+import { PenLine, Plus, ChevronLeft } from 'lucide-react';
 import { supabase } from '@/lib/supabase';
 import type { Topic, Poem, FeedTab } from '@/types';
 import { setTopicMetadata, resetMetadata } from '@/lib/metadata';
@@ -104,145 +104,296 @@ export default function TopicPage() {
 
   return (
     <div className="pb-24 lg:pb-8">
-      {/* Topic section with banner image */}
-      {topic && (
-        <>
-          {/* Banner image - full width above description */}
-          <div className="w-full h-48 sm:h-64 lg:h-80 bg-gradient-to-br from-brand-500/20 to-brand-600/10 border-b border-border overflow-hidden">
-            {topic.image_url ? (
-              <img 
-                src={topic.image_url} 
-                alt={topic.name}
-                className="w-full h-full object-cover"
-              />
-            ) : (
-              <div 
-                className="w-full h-full opacity-20"
-                style={{ backgroundColor: topic.color || '#6C4EF6' }}
-              />
-            )}
-          </div>
-
-          {/* Redesigned topic info section */}
-          <div className="flex border-b border-border" style={{ minHeight: '200px' }}>
-
-            {/* Left rail — Back to Explore */}
-            <Link
-              to="/explore"
-              className="flex-none w-9 flex items-center justify-center border-r border-border hover:bg-background-subtle transition-colors group"
-              title="Back to Explore"
-            >
-              <span
-                className="text-[10px] font-semibold tracking-[0.22em] uppercase select-none transition-colors group-hover:text-brand-500"
-                style={{
-                  writingMode: 'vertical-rl',
-                  transform: 'rotate(180deg)',
-                  color: 'var(--color-foreground-muted, #9ca3af)',
-                  letterSpacing: '0.22em',
-                }}
-              >
-                Back to Explore
-              </span>
-            </Link>
-
-            {/* Centre — description, stats, and plus button */}
-            <div className="flex-1 px-6 py-7 flex flex-col justify-between">
-              <div>
-                <p className="text-foreground text-sm leading-relaxed max-w-md mb-6" style={{ minHeight: '3.5rem' }}>
-                  {topic.description
-                    ? topic.description
-                    : `A space for poems about ${topic.name.toLowerCase()} — where language meets feeling, and writers push each other toward clarity.`}
-                </p>
-
-                {/* Stat mini-cards + Add button */}
-                <div className="flex flex-col gap-3">
-                  <div className="flex gap-3">
-                    <div className="flex flex-col items-center justify-center px-5 py-3 rounded-xl border border-border bg-background-subtle min-w-[90px]">
-                      <span className="font-serif font-bold text-2xl text-foreground leading-none">{poems.length}</span>
-                      <span className="text-[11px] text-foreground-muted mt-1 tracking-wide uppercase">Poems</span>
-                    </div>
-                    <div className="flex flex-col items-center justify-center px-5 py-3 rounded-xl border border-border bg-background-subtle min-w-[90px]">
-                      <span className="font-serif font-bold text-2xl text-foreground leading-none">{poets.length}</span>
-                      <span className="text-[11px] text-foreground-muted mt-1 tracking-wide uppercase">Poets</span>
-                    </div>
-                  </div>
-                  <Link
-                    to={`/write?topic=${topic.id}`}
-                    className="flex items-center justify-center px-5 py-3 rounded-xl border border-border bg-background-subtle hover:bg-background-hover transition-colors w-fit"
-                    title="Add a poem"
-                  >
-                    <Plus size={24} className="text-foreground" />
-                  </Link>
-                </div>
-              </div>
+      {/* Mobile/Tablet Layout */}
+      <div className="lg:hidden">
+        {/* Topic section with banner image */}
+        {topic && (
+          <>
+            {/* Banner image - full width above description */}
+            <div className="w-full h-48 sm:h-64 bg-gradient-to-br from-brand-500/20 to-brand-600/10 border-b border-border overflow-hidden">
+              {topic.image_url ? (
+                <img 
+                  src={topic.image_url} 
+                  alt={topic.name}
+                  className="w-full h-full object-cover"
+                />
+              ) : (
+                <div 
+                  className="w-full h-full opacity-20"
+                  style={{ backgroundColor: topic.color || '#6C4EF6' }}
+                />
+              )}
             </div>
 
-            {/* Right rail — Topic name in caps */}
-            <div
-              className="flex-none w-9 flex items-center justify-center border-l border-border"
-            >
-              <span
-                className="text-[10px] font-bold tracking-[0.22em] uppercase select-none"
-                style={{
-                  writingMode: 'vertical-rl',
-                  color: topic.color || '#6C4EF6',
-                  letterSpacing: '0.22em',
-                }}
+            {/* Redesigned topic info section */}
+            <div className="flex border-b border-border" style={{ minHeight: '200px' }}>
+
+              {/* Left rail — Back to Explore */}
+              <Link
+                to="/explore"
+                className="flex-none w-9 flex items-center justify-center border-r border-border hover:bg-background-subtle transition-colors group"
+                title="Back to Explore"
               >
-                {topic.name}
-              </span>
-            </div>
-          </div>
-        </>
-      )}
+                <span
+                  className="text-[10px] font-semibold tracking-[0.22em] uppercase select-none transition-colors group-hover:text-brand-500"
+                  style={{
+                    writingMode: 'vertical-rl',
+                    transform: 'rotate(180deg)',
+                    color: 'var(--color-foreground-muted, #9ca3af)',
+                    letterSpacing: '0.22em',
+                  }}
+                >
+                  Back to Explore
+                </span>
+              </Link>
 
-      {/* Feed tabs + poems */}
-      <div className="sticky top-16 z-20 bg-background/90 backdrop-blur-md border-b border-border">
-        <FeedTabs active={activeTab} onChange={setActiveTab} className="px-4" />
-      </div>
+              {/* Centre — description, stats, and plus button */}
+              <div className="flex-1 px-6 py-7 flex flex-col justify-between">
+                <div>
+                  <p className="text-foreground text-sm leading-relaxed max-w-md mb-6" style={{ minHeight: '3.5rem' }}>
+                    {topic.description
+                      ? topic.description
+                      : `A space for poems about ${topic.name.toLowerCase()} — where language meets feeling, and writers push each other toward clarity.`}
+                  </p>
 
-      <div className="px-4 max-w-2xl mx-auto">
-        {loading ? (
-          <div className="py-8 space-y-8">
-            {[1, 2, 3].map(i => (
-              <div key={i} className="border-b border-border-subtle py-4">
-                <div className="flex gap-2.5 mb-3">
-                  <div className="skeleton w-9 h-9 rounded-full" />
-                  <div className="space-y-1.5">
-                    <div className="skeleton h-3.5 w-24 rounded" />
-                    <div className="skeleton h-3 w-16 rounded" />
+                  {/* Stat mini-cards + Add button */}
+                  <div className="flex flex-col gap-3">
+                    <div className="flex gap-3">
+                      <div className="flex flex-col items-center justify-center px-5 py-3 rounded-xl border border-border bg-background-subtle min-w-[90px]">
+                        <span className="font-serif font-bold text-2xl text-foreground leading-none">{poems.length}</span>
+                        <span className="text-[11px] text-foreground-muted mt-1 tracking-wide uppercase">Poems</span>
+                      </div>
+                      <div className="flex flex-col items-center justify-center px-5 py-3 rounded-xl border border-border bg-background-subtle min-w-[90px]">
+                        <span className="font-serif font-bold text-2xl text-foreground leading-none">{poets.length}</span>
+                        <span className="text-[11px] text-foreground-muted mt-1 tracking-wide uppercase">Poets</span>
+                      </div>
+                    </div>
+                    <Link
+                      to={`/write?topic=${topic.id}`}
+                      className="flex items-center justify-center px-5 py-3 rounded-xl border border-border bg-background-subtle hover:bg-background-hover transition-colors w-fit"
+                      title="Add a poem"
+                    >
+                      <Plus size={24} className="text-foreground" />
+                    </Link>
                   </div>
                 </div>
-                <div className="skeleton h-6 w-40 rounded mb-3" />
-                <div className="space-y-2">
-                  <div className="skeleton h-4 w-full rounded" />
-                  <div className="skeleton h-4 w-2/3 rounded" />
-                </div>
               </div>
-            ))}
-          </div>
-        ) : poems.length === 0 ? (
-          <div className="py-20 text-center">
-            <p className="font-serif italic text-foreground-muted text-lg mb-2">No poems here yet.</p>
-            <p className="text-foreground-muted text-sm mb-6">Be the first to write about {topic?.name}.</p>
-            <Link to={`/write?topic=${topic?.id}`} className="inline-flex items-center gap-2 bg-brand-500 hover:bg-brand-600 text-white px-5 py-2.5 rounded-full text-sm font-medium transition-colors">
-              <PenLine size={14} /> Write a poem
-            </Link>
-          </div>
-        ) : (
-          poems.map(poem => (
-            <PoemCard
-              key={poem.id}
-              poem={poem}
-              feedLabel={activeTab}
-              onFeedbackClick={setActiveFeedback}
-            />
-          ))
+
+              {/* Right rail — Topic name in caps */}
+              <div
+                className="flex-none w-9 flex items-center justify-center border-l border-border"
+              >
+                <span
+                  className="text-[10px] font-bold tracking-[0.22em] uppercase select-none"
+                  style={{
+                    writingMode: 'vertical-rl',
+                    color: topic.color || '#6C4EF6',
+                    letterSpacing: '0.22em',
+                  }}
+                >
+                  {topic.name}
+                </span>
+              </div>
+            </div>
+          </>
+        )}
+
+        {/* Feed tabs + poems */}
+        <div className="sticky top-16 z-20 bg-background/90 backdrop-blur-md border-b border-border">
+          <FeedTabs active={activeTab} onChange={setActiveTab} className="px-4" />
+        </div>
+
+        <div className="px-4 max-w-2xl mx-auto">
+          {loading ? (
+            <div className="py-8 space-y-8">
+              {[1, 2, 3].map(i => (
+                <div key={i} className="border-b border-border-subtle py-4">
+                  <div className="flex gap-2.5 mb-3">
+                    <div className="skeleton w-9 h-9 rounded-full" />
+                    <div className="space-y-1.5">
+                      <div className="skeleton h-3.5 w-24 rounded" />
+                      <div className="skeleton h-3 w-16 rounded" />
+                    </div>
+                  </div>
+                  <div className="skeleton h-6 w-40 rounded mb-3" />
+                  <div className="space-y-2">
+                    <div className="skeleton h-4 w-full rounded" />
+                    <div className="skeleton h-4 w-2/3 rounded" />
+                  </div>
+                </div>
+              ))}
+            </div>
+          ) : poems.length === 0 ? (
+            <div className="py-20 text-center">
+              <p className="font-serif italic text-foreground-muted text-lg mb-2">No poems here yet.</p>
+              <p className="text-foreground-muted text-sm mb-6">Be the first to write about {topic?.name}.</p>
+              <Link to={`/write?topic=${topic?.id}`} className="inline-flex items-center gap-2 bg-brand-500 hover:bg-brand-600 text-white px-5 py-2.5 rounded-full text-sm font-medium transition-colors">
+                <PenLine size={14} /> Write a poem
+              </Link>
+            </div>
+          ) : (
+            poems.map(poem => (
+              <PoemCard
+                key={poem.id}
+                poem={poem}
+                feedLabel={activeTab}
+                onFeedbackClick={setActiveFeedback}
+              />
+            ))
+          )}
+        </div>
+
+        {activeFeedback && (
+          <FeedbackPanel poem={activeFeedback} onClose={() => setActiveFeedback(null)} />
         )}
       </div>
 
-      {activeFeedback && (
-        <FeedbackPanel poem={activeFeedback} onClose={() => setActiveFeedback(null)} />
+      {/* Desktop Layout (lg and up) */}
+      {topic && (
+        <div className="hidden lg:flex h-screen">
+          {/* Left Column: Fixed Cover Image */}
+          <div className="w-80 flex-none border-r border-border flex flex-col overflow-hidden bg-gradient-to-br from-brand-500/20 to-brand-600/10">
+            {/* Cover Image */}
+            <div className="flex-1 overflow-hidden">
+              {topic.image_url ? (
+                <img 
+                  src={topic.image_url} 
+                  alt={topic.name}
+                  className="w-full h-full object-cover"
+                />
+              ) : (
+                <div 
+                  className="w-full h-full opacity-20"
+                  style={{ backgroundColor: topic.color || '#6C4EF6' }}
+                />
+              )}
+            </div>
+
+            {/* Left Column Footer: Back to Explore & Topic Label */}
+            <div className="flex-none border-t border-border bg-background p-4 space-y-3">
+              <Link
+                to="/explore"
+                className="flex items-center gap-2 text-sm font-medium text-foreground-secondary hover:text-foreground transition-colors group"
+              >
+                <ChevronLeft size={16} className="group-hover:text-brand-500 transition-colors" />
+                Back to Explore
+              </Link>
+              <div className="pt-2 border-t border-border">
+                <p 
+                  className="text-xs font-bold tracking-widest uppercase"
+                  style={{ color: topic.color || '#6C4EF6' }}
+                >
+                  {topic.name}
+                </p>
+              </div>
+            </div>
+          </div>
+
+          {/* Center Column: Scrollable Feed Area */}
+          <div className="flex-1 flex flex-col overflow-hidden border-r border-border">
+            {/* Topic Description Header */}
+            <div className="flex-none border-b border-border p-8 flex flex-col items-center justify-center text-center">
+              <p className="text-foreground text-sm leading-relaxed max-w-xl">
+                {topic.description
+                  ? topic.description
+                  : `A space for poems about ${topic.name.toLowerCase()} — where language meets feeling, and writers push each other toward clarity.`}
+              </p>
+            </div>
+
+            {/* Feed Tabs (Centered) */}
+            <div className="flex-none border-b border-border bg-background/50 backdrop-blur-sm">
+              <div className="flex justify-center">
+                <FeedTabs active={activeTab} onChange={setActiveTab} />
+              </div>
+            </div>
+
+            {/* Scrollable Poems Feed */}
+            <div className="flex-1 overflow-y-auto">
+              <div className="px-8 py-6 max-w-2xl mx-auto">
+                {loading ? (
+                  <div className="py-8 space-y-8">
+                    {[1, 2, 3].map(i => (
+                      <div key={i} className="border-b border-border-subtle py-4">
+                        <div className="flex gap-2.5 mb-3">
+                          <div className="skeleton w-9 h-9 rounded-full" />
+                          <div className="space-y-1.5">
+                            <div className="skeleton h-3.5 w-24 rounded" />
+                            <div className="skeleton h-3 w-16 rounded" />
+                          </div>
+                        </div>
+                        <div className="skeleton h-6 w-40 rounded mb-3" />
+                        <div className="space-y-2">
+                          <div className="skeleton h-4 w-full rounded" />
+                          <div className="skeleton h-4 w-2/3 rounded" />
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                ) : poems.length === 0 ? (
+                  <div className="py-20 text-center">
+                    <p className="font-serif italic text-foreground-muted text-lg mb-2">No poems here yet.</p>
+                    <p className="text-foreground-muted text-sm mb-6">Be the first to write about {topic?.name}.</p>
+                    <Link to={`/write?topic=${topic?.id}`} className="inline-flex items-center gap-2 bg-brand-500 hover:bg-brand-600 text-white px-5 py-2.5 rounded-full text-sm font-medium transition-colors">
+                      <PenLine size={14} /> Write a poem
+                    </Link>
+                  </div>
+                ) : (
+                  poems.map(poem => (
+                    <PoemCard
+                      key={poem.id}
+                      poem={poem}
+                      feedLabel={activeTab}
+                      onFeedbackClick={setActiveFeedback}
+                    />
+                  ))
+                )}
+              </div>
+            </div>
+          </div>
+
+          {/* Right Column: Fixed Stats & Add Poem */}
+          <div className="w-64 flex-none border-l border-border bg-background flex flex-col overflow-y-auto">
+            {/* Stats Section */}
+            <div className="flex-none border-b border-border p-6 space-y-4">
+              <div>
+                <div className="text-3xl font-serif font-bold text-foreground mb-1">{poems.length}</div>
+                <div className="text-xs text-foreground-muted tracking-widest uppercase">Poems</div>
+              </div>
+              <div>
+                <div className="text-3xl font-serif font-bold text-foreground mb-1">{poets.length}</div>
+                <div className="text-xs text-foreground-muted tracking-widest uppercase">Poets</div>
+              </div>
+            </div>
+
+            {/* Add Poem Card */}
+            <div className="flex-none border-b border-border p-6">
+              <Link
+                to={`/write?topic=${topic.id}`}
+                className="flex flex-col items-center justify-center w-full px-4 py-8 rounded-lg border-2 border-dashed border-border hover:border-brand-500 hover:bg-brand-500/5 transition-all"
+              >
+                <Plus size={28} className="text-foreground-muted mb-2" />
+                <span className="text-sm font-medium text-foreground">Add Poem</span>
+              </Link>
+            </div>
+
+            {/* Top Topics / Trending List */}
+            <div className="flex-1 overflow-y-auto p-6">
+              <h3 className="text-xs font-bold tracking-widest uppercase text-foreground-muted mb-4">Topics You Might Like</h3>
+              <div className="space-y-2">
+                {[1, 2, 3, 4, 5].map(i => (
+                  <div key={i} className="p-2 rounded border border-border hover:bg-background-subtle transition-colors cursor-pointer">
+                    <div className="text-sm font-medium text-foreground mb-0.5">Topic {i}</div>
+                    <div className="text-xs text-foreground-muted">24 poems</div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+
+          {activeFeedback && (
+            <FeedbackPanel poem={activeFeedback} onClose={() => setActiveFeedback(null)} />
+          )}
+        </div>
       )}
     </div>
   );
