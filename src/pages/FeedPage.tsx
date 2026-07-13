@@ -380,7 +380,10 @@ export default function FeedPage() {
   // Mobile/Tablet layout
   const mobileLayout = (
     <div className="block lg:hidden">
-      <div className="sticky top-16 z-20 bg-background/90 backdrop-blur-md border-b border-border">
+      <div className={cn(
+        'sticky top-16 z-20 bg-background/90 backdrop-blur-md border-b border-border transition-all duration-300 ease-out transform',
+        !headerVisible && '-translate-y-full opacity-0 pointer-events-none'
+      )}>
         {/* Mode toggle */}
         <div className="relative flex items-center max-w-3xl mx-auto">
           <button
@@ -430,11 +433,7 @@ export default function FeedPage() {
         </div>
 
         {/* Feed tabs */}
-        <div className={cn(
-          'sticky top-0 z-20 bg-background/80 backdrop-blur-sm border-b border-border transition-all duration-300 ease-out transform',
-          'flex justify-center',
-          !headerVisible && '-translate-y-full opacity-0 pointer-events-none'
-        )}>
+        <div className="flex justify-center">
           {mode === 'modern' ? (
             <FeedTabs active={activeTab} onChange={handleTabChange} />
           ) : (
