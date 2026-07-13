@@ -654,71 +654,71 @@ function ModernPoemPage({ id }: { id: string }) {
         <div className="flex-none border-t border-border bg-background p-5 space-y-4 overflow-y-auto max-h-[40%] flex flex-col">
           {/* Engagement Options with Labels */}
           <div className="space-y-3">
-              <button
-                onClick={handleLike}
-                className="w-full flex items-center justify-between text-sm font-medium text-foreground-secondary hover:text-foreground transition-colors group"
+            <button
+              onClick={handleLike}
+              className="w-full flex items-center justify-between text-sm font-medium text-foreground-secondary hover:text-foreground transition-colors group"
+            >
+              <span className="flex items-center gap-2">
+                <Heart size={16} className={liked ? 'fill-red-500 text-red-500' : ''} />
+                Like this poem
+              </span>
+              <span className="text-xs text-foreground-muted">{likeCount}</span>
+            </button>
+
+            <button
+              onClick={() => setFeedbackOpen(true)}
+              className="w-full flex items-center justify-between text-sm font-medium text-foreground-secondary hover:text-foreground transition-colors"
+            >
+              <span className="flex items-center gap-2">
+                <MessageSquare size={16} />
+                Give feedback
+              </span>
+              <span className="text-xs text-foreground-muted">{feedbackCount}</span>
+            </button>
+
+            <button
+              onClick={handleBookmark}
+              className="w-full flex items-center justify-between text-sm font-medium text-foreground-secondary hover:text-foreground transition-colors"
+            >
+              <span className="flex items-center gap-2">
+                <Bookmark size={16} className={bookmarked ? 'fill-brand-500' : ''} />
+                Save poem
+              </span>
+            </button>
+
+            <button
+              onClick={handleShare}
+              className="w-full flex items-center justify-between text-sm font-medium text-foreground-secondary hover:text-foreground transition-colors"
+            >
+              <span className="flex items-center gap-2">
+                <Share2 size={16} />
+                Share
+              </span>
+            </button>
+
+            <button
+              onClick={() => setBehindOpen(true)}
+              className="w-full flex items-center justify-between text-sm font-medium text-foreground-secondary hover:text-foreground transition-colors"
+            >
+              <span className="flex items-center gap-2">
+                <DoorOpen size={16} />
+                Behind the poem
+              </span>
+            </button>
+
+            {isOwner && (
+              <Link
+                to={`/write?edit=${poem?.id}`}
+                className="w-full flex items-center justify-between text-sm font-medium text-brand-500 hover:text-brand-600 transition-colors"
               >
                 <span className="flex items-center gap-2">
-                  <Heart size={16} className={liked ? 'fill-red-500 text-red-500' : ''} />
-                  Like this poem
+                  <PenLine size={16} />
+                  Edit this poem
                 </span>
-                <span className="text-xs text-foreground-muted">{likeCount}</span>
-              </button>
+              </Link>
+            )}
 
-              <button
-                onClick={() => setFeedbackOpen(true)}
-                className="w-full flex items-center justify-between text-sm font-medium text-foreground-secondary hover:text-foreground transition-colors"
-              >
-                <span className="flex items-center gap-2">
-                  <MessageSquare size={16} />
-                  Give feedback
-                </span>
-                <span className="text-xs text-foreground-muted">{feedbackCount}</span>
-              </button>
-
-              <button
-                onClick={handleBookmark}
-                className="w-full flex items-center justify-between text-sm font-medium text-foreground-secondary hover:text-foreground transition-colors"
-              >
-                <span className="flex items-center gap-2">
-                  <Bookmark size={16} className={bookmarked ? 'fill-brand-500' : ''} />
-                  Save poem
-                </span>
-              </button>
-
-              <button
-                onClick={handleShare}
-                className="w-full flex items-center justify-between text-sm font-medium text-foreground-secondary hover:text-foreground transition-colors"
-              >
-                <span className="flex items-center gap-2">
-                  <Share2 size={16} />
-                  Share
-                </span>
-              </button>
-
-              <button
-                onClick={() => setBehindOpen(true)}
-                className="w-full flex items-center justify-between text-sm font-medium text-foreground-secondary hover:text-foreground transition-colors"
-              >
-                <span className="flex items-center gap-2">
-                  <DoorOpen size={16} />
-                  Behind the poem
-                </span>
-              </button>
-
-              {isOwner && (
-                <Link
-                  to={`/write?edit=${poem?.id}`}
-                  className="w-full flex items-center justify-between text-sm font-medium text-brand-500 hover:text-brand-600 transition-colors"
-                >
-                  <span className="flex items-center gap-2">
-                    <PenLine size={16} />
-                    Edit this poem
-                  </span>
-                </Link>
-              )}
-
-              {!isOwner && (
+            {!isOwner && (
               <button
                 onClick={() => setMenuOpen(!menuOpen)}
                 className="w-full flex items-center justify-between text-sm font-medium text-red-600 hover:text-red-700 transition-colors relative"
@@ -732,25 +732,23 @@ function ModernPoemPage({ id }: { id: string }) {
             </div>
 
           {/* Published under topic - at bottom */}
-          <div className="border-t border-border pt-4 mt-auto">
-            {poem.topic && (
-              <div>
-                <p className="text-xs text-foreground-muted tracking-wider uppercase mb-2">Published under</p>
-                <Link 
-                  to={`/topic/${poem.topic.slug}`}
-                  className="text-sm font-medium text-foreground hover:text-brand-500 transition-colors"
-                >
-                  {poem.topic.name}
-                </Link>
-                <Link
-                  to={`/topic/${poem.topic.slug}`}
-                  className="text-xs text-brand-500 hover:text-brand-600 mt-2 inline-block"
-                >
-                  See more poems under {poem.topic.name} →
-                </Link>
-              </div>
-            )}
-          </div>
+          {poem.topic && (
+            <div className="border-t border-border pt-4 mt-auto">
+              <p className="text-xs text-foreground-muted tracking-wider uppercase mb-2">Published under</p>
+              <Link
+                to={`/topic/${poem.topic.slug}`}
+                className="text-sm font-medium text-foreground hover:text-brand-500 transition-colors"
+              >
+                {poem.topic.name}
+              </Link>
+              <Link
+                to={`/topic/${poem.topic.slug}`}
+                className="text-xs text-brand-500 hover:text-brand-600 mt-2 inline-block"
+              >
+                See more poems under {poem.topic.name} →
+              </Link>
+            </div>
+          )}
         </div>
       </div>
 
