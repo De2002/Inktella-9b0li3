@@ -650,30 +650,10 @@ function ModernPoemPage({ id }: { id: string }) {
           </div>
         </div>
 
-        {/* Left Column Footer: Published Info + Engagement */}
-        <div className="flex-none border-t border-border bg-background p-5 space-y-4 overflow-y-auto max-h-[40%]">
-          {/* Published under topic */}
-          {poem.topic && (
-            <div>
-              <p className="text-xs text-foreground-muted tracking-wider uppercase mb-2">Published under</p>
-              <Link 
-                to={`/topic/${poem.topic.slug}`}
-                className="text-sm font-medium text-foreground hover:text-brand-500 transition-colors"
-              >
-                {poem.topic.name}
-              </Link>
-              <Link
-                to={`/topic/${poem.topic.slug}`}
-                className="text-xs text-brand-500 hover:text-brand-600 mt-2 inline-block"
-              >
-                See more poems under {poem.topic.name} →
-              </Link>
-            </div>
-          )}
-
-          <div className="border-t border-border pt-4">
-            {/* Engagement Options with Labels */}
-            <div className="space-y-3">
+        {/* Left Column Footer: Engagement + Published Info */}
+        <div className="flex-none border-t border-border bg-background p-5 space-y-4 overflow-y-auto max-h-[40%] flex flex-col">
+          {/* Engagement Options with Labels */}
+          <div className="space-y-3">
               <button
                 onClick={handleLike}
                 className="w-full flex items-center justify-between text-sm font-medium text-foreground-secondary hover:text-foreground transition-colors group"
@@ -739,17 +719,38 @@ function ModernPoemPage({ id }: { id: string }) {
               )}
 
               {!isOwner && (
-                <button
-                  onClick={() => setMenuOpen(!menuOpen)}
-                  className="w-full flex items-center justify-between text-sm font-medium text-red-600 hover:text-red-700 transition-colors relative"
-                >
-                  <span className="flex items-center gap-2">
-                    <MoreHorizontal size={16} />
-                    Report poem
-                  </span>
-                </button>
+              <button
+                onClick={() => setMenuOpen(!menuOpen)}
+                className="w-full flex items-center justify-between text-sm font-medium text-red-600 hover:text-red-700 transition-colors relative"
+              >
+                <span className="flex items-center gap-2">
+                  <MoreHorizontal size={16} />
+                  Report poem
+                </span>
+              </button>
               )}
             </div>
+          </div>
+
+          {/* Published under topic - at bottom */}
+          <div className="border-t border-border pt-4 mt-auto">
+            {poem.topic && (
+              <div>
+                <p className="text-xs text-foreground-muted tracking-wider uppercase mb-2">Published under</p>
+                <Link 
+                  to={`/topic/${poem.topic.slug}`}
+                  className="text-sm font-medium text-foreground hover:text-brand-500 transition-colors"
+                >
+                  {poem.topic.name}
+                </Link>
+                <Link
+                  to={`/topic/${poem.topic.slug}`}
+                  className="text-xs text-brand-500 hover:text-brand-600 mt-2 inline-block"
+                >
+                  See more poems under {poem.topic.name} →
+                </Link>
+              </div>
+            )}
           </div>
         </div>
       </div>
