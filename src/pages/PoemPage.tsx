@@ -730,7 +730,6 @@ function ModernPoemPage({ id }: { id: string }) {
               </button>
               )}
             </div>
-          </div>
 
           {/* Published under topic - at bottom */}
           <div className="border-t border-border pt-4 mt-auto">
