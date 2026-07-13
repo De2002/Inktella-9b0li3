@@ -376,17 +376,12 @@ export default function FeedPage() {
     </div>
   );
 
-  return (
-    <div className="max-w-2xl mx-auto">
-      {/* Sticky header: Mode switcher + tabs — hides on scroll down, reveals on scroll up */}
-      <div
-        className={cn(
-          'sticky top-16 z-30 bg-background/95 backdrop-blur-md border-b border-border transition-transform duration-300 ease-in-out',
-          headerVisible ? 'translate-y-0' : '-translate-y-full'
-        )}
-      >
-        {/* Modern / Classics switcher */}
-        <div className="flex items-stretch min-h-[52px] relative overflow-hidden">
+  // Mobile/Tablet layout
+  const mobileLayout = (
+    <div className="block lg:hidden">
+      <div className="sticky top-16 z-20 bg-background/90 backdrop-blur-md border-b border-border">
+        {/* Mode toggle */}
+        <div className="relative flex items-center max-w-3xl mx-auto">
           <button
             onClick={() => handleModeSwitch('modern')}
             className={cn(
@@ -512,6 +507,194 @@ export default function FeedPage() {
       )}
     </div>
   );
+
+  // Desktop layout (3-column: left fixed, right scrollable)
+  const desktopLayout = (
+    <div className="hidden lg:flex h-screen">
+      {/* Left Column: Fixed - Mode Selector */}
+      <div className="w-80 flex-none border-r border-border bg-background flex flex-col overflow-hidden">
+        <div className="flex-1 overflow-y-auto p-8 space-y-12">
+          {/* Modern Section */}
+          <button
+            onClick={() => {
+              setMode('modern');
+              setActiveTab('picks');
+            }}
+            className="w-full text-left group"
+          >
+            <h2 className={cn(
+              'text-5xl font-bold mb-4 transition-colors',
+              mode === 'modern' ? 'text-brand-500' : 'text-foreground-muted group-hover:text-foreground'
+            )}>
+              MODERN
+            </h2>
+            <p className="text-sm text-foreground-muted leading-relaxed group-hover:text-foreground transition-colors">
+              {MODE_DESCRIPTIONS.modern}
+            </p>
+          </button>
+
+          {/* Classics Section */}
+          <button
+            onClick={() => setMode('classics')}
+            className="w-full text-left group opacity-50 cursor-not-allowed"
+            disabled
+            title="Classics is coming soon"
+          >
+            <h2 className="text-5xl font-bold mb-4 transition-colors text-foreground-muted">
+              CLASSICS
+            </h2>
+            <p className="text-sm text-foreground-muted leading-relaxed">
+              {MODE_DESCRIPTIONS.classics}
+            </p>
+            <div className="mt-3">
+              <span className="inline-block px-2 py-1 bg-background-subtle rounded text-xs font-medium text-foreground-muted">
+                Coming soon
+              </span>
+            </div>
+          </button>
+        </div>
+      </div>
+
+      {/* Right Column: Scrollable - Tabs + Poems */}
+      <div className="flex-1 flex flex-col overflow-hidden border-l border-border">
+        {/* Tab Selection Header */}
+        <div className="flex-none border-b border-border bg-background/50 backdrop-blur-sm">
+          <div className="p-6 flex flex-col gap-4">
+            {/* Active Tab Description */}
+            <div>
+              <p className="text-xs text-foreground-muted tracking-widest uppercase mb-2">Current feed</p>
+              <h3 className="text-lg font-semibold text-foreground capitalize">
+                {mode === 'modern' ? activeTab : classicsTab}
+              </h3>
+            </div>
+
+            {/* Tabs Vertical Stack */}
+            <div className="flex flex-col gap-2">
+              {mode === 'modern' ? (
+                <>
+                  {[
+                    { id: 'picks' as FeedTab, label: 'Picks' },
+                    { id: 'latest' as FeedTab, label: 'Latest' },
+                    { id: 'discussed' as FeedTab, label: 'Discussed' },
+                    { id: 'hearted' as FeedTab, label: 'Hearted' },
+                    { id: 'following' as FeedTab, label: 'Following' },
+                  ].map(({ id, label }) => (
+                    <button
+                      key={id}
+                      onClick={() => handleTabChange(id)}
+                      className={cn(
+                        'text-left px-4 py-2 rounded-lg transition-all text-sm font-medium',
+                        activeTab === id
+                          ? 'bg-brand-500/10 text-brand-500 border border-brand-500/20'
+                          : 'text-foreground-secondary hover:text-foreground hover:bg-background-subtle'
+                      )}
+                    >
+                      {label}
+                    </button>
+                  ))}
+                </>
+              ) : (
+                <>
+                  {CLASSICS_TABS.map(({ id, label }) => (
+                    <button
+                      key={id}
+                      onClick={() => handleClassicsTabChange(id)}
+                      className={cn(
+                        'text-left px-4 py-2 rounded-lg transition-all text-sm font-medium',
+                        classicsTab === id
+                          ? 'bg-tella-500/10 text-tella-500 border border-tella-500/20'
+                          : 'text-foreground-secondary hover:text-foreground hover:bg-background-subtle'
+                      )}
+                    >
+                      {label}
+                    </button>
+                  ))}
+                </>
+              )}
+            </div>
+          </div>
+        </div>
+
+        {/* Scrollable Poems Area */}
+        <div className="flex-1 overflow-y-auto">
+          <div className="px-8 py-6 max-w-3xl">
+            {loading && poems.length === 0 ? skeletonLoader : (
+              <>
+                {/* Following: no follows yet */}
+                {mode === 'modern' && activeTab === 'following' && !loading && followingIds?.length === 0 ? (
+                  <FollowEmptyState
+                    suggestions={followSuggestions}
+                    followedSet={followedSet}
+                    followPending={followPending}
+                    onFollow={handleFollowSuggestion}
+                  />
+                ) : mode === 'modern' && activeTab === 'following' && !loading && poems.length === 0 && (followingIds?.length ?? 0) > 0 ? (
+                  <div className="py-24 text-center px-4">
+                    <div className="w-16 h-16 rounded-full bg-background-subtle flex items-center justify-center mx-auto mb-4">
+                      <Users size={26} className="text-foreground-muted opacity-50" />
+                    </div>
+                    <p className="font-serif italic text-foreground-muted text-lg mb-1">No poems yet.</p>
+                    <p className="text-xs text-foreground-muted">The poets you follow haven't published recently.</p>
+                  </div>
+
+                ) : mode === 'modern' && !loading && poems.length === 0 ? (
+                  <FeedEmptyState tab={activeTab} />
+
+                ) : mode === 'modern' ? (
+                  poems.map(poem => (
+                    <PoemCard
+                      key={poem.id}
+                      poem={poem}
+                      feedLabel={poem.feed_label}
+                      onFeedbackClick={setActiveFeedback}
+                      onUpdate={(id, updates) => setPoems(prev => prev.map(p => p.id === id ? { ...p, ...updates } : p))}
+                    />
+                  ))
+                ) : (
+                  poems.map(poem => (
+                    <ClassicPoemCard
+                      key={poem.id}
+                      poem={poem}
+                      onUpdate={(id, updates) => setPoems(prev => prev.map(p => p.id === id ? { ...p, ...updates } : p))}
+                    />
+                  ))
+                )}
+
+                {hasMore && !loading && activeTab !== 'following' && (
+                  <div className="py-8 text-center">
+                    <button
+                      onClick={() => fetchPoems()}
+                      className="text-sm font-medium text-brand-500 hover:text-brand-600 transition-colors"
+                    >
+                      Load more poems
+                    </button>
+                  </div>
+                )}
+
+                {!hasMore && poems.length > 0 && (
+                  <div className="py-10 text-center">
+                    <p className="font-serif italic text-foreground-muted text-sm">You've reached the end.</p>
+                  </div>
+                )}
+              </>
+            )}
+          </div>
+        </div>
+      </div>
+
+      {activeFeedback && (
+        <FeedbackPanel poem={activeFeedback} onClose={() => setActiveFeedback(null)} />
+      )}
+    </div>
+  );
+
+  return (
+    <>
+      {mobileLayout}
+      {desktopLayout}
+    </>
+  );
+};
 }
 
 // ── Per-tab empty states ─────────────────────────────────────────────────────
