@@ -104,11 +104,11 @@ export default function BehindThePoem({ poem, onClose, isDesktopConstrained }: B
   };
 
   const backdropClass = isDesktopConstrained
-    ? "fixed inset-0 bg-black/40 backdrop-blur-sm z-40 animate-fadeIn hidden lg:block"
+    ? "fixed inset-0 bg-black/40 backdrop-blur-sm z-40 animate-fadeIn lg:hidden"
     : "fixed inset-0 bg-black/40 backdrop-blur-sm z-40 animate-fadeIn";
 
   const sheetContainerClass = isDesktopConstrained
-    ? "hidden lg:flex fixed bottom-0 left-1/2 -translate-x-1/2 z-50 flex-col h-[90vh] max-h-[90vh] animate-slideUp rounded-t-3xl max-w-2xl w-full"
+    ? "hidden lg:flex fixed bottom-0 inset-x-0 z-50 flex-col h-[90vh] max-h-[90vh] animate-slideUp rounded-t-3xl px-72"
     : "fixed inset-x-0 bottom-0 z-50 flex flex-col h-[90vh] max-h-[90vh] animate-slideUp rounded-t-3xl";
 
   return (
