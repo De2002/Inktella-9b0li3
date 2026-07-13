@@ -269,8 +269,11 @@ export default function TopicPage() {
               )}
               
               {/* Description Overlay on Bottom of Cover Image */}
-              <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-background to-transparent p-6 pt-12">
-                <p className="text-foreground text-sm leading-relaxed">
+              <div 
+                className="absolute bottom-0 left-0 right-0 p-6 pt-8"
+                style={{ backgroundColor: topic.color || '#6C4EF6' }}
+              >
+                <p className="text-white text-sm leading-relaxed">
                   {topic.description
                     ? topic.description
                     : `A space for poems about ${topic.name.toLowerCase()} — where language meets feeling, and writers push each other toward clarity.`}
