@@ -558,53 +558,63 @@ export default function FeedPage() {
 
       {/* Second Left Column: Fixed - Feed Tabs Menu */}
       <div className="w-[120px] flex-none border-r border-border bg-background/50 flex flex-col overflow-hidden">
-        <div className="flex-1 overflow-y-auto p-4 space-y-8">
-          {/* Modern Tabs Group */}
-          <div className={cn('space-y-2', mode !== 'modern' && 'opacity-30')}>
-            {[
-              { id: 'picks' as FeedTab, label: 'Picks' },
-              { id: 'latest' as FeedTab, label: 'Latest' },
-              { id: 'discussed' as FeedTab, label: 'Discussed' },
-              { id: 'hearted' as FeedTab, label: 'Hearted' },
-              { id: 'following' as FeedTab, label: 'Following' },
-            ].map(({ id, label }) => (
-              <button
-                key={id}
-                onClick={() => {
-                  setMode('modern');
-                  handleTabChange(id);
-                }}
-                className={cn(
-                  'w-full text-left px-3 py-2 rounded transition-all text-sm font-medium',
-                  mode === 'modern' && activeTab === id
-                    ? 'bg-brand-500/10 text-brand-500 border border-brand-500/20'
-                    : 'text-foreground-secondary hover:text-foreground hover:bg-background-subtle'
-                )}
-                disabled={mode !== 'modern'}
-              >
-                {label}
-              </button>
-            ))}
-          </div>
-
-          {/* Classics Tabs Group */}
-          <div className="space-y-2 opacity-30">
-            {CLASSICS_TABS.map(({ id, label }) => (
-              <button
-                key={id}
-                onClick={() => setMode('classics')}
-                className="w-full text-left px-3 py-2 rounded transition-all text-sm font-medium text-foreground-secondary hover:text-foreground hover:bg-background-subtle disabled:cursor-not-allowed"
-                disabled
-              >
-                {label}
-              </button>
-            ))}
+        <div className="flex-1 overflow-y-auto p-4">
+          <div className="space-y-2">
+            {mode === 'modern' ? (
+              <>
+                {[
+                  { id: 'picks' as FeedTab, label: 'Picks' },
+                  { id: 'latest' as FeedTab, label: 'Latest' },
+                  { id: 'discussed' as FeedTab, label: 'Discussed' },
+                  { id: 'hearted' as FeedTab, label: 'Hearted' },
+                  { id: 'following' as FeedTab, label: 'Following' },
+                ].map(({ id, label }) => (
+                  <button
+                    key={id}
+                    onClick={() => handleTabChange(id)}
+                    className={cn(
+                      'w-full text-left px-3 py-2 rounded transition-all text-sm font-medium',
+                      activeTab === id
+                        ? 'bg-brand-500/10 text-brand-500 border border-brand-500/20'
+                        : 'text-foreground-secondary hover:text-foreground hover:bg-background-subtle'
+                    )}
+                  >
+                    {label}
+                  </button>
+                ))}
+              </>
+            ) : (
+              <>
+                {CLASSICS_TABS.map(({ id, label }) => (
+                  <button
+                    key={id}
+                    onClick={() => handleClassicsTabChange(id)}
+                    className={cn(
+                      'w-full text-left px-3 py-2 rounded transition-all text-sm font-medium',
+                      classicsTab === id
+                        ? 'bg-tella-500/10 text-tella-500 border border-tella-500/20'
+                        : 'text-foreground-secondary hover:text-foreground hover:bg-background-subtle'
+                    )}
+                  >
+                    {label}
+                  </button>
+                ))}
+              </>
+            )}
           </div>
         </div>
       </div>
 
-      {/* Right Column: Scrollable - Poems */}
+      {/* Right Column: Scrollable - Tab Info + Poems */}
       <div className="flex-1 flex flex-col overflow-hidden border-l border-border">
+        {/* Tab Description Header */}
+        <div className="flex-none border-b border-border bg-background/50 backdrop-blur-sm p-6">
+          <p className="text-xs text-foreground-muted tracking-widest uppercase mb-2">Current feed</p>
+          <h3 className="text-lg font-semibold text-foreground capitalize">
+            {mode === 'modern' ? activeTab : classicsTab}
+          </h3>
+        </div>
+
         {/* Scrollable Poems Area */}
         <div className="flex-1 overflow-y-auto">
           <div className="px-8 py-6 max-w-3xl">
