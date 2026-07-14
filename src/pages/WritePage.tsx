@@ -253,15 +253,18 @@ export default function WritePage() {
 
       // Step 2: Create the poem
       const randomDivider = getRandomDivider();
-      const { data: poem, error: poemError } = await supabase.from('poems').insert({
+      const poemData = {
         user_id: user.id, title: title.trim(), content: content.trim(),
         image_url: imageUrl.trim() || null, topic_id: topicId || null,
         ink_spent: INK_PUBLISH_COST, published: true, behind_the_poem: behindPayload(),
         decorative_divider: randomDivider.id,
-      }).select().single();
+      };
+      console.log('[v0] Publishing poem with data:', poemData);
+      const { data: poem, error: poemError } = await supabase.from('poems').insert(poemData).select().single();
 
       if (poemError || !poem) {
         console.error('[v0] Poem insert error:', poemError);
+        console.error('[v0] Poem data was:', poemData);
         // Refund the ink if poem creation fails
         await supabase.from('user_profiles').update({ ink_balance: profile.ink_balance }).eq('id', user.id);
         toast.error('Failed to publish poem. Ink refunded.');
@@ -274,9 +277,12 @@ export default function WritePage() {
 
       // Step 4: Add tags
       for (const tagName of tags) {
-        const { data: existingTag } = await supabase.from('tags').select('id').eq('name', tagName).single();
-        let tagId = existingTag?.id;
-        if (!tagId) { const { data: newTag } = await supabase.from('tags').insert({ name: tagName }).select('id').single(); tagId = newTag?.id; }
+        const { data: existingTags } = await supabase.from('tags').select('id').eq('name', tagName);
+        let tagId = existingTags?.[0]?.id;
+        if (!tagId) { 
+          const { data: newTags, error: tagError } = await supabase.from('tags').insert({ name: tagName }).select('id');
+          if (!tagError && newTags?.[0]) tagId = newTags[0].id;
+        }
         if (tagId) await supabase.from('poem_tags').insert({ poem_id: poem.id, tag_id: tagId });
       }
 
