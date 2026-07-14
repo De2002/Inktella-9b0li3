@@ -19,22 +19,24 @@ interface FeedTabsProps {
 
 export default function FeedTabs({ active, onChange, className, hideTabs = [] }: FeedTabsProps) {
   const visibleTabs = TABS.filter(tab => !hideTabs.includes(tab.id));
+  const isMobileLayout = hideTabs.length > 0;
   
   return (
-    <div className={cn('flex items-center gap-0 overflow-x-auto scrollbar-hide', className)}>
+    <div className={cn('flex items-center gap-0 overflow-x-auto scrollbar-hide w-full', className)}>
       {visibleTabs.map(({ id, label, icon: Icon }) => (
         <button
           key={id}
           onClick={() => onChange(id)}
           className={cn(
-            'flex items-center gap-1.5 px-3 py-3 text-sm font-medium whitespace-nowrap border-b-2 transition-all shrink-0',
+            'flex items-center justify-center gap-1.5 py-3 text-sm font-medium whitespace-nowrap border-b-2 transition-all',
+            isMobileLayout ? 'flex-1 px-1' : 'px-3 shrink-0',
             active === id
               ? 'text-brand-600 dark:text-brand-400 border-brand-500'
               : 'text-foreground-muted hover:text-foreground border-transparent hover:border-border'
           )}
         >
           <Icon size={14} className={active === id ? 'text-brand-500' : 'text-foreground-muted'} />
-          {label}
+          <span className={isMobileLayout ? 'hidden sm:inline' : ''}>{label}</span>
         </button>
       ))}
     </div>

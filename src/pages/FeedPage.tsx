@@ -433,7 +433,7 @@ export default function FeedPage() {
         </div>
 
         {/* Feed tabs */}
-        <div className="flex justify-between">
+        <div className="w-full">
           {mode === 'modern' ? (
             <FeedTabs active={activeTab} onChange={handleTabChange} hideTabs={['discussed', 'hearted']} />
           ) : (
