@@ -233,10 +233,15 @@ export default function WritePage() {
   }
 
   async function handlePublish() {
-    if (!user || !profile) return;
+    console.log('[v0] Publish clicked. User:', user?.id, 'Profile:', profile?.id, 'Ink:', profile?.ink_balance, 'Cost:', INK_PUBLISH_COST);
+    if (!user || !profile) {
+      console.log('[v0] Missing user or profile');
+      return;
+    }
     if (!title.trim()) { toast.error('Your poem needs a title'); return; }
     if (!content.trim() || content.trim().length < 10) { toast.error('Write at least a few lines'); return; }
     if (profile.ink_balance < INK_PUBLISH_COST) { toast.error(`You need ${INK_PUBLISH_COST} Ink to publish. Give feedback to earn more.`); return; }
+    console.log('[v0] Starting publish...');
     setSubmitting(true);
 
     try {
@@ -273,21 +278,40 @@ export default function WritePage() {
       }
 
       // Step 3: Create poem draft
-      await supabase.from('poem_drafts').insert({ poem_id: poem.id, content: content.trim(), draft_number: 1 });
+      const { error: draftError } = await supabase.from('poem_drafts').insert({ poem_id: poem.id, content: content.trim(), draft_number: 1 });
+      if (draftError) console.error('[v0] Draft insert error:', draftError);
 
       // Step 4: Add tags
       for (const tagName of tags) {
-        const { data: existingTags } = await supabase.from('tags').select('id').eq('name', tagName);
-        let tagId = existingTags?.[0]?.id;
-        if (!tagId) { 
-          const { data: newTags, error: tagError } = await supabase.from('tags').insert({ name: tagName }).select('id');
-          if (!tagError && newTags?.[0]) tagId = newTags[0].id;
+        try {
+          const { data: existingTags, error: selectError } = await supabase.from('tags').select('id').eq('name', tagName);
+          if (selectError) {
+            console.error('[v0] Tag select error:', selectError);
+            continue;
+          }
+          
+          let tagId = existingTags?.[0]?.id;
+          if (!tagId) { 
+            const { data: newTags, error: tagError } = await supabase.from('tags').insert({ name: tagName }).select('id');
+            if (tagError) {
+              console.error('[v0] Tag insert error:', tagError);
+              continue;
+            }
+            if (newTags?.[0]) tagId = newTags[0].id;
+          }
+          
+          if (tagId) {
+            const { error: poemTagError } = await supabase.from('poem_tags').insert({ poem_id: poem.id, tag_id: tagId });
+            if (poemTagError) console.error('[v0] Poem tag insert error:', poemTagError);
+          }
+        } catch (tagErr) {
+          console.error('[v0] Tag processing error:', tagErr);
         }
-        if (tagId) await supabase.from('poem_tags').insert({ poem_id: poem.id, tag_id: tagId });
       }
 
       // Step 5: Create transaction record
-      await supabase.from('ink_transactions').insert({ user_id: user.id, amount: -INK_PUBLISH_COST, reason: `Published "${title.trim()}"`, related_id: poem.id });
+      const { error: txError } = await supabase.from('ink_transactions').insert({ user_id: user.id, amount: -INK_PUBLISH_COST, reason: `Published "${title.trim()}"`, related_id: poem.id });
+      if (txError) console.error('[v0] Transaction insert error:', txError);
 
       localStorage.removeItem(NEW_POEM_KEY);
       await refreshProfile();
