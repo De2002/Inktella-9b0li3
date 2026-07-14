@@ -433,9 +433,9 @@ export default function FeedPage() {
         </div>
 
         {/* Feed tabs */}
-        <div className="flex justify-center">
+        <div className="flex justify-between">
           {mode === 'modern' ? (
-            <FeedTabs active={activeTab} onChange={handleTabChange} />
+            <FeedTabs active={activeTab} onChange={handleTabChange} hideTabs={['discussed', 'hearted']} />
           ) : (
             <ClassicsTabs active={classicsTab} onChange={handleClassicsTabChange} />
           )}

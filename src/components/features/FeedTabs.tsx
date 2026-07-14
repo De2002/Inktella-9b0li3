@@ -14,12 +14,15 @@ interface FeedTabsProps {
   active: FeedTab;
   onChange: (tab: FeedTab) => void;
   className?: string;
+  hideTabs?: FeedTab[];
 }
 
-export default function FeedTabs({ active, onChange, className }: FeedTabsProps) {
+export default function FeedTabs({ active, onChange, className, hideTabs = [] }: FeedTabsProps) {
+  const visibleTabs = TABS.filter(tab => !hideTabs.includes(tab.id));
+  
   return (
     <div className={cn('flex items-center gap-0 overflow-x-auto scrollbar-hide', className)}>
-      {TABS.map(({ id, label, icon: Icon }) => (
+      {visibleTabs.map(({ id, label, icon: Icon }) => (
         <button
           key={id}
           onClick={() => onChange(id)}
