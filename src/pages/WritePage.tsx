@@ -239,35 +239,60 @@ export default function WritePage() {
     if (profile.ink_balance < INK_PUBLISH_COST) { toast.error(`You need ${INK_PUBLISH_COST} Ink to publish. Give feedback to earn more.`); return; }
     setSubmitting(true);
 
-    const randomDivider = getRandomDivider();
-    const { data: poem, error } = await supabase.from('poems').insert({
-      user_id: user.id, title: title.trim(), content: content.trim(),
-      image_url: imageUrl.trim() || null, topic_id: topicId || null,
-      ink_spent: INK_PUBLISH_COST, published: true, behind_the_poem: behindPayload(),
-      decorative_divider: randomDivider.id,
-    }).select().single();
+    try {
+      // Step 1: Deduct ink from profile first
+      const newInk = profile.ink_balance - INK_PUBLISH_COST;
+      const { error: profileError } = await supabase.from('user_profiles').update({ ink_balance: newInk }).eq('id', user.id);
+      
+      if (profileError) {
+        console.error('[v0] Profile update error:', profileError);
+        toast.error('Failed to deduct ink. Please try again.');
+        setSubmitting(false);
+        return;
+      }
 
-    if (error) { toast.error('Failed to publish poem'); setSubmitting(false); return; }
+      // Step 2: Create the poem
+      const randomDivider = getRandomDivider();
+      const { data: poem, error: poemError } = await supabase.from('poems').insert({
+        user_id: user.id, title: title.trim(), content: content.trim(),
+        image_url: imageUrl.trim() || null, topic_id: topicId || null,
+        ink_spent: INK_PUBLISH_COST, published: true, behind_the_poem: behindPayload(),
+        decorative_divider: randomDivider.id,
+      }).select().single();
 
-    await supabase.from('poem_drafts').insert({ poem_id: poem.id, content: content.trim(), draft_number: 1 });
-    for (const tagName of tags) {
-      const { data: existingTag } = await supabase.from('tags').select('id').eq('name', tagName).single();
-      let tagId = existingTag?.id;
-      if (!tagId) { const { data: newTag } = await supabase.from('tags').insert({ name: tagName }).select('id').single(); tagId = newTag?.id; }
-      if (tagId) await supabase.from('poem_tags').insert({ poem_id: poem.id, tag_id: tagId });
+      if (poemError || !poem) {
+        console.error('[v0] Poem insert error:', poemError);
+        // Refund the ink if poem creation fails
+        await supabase.from('user_profiles').update({ ink_balance: profile.ink_balance }).eq('id', user.id);
+        toast.error('Failed to publish poem. Ink refunded.');
+        setSubmitting(false);
+        return;
+      }
+
+      // Step 3: Create poem draft
+      await supabase.from('poem_drafts').insert({ poem_id: poem.id, content: content.trim(), draft_number: 1 });
+
+      // Step 4: Add tags
+      for (const tagName of tags) {
+        const { data: existingTag } = await supabase.from('tags').select('id').eq('name', tagName).single();
+        let tagId = existingTag?.id;
+        if (!tagId) { const { data: newTag } = await supabase.from('tags').insert({ name: tagName }).select('id').single(); tagId = newTag?.id; }
+        if (tagId) await supabase.from('poem_tags').insert({ poem_id: poem.id, tag_id: tagId });
+      }
+
+      // Step 5: Create transaction record
+      await supabase.from('ink_transactions').insert({ user_id: user.id, amount: -INK_PUBLISH_COST, reason: `Published "${title.trim()}"`, related_id: poem.id });
+
+      localStorage.removeItem(NEW_POEM_KEY);
+      await refreshProfile();
+      toast.success('Poem published!', { description: `-${INK_PUBLISH_COST} Ink spent` });
+      navigate(`/poem/${poem.id}`);
+    } catch (err) {
+      console.error('[v0] Publish error:', err);
+      toast.error('An unexpected error occurred while publishing.');
+    } finally {
+      setSubmitting(false);
     }
-
-    const newInk = profile.ink_balance - INK_PUBLISH_COST;
-    await Promise.all([
-      supabase.from('user_profiles').update({ ink_balance: newInk }).eq('id', user.id),
-      supabase.from('ink_transactions').insert({ user_id: user.id, amount: -INK_PUBLISH_COST, reason: `Published "${title.trim()}"`, related_id: poem.id }),
-    ]);
-
-    localStorage.removeItem(NEW_POEM_KEY);
-    await refreshProfile();
-    toast.success('Poem published!', { description: `-${INK_PUBLISH_COST} Ink spent` });
-    navigate(`/poem/${poem.id}`);
-    setSubmitting(false);
   }
 
   const canPublish = profile && profile.ink_balance >= INK_PUBLISH_COST;
