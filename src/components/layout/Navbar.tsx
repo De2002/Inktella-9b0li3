@@ -289,9 +289,16 @@ export default function Navbar() {
               </div>
             </>
           ) : (
-            <Link to="/auth" className="bg-brand-500 hover:bg-brand-600 text-white px-4 py-2 rounded-full text-sm font-medium transition-colors">
-              Get Started
-            </Link>
+            <>
+              {/* Mobile - show "Sign up" text */}
+              <Link to="/auth" className="md:hidden bg-brand-500 hover:bg-brand-600 text-white px-3 py-2 rounded-full text-xs font-medium transition-colors whitespace-nowrap">
+                Sign up
+              </Link>
+              {/* Desktop - show "Get Started" */}
+              <Link to="/auth" className="hidden md:flex bg-brand-500 hover:bg-brand-600 text-white px-4 py-2 rounded-full text-sm font-medium transition-colors">
+                Get Started
+              </Link>
+            </>
           )}
         </div>
       </div>
