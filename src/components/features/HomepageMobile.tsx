@@ -85,7 +85,7 @@ export default function HomepageMobile() {
       const { data, error, count } = await supabase
         .from('poems')
         .select(POEM_SELECT, { count: 'exact' })
-        .eq('status', 'published')
+        .eq('published', true)
         .order('created_at', { ascending: false })
         .range(startPage * PAGE_SIZE, (startPage + 1) * PAGE_SIZE - 1);
 
