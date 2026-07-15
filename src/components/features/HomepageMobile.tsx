@@ -134,22 +134,22 @@ export default function HomepageMobile() {
         </div>
 
         {/* Action Buttons */}
-        <div className="grid grid-cols-3 gap-3 px-4 py-6">
+        <div className="grid grid-cols-3 gap-2 px-4 py-4">
           <Link
             to="/about"
-            className="flex items-center justify-center py-3 px-2 bg-brand-500/10 hover:bg-brand-500/20 rounded-lg text-sm font-semibold text-brand-500 transition-colors"
+            className="flex items-center justify-center py-2 px-1 bg-brand-500/10 hover:bg-brand-500/20 rounded-lg text-xs font-semibold text-brand-500 transition-colors"
           >
             ABOUT
           </Link>
           <Link
             to="/explore"
-            className="flex items-center justify-center py-3 px-2 bg-brand-500/10 hover:bg-brand-500/20 rounded-lg text-sm font-semibold text-brand-500 transition-colors"
+            className="flex items-center justify-center py-2 px-1 bg-brand-500/10 hover:bg-brand-500/20 rounded-lg text-xs font-semibold text-brand-500 transition-colors"
           >
             EXPLORE
           </Link>
           <Link
             to="/auth"
-            className="flex items-center justify-center py-3 px-2 bg-brand-500 hover:bg-brand-600 rounded-lg text-sm font-semibold text-white transition-colors"
+            className="flex items-center justify-center py-2 px-1 bg-brand-500 hover:bg-brand-600 rounded-lg text-xs font-semibold text-white transition-colors"
           >
             POST
           </Link>
