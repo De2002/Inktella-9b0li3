@@ -10,6 +10,7 @@ import FeedbackPanel from '@/components/features/FeedbackPanel';
 import BehindThePoem from '@/components/features/BehindThePoem';
 import BoostButton from '@/components/features/BoostButton';
 import ClassicCommentSheet from '@/components/features/ClassicCommentSheet';
+import { DecorativeDivider } from '@/components/features/DecorativeDividers';
 import { useAuth } from '@/contexts/AuthContext';
 import { formatTimeAgo, cn, getInitials } from '@/lib/utils';
 import { getLevel, LEVEL_CONFIG, LEVEL_BADGE_IMAGES } from '@/constants';
@@ -483,6 +484,8 @@ function ModernPoemPage({ id }: { id: string }) {
         </div>
       )}
 
+      <DecorativeDivider dividerId={poem.decorative_divider} />
+
       <div className="poem-text text-foreground leading-[1.9] text-lg mb-8">{poem.content}</div>
 
       {poem.tags && poem.tags.length > 0 && (
@@ -744,6 +747,8 @@ function ModernPoemPage({ id }: { id: string }) {
         {/* Scrollable Poem Content */}
         <div className="flex-1 overflow-y-auto">
           <div className="px-8 py-8 max-w-2xl mx-auto">
+            <DecorativeDivider dividerId={poem.decorative_divider} />
+            
             <div className="poem-text text-foreground leading-[1.9] text-lg mb-8">{poem.content}</div>
 
             {poem.tags && poem.tags.length > 0 && (

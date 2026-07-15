@@ -3,6 +3,7 @@ import { Toaster } from 'sonner';
 import { AuthProvider } from '@/contexts/AuthContext';
 import { ThemeProvider } from '@/contexts/ThemeContext';
 import AppLayout from '@/components/layout/AppLayout';
+import LandingPage from '@/pages/LandingPage';
 import Index from '@/pages/Index';
 import FeedPage from '@/pages/FeedPage';
 import AuthPage from '@/pages/AuthPage';

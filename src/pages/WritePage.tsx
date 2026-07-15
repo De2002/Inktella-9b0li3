@@ -7,6 +7,7 @@ import type { Topic } from '@/types';
 import { INK_PUBLISH_COST, getLevel, LEVEL_CONFIG, TELLA_PER_CREDIT } from '@/constants';
 import { cn, getInitials } from '@/lib/utils';
 import { toast } from 'sonner';
+import { getRandomDivider } from '@/components/features/DecorativeDividers';
 
 const POEM_DRAFT_KEY = (id: string) => `inktella_poem_draft_${id}`;
 const NEW_POEM_KEY = 'inktella_new_poem_draft';
@@ -256,10 +257,12 @@ export default function WritePage() {
       }
 
       // Step 2: Create the poem
+      const randomDivider = getRandomDivider();
       const poemData = {
         user_id: user.id, title: title.trim(), content: content.trim(),
         image_url: imageUrl.trim() || null, topic_id: topicId || null,
         ink_spent: INK_PUBLISH_COST, published: true, behind_the_poem: behindPayload(),
+        decorative_divider: randomDivider.id,
       };
       console.log('[v0] Publishing poem with data:', poemData);
       const { data: poem, error: poemError } = await supabase.from('poems').insert(poemData).select().single();
