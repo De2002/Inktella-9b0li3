@@ -4,7 +4,7 @@ import { supabase } from '@/lib/supabase';
 import { useAuth } from '@/contexts/AuthContext';
 import FeedTabs from './FeedTabs';
 import PoemCard from './PoemCard';
-import LoggedOutFooter from '@/components/layout/LoggedOutFooter';
+import BottomNavLoggedOut from '@/components/layout/BottomNavLoggedOut';
 import type { Poem, FeedTab } from '@/types';
 
 const POEM_SELECT = `
@@ -203,7 +203,7 @@ export default function HomepageMobile() {
         )}
       </div>
       </div>
-      <LoggedOutFooter />
+      <BottomNavLoggedOut />
     </>
   );
 }
