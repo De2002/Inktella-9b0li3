@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
 import { supabase } from '@/lib/supabase';
 import { useAuth } from '@/contexts/AuthContext';
 import FeedTabs from './FeedTabs';
@@ -130,6 +131,28 @@ export default function HomepageMobile() {
           <p className="text-sm text-foreground-secondary">
             Read poems from emerging voices, share your perspective, and be part of a community that values thoughtful feedback. Whether you write, critique, or simply love poetry, Inktella gives you a place to engage and contribute.
           </p>
+        </div>
+
+        {/* Action Buttons */}
+        <div className="grid grid-cols-3 gap-3 px-4 py-6">
+          <Link
+            to="/about"
+            className="flex items-center justify-center py-3 px-2 bg-brand-500/10 hover:bg-brand-500/20 rounded-lg text-sm font-semibold text-brand-500 transition-colors"
+          >
+            ABOUT
+          </Link>
+          <Link
+            to="/explore"
+            className="flex items-center justify-center py-3 px-2 bg-brand-500/10 hover:bg-brand-500/20 rounded-lg text-sm font-semibold text-brand-500 transition-colors"
+          >
+            EXPLORE
+          </Link>
+          <Link
+            to="/auth"
+            className="flex items-center justify-center py-3 px-2 bg-brand-500 hover:bg-brand-600 rounded-lg text-sm font-semibold text-white transition-colors"
+          >
+            POST
+          </Link>
         </div>
 
       {/* Latest Feed Tab */}
