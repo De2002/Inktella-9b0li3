@@ -46,9 +46,6 @@ export default function FeaturedPoemSection({
           <p className="mt-3 text-sm">{fullText}</p>
         </div>
 
-        {/* Divider */}
-        <div className="border-t border-border my-4" />
-
         {/* Engagement Metrics & Read Button */}
         <div className="flex items-center justify-between flex-wrap gap-4">
           <div className="flex items-center gap-6 text-foreground-secondary text-sm">
