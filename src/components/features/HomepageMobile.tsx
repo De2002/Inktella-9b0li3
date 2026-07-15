@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { supabase } from '@/lib/supabase';
+import { useAuth } from '@/contexts/AuthContext';
 import FeedTabs from './FeedTabs';
 import PoemCard from './PoemCard';
 import type { Poem, FeedTab } from '@/types';
@@ -11,11 +12,20 @@ const POEM_SELECT = `
   poem_tags(tag:tags(id, name))
 `;
 
-async function enrichPoems(rawPoems: any[]): Promise<Poem[]> {
+async function enrichPoems(rawPoems: any[], userId: string | undefined): Promise<Poem[]> {
   return Promise.all(rawPoems.map(async (poem: any) => {
-    const [likesRes, feedbackRes] = await Promise.all([
+    const [likesRes, feedbackRes, likedRes, bookmarkedRes, pushedRes] = await Promise.all([
       supabase.from('poem_likes').select('*', { count: 'exact', head: true }).eq('poem_id', poem.id),
       supabase.from('feedback').select('*', { count: 'exact', head: true }).eq('poem_id', poem.id),
+      userId
+        ? supabase.from('poem_likes').select('poem_id').match({ poem_id: poem.id, user_id: userId }).maybeSingle()
+        : Promise.resolve({ data: null }),
+      userId
+        ? supabase.from('poem_bookmarks').select('poem_id').match({ poem_id: poem.id, user_id: userId }).maybeSingle()
+        : Promise.resolve({ data: null }),
+      userId
+        ? supabase.from('poem_boosts').select('id').match({ poem_id: poem.id, user_id: userId, feed_type: 'picks' }).maybeSingle()
+        : Promise.resolve({ data: null }),
     ]);
 
     return {
@@ -23,14 +33,15 @@ async function enrichPoems(rawPoems: any[]): Promise<Poem[]> {
       tags: poem.poem_tags?.map((pt: any) => pt.tag).filter(Boolean) || [],
       like_count: likesRes.count || 0,
       feedback_count: feedbackRes.count || 0,
-      is_liked: false,
-      is_bookmarked: false,
-      is_pushed: false,
+      is_liked: !!likedRes.data,
+      is_bookmarked: !!bookmarkedRes.data,
+      is_pushed: !!pushedRes.data,
     } as Poem;
   }));
 }
 
 export default function HomepageMobile() {
+  const { user } = useAuth();
   const [activeTab, setActiveTab] = useState<FeedTab>('latest');
   const [poems, setPoems] = useState<Poem[]>([]);
   const [loading, setLoading] = useState(true);
@@ -48,7 +59,7 @@ export default function HomepageMobile() {
     const startPage = reset ? 0 : page;
 
     try {
-      // Fetch latest poems
+      // Fetch latest poems - same data as logged-in users
       const { data, error, count } = await supabase
         .from('poems')
         .select(POEM_SELECT, { count: 'exact' })
@@ -58,7 +69,7 @@ export default function HomepageMobile() {
 
       if (error) throw error;
 
-      const enriched = await enrichPoems(data || []);
+      const enriched = await enrichPoems(data || [], user?.id);
       if (reset) {
         setPoems(enriched);
       } else {
