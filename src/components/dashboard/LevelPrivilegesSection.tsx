@@ -184,7 +184,7 @@ export default function LevelPrivilegesSection({ level, tellaBalance }: LevelPri
       {nextLevel && (
         <div className="mt-6 pt-6 border-t border-border bg-background/50 rounded-lg p-4 text-center">
           <p className="text-xs text-foreground/70 mb-2">Advance your level by creating quality work</p>
-          <a href="https://inktella.com/blog/how-to-earn-tella" target="_blank" rel="noopener noreferrer" className="inline-block text-sm font-medium text-primary hover:text-primary/80 transition-colors">
+          <a href="https://blog.inktella.cyou/how-to-earn-tella-on-inktella/" target="_blank" rel="noopener noreferrer" className="inline-block text-sm font-medium text-primary hover:text-primary/80 transition-colors">
             Learn how to earn more Tella →
           </a>
         </div>
