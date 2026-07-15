@@ -404,13 +404,6 @@ export default function FeedPage() {
             )}
           </button>
 
-          {/* Diagonal slash divider */}
-          <div className="absolute left-1/2 -translate-x-1/2 top-0 bottom-0 flex items-center pointer-events-none z-10 w-8 justify-center">
-            <svg width="16" height="40" viewBox="0 0 16 40" fill="none" className="text-border">
-              <line x1="12" y1="2" x2="4" y2="38" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
-            </svg>
-          </div>
-
           <button
             onClick={() => handleModeSwitch('classics')}
             disabled
