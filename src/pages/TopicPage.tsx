@@ -253,14 +253,13 @@ export default function TopicPage() {
                   style={{ backgroundColor: topic.color || '#6C4EF6' }}
                 />
               )}
-              {/* Topic name overlay - vertical text */}
-              <div className="absolute inset-0 flex items-center justify-center">
+              {/* Topic name overlay - vertical text on far right */}
+              <div className="absolute inset-y-0 right-0 flex items-center justify-center px-3 py-4" style={{ backgroundColor: topic.color || '#6C4EF6' }}>
                 <span
-                  className="text-2xl sm:text-3xl font-bold uppercase select-none text-white drop-shadow-lg"
+                  className="text-lg sm:text-xl font-bold uppercase select-none text-white"
                   style={{
                     writingMode: 'vertical-rl',
                     transform: 'rotate(180deg)',
-                    textShadow: '2px 2px 8px rgba(0,0,0,0.3)',
                   }}
                 >
                   {topic.name}
