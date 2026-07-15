@@ -517,7 +517,7 @@ export default function FeedPage() {
     <div className="hidden lg:flex h-screen">
       {/* Left Column: Fixed - Mode Selector */}
       <div className="w-80 flex-none border-r border-border bg-background flex flex-col overflow-hidden">
-        <div className="flex-1 overflow-y-auto p-8 space-y-12">
+        <div className="flex-1 overflow-y-auto p-8 space-y-0">
           {/* Modern Section */}
           <button
             onClick={() => {
