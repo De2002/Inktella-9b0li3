@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
-import { PenLine } from 'lucide-react';
+import { PenLine, Plus } from 'lucide-react';
 import { supabase } from '@/lib/supabase';
 import type { Topic, Poem, FeedTab } from '@/types';
 import { setTopicMetadata, resetMetadata } from '@/lib/metadata';
