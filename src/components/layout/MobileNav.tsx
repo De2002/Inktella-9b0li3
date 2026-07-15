@@ -1,4 +1,5 @@
 import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { Newspaper, Compass, Droplets, User } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import quillIcon from '@/assets/quill-icon.png';
 
@@ -8,17 +9,17 @@ export default function MobileNav() {
   const navigate = useNavigate();
 
   const navItems = [
-    { to: '/feed', label: 'FEED' },
-    { to: '/explore', label: 'EXPLORE' },
-    { to: '/write', label: 'WRITE', fab: true },
-    { to: '/ink', label: 'INK' },
-    { to: `/profile/${user?.username}`, label: 'PROFILE' },
+    { to: '/feed', icon: Newspaper, label: 'Feed' },
+    { to: '/explore', icon: Compass, label: 'Explore' },
+    { to: '/write', icon: null, label: 'Write', fab: true },
+    { to: '/ink', icon: Droplets, label: 'Ink' },
+    { to: `/profile/${user?.username}`, icon: User, label: 'Me' },
   ];
 
   return (
     <nav className="lg:hidden fixed bottom-0 left-0 right-0 bg-background/95 backdrop-blur-md border-t border-border z-40 h-16 pb-safe">
       <div className="flex items-center justify-around h-full px-2">
-        {navItems.map(({ to, label, fab }) => {
+        {navItems.map(({ to, icon: Icon, label, fab }) => {
           const active = location.pathname === to ||
             (to !== '/feed' && to !== `/profile/${user?.username}` && location.pathname.startsWith(to));
 
@@ -38,11 +39,12 @@ export default function MobileNav() {
             <Link
               key={to}
               to={to}
-              className={`flex items-center justify-center px-2 py-1.5 rounded-lg min-w-[44px] min-h-[44px] transition-colors text-xs font-bold tracking-tight ${
-                active ? 'text-brand-500' : 'text-foreground-muted hover:text-foreground'
+              className={`flex flex-col items-center gap-0.5 px-3 py-1.5 rounded-lg min-w-[44px] min-h-[44px] justify-center transition-colors ${
+                active ? 'text-brand-500' : 'text-foreground-muted'
               }`}
             >
-              {label}
+              <Icon size={20} />
+              <span className="text-[10px] font-medium">{label}</span>
             </Link>
           );
         })}

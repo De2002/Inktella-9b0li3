@@ -3,6 +3,7 @@ import { useEffect } from 'react';
 import { ArrowRight, Feather, MessageSquare, BookOpen, Pen, Users } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import { setMetadata } from '@/lib/metadata';
+import BottomNavLoggedOut from '@/components/layout/BottomNavLoggedOut';
 import logoSrc from '@/assets/logo.png';
 
 const HOW_IT_WORKS = [
@@ -81,6 +82,7 @@ export default function LandingPage() {
   }
 
   return (
+    <>
     <div className="min-h-screen bg-background">
 
       {/* ── HERO ───────────────────────────────────────────────────────────────── */}
@@ -183,7 +185,7 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* ── HOW IT WORKS ───────────────────────────────────────────────────────── */}
+      {/* ���─ HOW IT WORKS ───────────────────────────────────────────────────────── */}
       <section className="py-20 px-4">
         <div className="max-w-4xl mx-auto">
           <div className="text-center mb-14">
@@ -515,5 +517,7 @@ export default function LandingPage() {
         </div>
       </footer>
     </div>
+    <BottomNavLoggedOut />
+    </>
   );
 }

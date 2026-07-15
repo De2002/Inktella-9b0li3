@@ -3,6 +3,7 @@ import { supabase } from '@/lib/supabase';
 import { useAuth } from '@/contexts/AuthContext';
 import FeedTabs from './FeedTabs';
 import PoemCard from './PoemCard';
+import BottomNavLoggedOut from '@/components/layout/BottomNavLoggedOut';
 import type { Poem, FeedTab } from '@/types';
 
 const POEM_SELECT = `
@@ -119,16 +120,17 @@ export default function HomepageMobile() {
   }
 
   return (
-    <div className="flex flex-col min-h-screen pb-48">
-      {/* Hero Section */}
-      <div className="text-center py-8 px-4">
-        <h1 className="text-3xl font-bold text-foreground mb-2">
-          A place where poetry grows through connection
-        </h1>
-        <p className="text-sm text-foreground-secondary">
-          Read poems from emerging voices, share your perspective, and be part of a community that values thoughtful feedback. Whether you write, critique, or simply love poetry, Inktella gives you a place to engage and contribute.
-        </p>
-      </div>
+    <>
+      <div className="flex flex-col min-h-screen pb-48">
+        {/* Hero Section */}
+        <div className="text-center py-8 px-4">
+          <h1 className="text-3xl font-bold text-foreground mb-2">
+            A place where poetry grows through connection
+          </h1>
+          <p className="text-sm text-foreground-secondary">
+            Read poems from emerging voices, share your perspective, and be part of a community that values thoughtful feedback. Whether you write, critique, or simply love poetry, Inktella gives you a place to engage and contribute.
+          </p>
+        </div>
 
       {/* Latest Feed Tab */}
       <div className="border-b border-border px-4">
@@ -177,6 +179,8 @@ export default function HomepageMobile() {
           </div>
         )}
       </div>
-    </div>
+      </div>
+      <BottomNavLoggedOut />
+    </>
   );
 }
