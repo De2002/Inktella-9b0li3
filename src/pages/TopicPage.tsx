@@ -47,36 +47,166 @@ export default function TopicPage() {
     if (!topic) return;
     setLoading(true);
 
-    let query = supabase
-      .from('poems')
-      .select(`
-        *,
-        author:user_id(id, username, avatar_url, tella_balance),
-        topic:topics(id, name, slug, color),
-        poem_tags(tag:tags(id, name))
-      `)
-      .eq('topic_id', topic.id)
-      .eq('published', true);
+    const POEM_SELECT = `
+      *,
+      author:user_id(id, username, avatar_url, tella_balance),
+      topic:topics(id, name, slug, color),
+      poem_tags(tag:tags(id, name))
+    `;
 
-    if (activeTab === 'discussed') {
-      query = query.order('revision_count', { ascending: false });
-    } else {
-      query = query.order('created_at', { ascending: false });
+    let data: any[] | null = null;
+
+    switch (activeTab) {
+      // ── PICKS ──────────────────────────────────────────────────────────
+      // Only poems that have earned ≥10 distinct Critic approvals via poem_boosts.
+      case 'picks': {
+        const { data: pickIds } = await supabase.rpc('get_picks_feed', {
+          p_limit: 20,
+          p_offset: 0,
+        });
+
+        if (!pickIds || pickIds.length === 0) {
+          data = [];
+          break;
+        }
+
+        const ids = pickIds.map((r: any) => r.poem_id);
+        const { data: poemRows } = await supabase
+          .from('poems')
+          .select(POEM_SELECT)
+          .in('id', ids)
+          .eq('topic_id', topic.id)
+          .eq('published', true);
+
+        // Preserve the DB scoring order
+        const idOrder = new Map(ids.map((id: string, i: number) => [id, i]));
+        data = (poemRows || []).sort((a: any, b: any) => (idOrder.get(a.id) ?? 99) - (idOrder.get(b.id) ?? 99));
+        break;
+      }
+
+      // ── LATEST ────────────────────────────────────────────────────────
+      // Pure chronological — most recent poems first
+      case 'latest': {
+        const { data: rows } = await supabase
+          .from('poems')
+          .select(POEM_SELECT)
+          .eq('topic_id', topic.id)
+          .eq('published', true)
+          .order('created_at', { ascending: false })
+          .limit(20);
+        data = rows || [];
+        break;
+      }
+
+      // ── DISCUSSED ─────────────────────────────────────────────────────
+      // Poems with ≥5 feedback entries, ranked by feedback activity
+      case 'discussed': {
+        const { data: discussedIds } = await supabase.rpc('get_discussed_feed', {
+          p_limit: 20,
+          p_offset: 0,
+        });
+
+        if (!discussedIds || discussedIds.length === 0) {
+          data = [];
+          break;
+        }
+
+        const ids = discussedIds.map((r: any) => r.poem_id);
+        const { data: poemRows } = await supabase
+          .from('poems')
+          .select(POEM_SELECT)
+          .in('id', ids)
+          .eq('topic_id', topic.id)
+          .eq('published', true);
+
+        // Preserve DB score ordering
+        const idOrder = new Map(ids.map((id: string, i: number) => [id, i]));
+        data = (poemRows || []).sort((a: any, b: any) => (idOrder.get(a.id) ?? 99) - (idOrder.get(b.id) ?? 99));
+        break;
+      }
+
+      // ── HEARTED ───────────────────────────────────────────────────────
+      // heart score = likes×2 + saves×3, time-decayed
+      case 'hearted': {
+        const { data: heartedIds } = await supabase.rpc('get_hearted_feed', {
+          p_limit: 20,
+          p_offset: 0,
+        });
+
+        if (!heartedIds || heartedIds.length === 0) {
+          data = [];
+          break;
+        }
+
+        const ids = heartedIds.map((r: any) => r.poem_id);
+        const { data: poemRows } = await supabase
+          .from('poems')
+          .select(POEM_SELECT)
+          .in('id', ids)
+          .eq('topic_id', topic.id)
+          .eq('published', true);
+
+        // Preserve heart-score ordering
+        const idOrder = new Map(ids.map((id: string, i: number) => [id, i]));
+        data = (poemRows || []).sort((a: any, b: any) => (idOrder.get(a.id) ?? 99) - (idOrder.get(b.id) ?? 99));
+        break;
+      }
+
+      // ── FOLLOWING ─────────────────────────────────────────────────────
+      // Poems from poets the current user follows
+      case 'following': {
+        if (!user) {
+          data = [];
+          break;
+        }
+
+        const { data: followsData } = await supabase
+          .from('follows')
+          .select('following_id')
+          .eq('follower_id', user.id);
+        
+        const followingIds = (followsData || []).map((f: any) => f.following_id);
+
+        if (followingIds.length === 0) {
+          data = [];
+          break;
+        }
+
+        const { data: rows } = await supabase
+          .from('poems')
+          .select(POEM_SELECT)
+          .eq('topic_id', topic.id)
+          .eq('published', true)
+          .in('user_id', followingIds)
+          .order('created_at', { ascending: false })
+          .limit(20);
+        data = rows || [];
+        break;
+      }
+
+      default:
+        data = [];
     }
-
-    const { data } = await query.limit(20);
 
     if (data) {
       const enriched = await Promise.all(data.map(async (poem) => {
-        const [likes, feedback] = await Promise.all([
+        const [likes, feedback, bookmarked, pushed] = await Promise.all([
           supabase.from('poem_likes').select('*', { count: 'exact', head: true }).eq('poem_id', poem.id),
           supabase.from('feedback').select('*', { count: 'exact', head: true }).eq('poem_id', poem.id),
+          user
+            ? supabase.from('poem_bookmarks').select('poem_id').match({ poem_id: poem.id, user_id: user.id }).maybeSingle()
+            : Promise.resolve({ data: null }),
+          user
+            ? supabase.from('poem_boosts').select('id').match({ poem_id: poem.id, user_id: user.id, feed_type: 'picks' }).maybeSingle()
+            : Promise.resolve({ data: null }),
         ]);
         return {
           ...poem,
           tags: poem.poem_tags?.map((pt: any) => pt.tag).filter(Boolean) || [],
           like_count: likes.count || 0,
           feedback_count: feedback.count || 0,
+          is_bookmarked: !!bookmarked.data,
+          is_pushed: !!pushed.data,
         };
       }));
       setPoems(enriched);
