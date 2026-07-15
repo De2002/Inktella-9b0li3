@@ -299,7 +299,7 @@ export default function TopicPage() {
 
         {/* Feed tabs + poems */}
         <div className="sticky top-16 z-20 bg-background/90 backdrop-blur-md border-b border-border">
-          <FeedTabs active={activeTab} onChange={setActiveTab} className="px-4" hideTabs={['discussed', 'hearted']} />
+          <FeedTabs active={activeTab} onChange={setActiveTab} className="px-4" hideTabs={['discussed' as const, 'hearted' as const]} />
         </div>
 
         <div className="px-4 max-w-2xl mx-auto">
