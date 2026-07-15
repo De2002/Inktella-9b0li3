@@ -651,72 +651,76 @@ export default function DashboardPage() {
           </div>
         </div>
 
-        {/* Recent Notifications */}
-        <div className="mb-8 sm:mb-12">
-          <div className="flex items-center justify-between mb-6">
-            <h2 className="text-xl sm:text-2xl font-bold text-foreground">Recent Notifications</h2>
-            <Link to="/notifications" className="text-brand-500 hover:text-brand-600 text-sm font-medium transition-colors flex items-center gap-1">
-              View all <ChevronRight size={14} />
-            </Link>
-          </div>
-          <div className="bg-surface p-4 sm:p-6 rounded-xl border border-border">
-            {dataLoading ? (
-              <div className="space-y-4">
-                {[1, 2, 3].map(i => (
-                  <div key={i} className="flex gap-3 items-start py-3">
-                    <div className="skeleton w-10 h-10 rounded-full shrink-0" />
-                    <div className="flex-1 space-y-2">
-                      <div className="skeleton h-4 w-3/4 rounded" />
-                      <div className="skeleton h-3 w-1/4 rounded" />
-                    </div>
-                  </div>
-                ))}
-              </div>
-            ) : notifications.length === 0 ? (
-              <div className="py-8 text-center">
-                <Bell size={28} className="mx-auto mb-2 text-foreground-muted opacity-40" />
-                <p className="text-sm text-foreground-muted font-serif italic">No notifications yet.</p>
-              </div>
-            ) : (
-              <div className="space-y-1">
-                {notifications.map(notif => {
-                  const actor = notif.actor;
-                  const actorLevel = actor ? getLevel(actor.tella_balance || 0) : 'observer';
-                  const actorCfg = LEVEL_CONFIG[actorLevel];
-                  return (
-                    <div key={notif.id} className={cn('flex items-start gap-3 pb-4 last:pb-0 border-b border-border last:border-0', !notif.read && 'opacity-100')}>
-                      <div className="flex-shrink-0">
-                        {actor?.avatar_url ? (
-                          <img src={actor.avatar_url} alt={actor.username} className="w-10 h-10 rounded-full object-cover" />
-                        ) : actor ? (
-                          <div
-                            className={cn('w-10 h-10 rounded-full flex items-center justify-center text-xs font-bold', actorCfg.borderClass)}
-                            style={{ background: actorCfg.color + '15', color: actorCfg.color }}
-                          >
-                            {getInitials(actor.username || '?')}
-                          </div>
-                        ) : (
-                          <div className="w-10 h-10 rounded-full bg-background-subtle flex items-center justify-center">
-                            <Bell size={16} className="text-foreground-muted" />
-                          </div>
-                        )}
+        {/* Recent Notifications & WhatsApp Channel */}
+        <div className="mb-8 sm:mb-12 grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6">
+          {/* Recent Notifications */}
+          <div className="lg:col-span-2">
+            <div className="flex items-center justify-between mb-6">
+              <h2 className="text-xl sm:text-2xl font-bold text-foreground">Recent Notifications</h2>
+              <Link to="/notifications" className="text-brand-500 hover:text-brand-600 text-sm font-medium transition-colors flex items-center gap-1">
+                View all <ChevronRight size={14} />
+              </Link>
+            </div>
+            <div className="bg-surface p-4 sm:p-6 rounded-xl border border-border">
+              {dataLoading ? (
+                <div className="space-y-4">
+                  {[1, 2, 3].map(i => (
+                    <div key={i} className="flex gap-3 items-start py-3">
+                      <div className="skeleton w-10 h-10 rounded-full shrink-0" />
+                      <div className="flex-1 space-y-2">
+                        <div className="skeleton h-4 w-3/4 rounded" />
+                        <div className="skeleton h-3 w-1/4 rounded" />
                       </div>
-                      <div className="flex-1 min-w-0">
-                        <p className="text-sm text-foreground-secondary leading-snug">{notif.content}</p>
-                        <p className="text-xs text-foreground-muted mt-1">{formatTimeAgo(notif.created_at)}</p>
-                      </div>
-                      {!notif.read && <span className="w-2 h-2 rounded-full bg-brand-500 shrink-0 mt-2" />}
                     </div>
-                  );
-                })}
-              </div>
-            )}
+                  ))}
+                </div>
+              ) : notifications.length === 0 ? (
+                <div className="py-8 text-center">
+                  <Bell size={28} className="mx-auto mb-2 text-foreground-muted opacity-40" />
+                  <p className="text-sm text-foreground-muted font-serif italic">No notifications yet.</p>
+                </div>
+              ) : (
+                <div className="space-y-1">
+                  {notifications.map(notif => {
+                    const actor = notif.actor;
+                    const actorLevel = actor ? getLevel(actor.tella_balance || 0) : 'observer';
+                    const actorCfg = LEVEL_CONFIG[actorLevel];
+                    return (
+                      <div key={notif.id} className={cn('flex items-start gap-3 pb-4 last:pb-0 border-b border-border last:border-0', !notif.read && 'opacity-100')}>
+                        <div className="flex-shrink-0">
+                          {actor?.avatar_url ? (
+                            <img src={actor.avatar_url} alt={actor.username} className="w-10 h-10 rounded-full object-cover" />
+                          ) : actor ? (
+                            <div
+                              className={cn('w-10 h-10 rounded-full flex items-center justify-center text-xs font-bold', actorCfg.borderClass)}
+                              style={{ background: actorCfg.color + '15', color: actorCfg.color }}
+                            >
+                              {getInitials(actor.username || '?')}
+                            </div>
+                          ) : (
+                            <div className="w-10 h-10 rounded-full bg-background-subtle flex items-center justify-center">
+                              <Bell size={16} className="text-foreground-muted" />
+                            </div>
+                          )}
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <p className="text-sm text-foreground-secondary leading-snug">{notif.content}</p>
+                          <p className="text-xs text-foreground-muted mt-1">{formatTimeAgo(notif.created_at)}</p>
+                        </div>
+                        {!notif.read && <span className="w-2 h-2 rounded-full bg-brand-500 shrink-0 mt-2" />}
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
+            </div>
           </div>
-        </div>
 
-        {/* Platform Updates / WhatsApp Channel */}
-        <div className="mb-8 sm:mb-12">
-          <WhatsAppBanner variant="card" />
+          {/* Platform Updates / WhatsApp Channel */}
+          <div className="lg:col-span-1">
+            <div className="mb-6 h-0" />
+            <WhatsAppBanner variant="card" />
+          </div>
         </div>
 
         {/* Writing Section */}

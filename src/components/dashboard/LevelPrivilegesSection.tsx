@@ -1,3 +1,4 @@
+import { Link } from 'react-router-dom';
 import { Shield, BookMarked, MessageSquare, Zap, Award } from 'lucide-react';
 import { LEVEL_CONFIG } from '@/constants';
 import LevelBadge from '@/components/features/LevelBadge';
@@ -183,9 +184,9 @@ export default function LevelPrivilegesSection({ level, tellaBalance }: LevelPri
       {nextLevel && (
         <div className="mt-6 pt-6 border-t border-border bg-background/50 rounded-lg p-4 text-center">
           <p className="text-xs text-foreground/70 mb-2">Advance your level by creating quality work</p>
-          <button className="text-sm font-medium text-primary hover:text-primary/80 transition-colors">
+          <a href="https://inktella.com/blog/how-to-earn-tella" target="_blank" rel="noopener noreferrer" className="inline-block text-sm font-medium text-primary hover:text-primary/80 transition-colors">
             Learn how to earn more Tella →
-          </button>
+          </a>
         </div>
       )}
     </div>
