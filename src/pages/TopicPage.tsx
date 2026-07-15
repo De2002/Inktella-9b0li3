@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
-import { PenLine, Plus } from 'lucide-react';
+import { PenLine } from 'lucide-react';
 import { supabase } from '@/lib/supabase';
 import type { Topic, Poem, FeedTab } from '@/types';
 import { setTopicMetadata, resetMetadata } from '@/lib/metadata';
@@ -239,8 +239,8 @@ export default function TopicPage() {
         {/* Topic section with banner image */}
         {topic && (
           <>
-            {/* Banner image - full width above description */}
-            <div className="w-full h-48 sm:h-64 bg-gradient-to-br from-brand-500/20 to-brand-600/10 border-b border-border overflow-hidden">
+            {/* Banner image with overlay topic name */}
+            <div className="relative w-full h-48 sm:h-64 bg-gradient-to-br from-brand-500/20 to-brand-600/10 border-b border-border overflow-hidden">
               {topic.image_url ? (
                 <img 
                   src={topic.image_url} 
@@ -253,84 +253,53 @@ export default function TopicPage() {
                   style={{ backgroundColor: topic.color || '#6C4EF6' }}
                 />
               )}
-            </div>
-
-            {/* Redesigned topic info section */}
-            <div className="flex border-b border-border" style={{ minHeight: '200px' }}>
-
-              {/* Left rail — Back to Explore */}
-              <Link
-                to="/explore"
-                className="flex-none w-9 flex items-center justify-center border-r border-border hover:bg-background-subtle transition-colors group"
-                title="Back to Explore"
-              >
+              {/* Topic name overlay - vertical text */}
+              <div className="absolute inset-0 flex items-center justify-center">
                 <span
-                  className="text-[10px] font-semibold tracking-[0.22em] uppercase select-none transition-colors group-hover:text-brand-500"
+                  className="text-2xl sm:text-3xl font-bold uppercase select-none text-white drop-shadow-lg"
                   style={{
                     writingMode: 'vertical-rl',
                     transform: 'rotate(180deg)',
-                    color: 'var(--color-foreground-muted, #9ca3af)',
-                    letterSpacing: '0.22em',
-                  }}
-                >
-                  Back to Explore
-                </span>
-              </Link>
-
-              {/* Centre — description, stats, and plus button */}
-              <div className="flex-1 px-6 py-7 flex flex-col justify-between">
-                <div>
-                  <p className="text-foreground text-sm leading-relaxed max-w-md mb-6" style={{ minHeight: '3.5rem' }}>
-                    {topic.description
-                      ? topic.description
-                      : `A space for poems about ${topic.name.toLowerCase()} — where language meets feeling, and writers push each other toward clarity.`}
-                  </p>
-
-                  {/* Stat mini-cards + Add button */}
-                  <div className="flex flex-col gap-3">
-                    <div className="flex gap-3">
-                      <div className="flex flex-col items-center justify-center px-5 py-3 rounded-xl border border-border bg-background-subtle min-w-[90px]">
-                        <span className="font-serif font-bold text-2xl text-foreground leading-none">{poems.length}</span>
-                        <span className="text-[11px] text-foreground-muted mt-1 tracking-wide uppercase">Poems</span>
-                      </div>
-                      <div className="flex flex-col items-center justify-center px-5 py-3 rounded-xl border border-border bg-background-subtle min-w-[90px]">
-                        <span className="font-serif font-bold text-2xl text-foreground leading-none">{poets.length}</span>
-                        <span className="text-[11px] text-foreground-muted mt-1 tracking-wide uppercase">Poets</span>
-                      </div>
-                    </div>
-                    <Link
-                      to={`/write?topic=${topic.id}`}
-                      className="flex items-center justify-center px-5 py-3 rounded-xl border border-border bg-background-subtle hover:bg-background-hover transition-colors w-fit"
-                      title="Add a poem"
-                    >
-                      <Plus size={24} className="text-foreground" />
-                    </Link>
-                  </div>
-                </div>
-              </div>
-
-              {/* Right rail — Topic name in caps */}
-              <div
-                className="flex-none w-9 flex items-center justify-center border-l border-border"
-              >
-                <span
-                  className="text-[10px] font-bold tracking-[0.22em] uppercase select-none"
-                  style={{
-                    writingMode: 'vertical-rl',
-                    color: topic.color || '#6C4EF6',
-                    letterSpacing: '0.22em',
+                    textShadow: '2px 2px 8px rgba(0,0,0,0.3)',
                   }}
                 >
                   {topic.name}
                 </span>
               </div>
             </div>
+
+            {/* Action buttons row - Back to Explore and Add your Poem */}
+            <div className="flex gap-3 px-4 py-4 border-b border-border">
+              <Link
+                to="/explore"
+                className="flex-1 flex items-center justify-center px-3 py-3 rounded-lg border border-border bg-background-subtle hover:bg-background-hover transition-colors text-xs font-semibold uppercase tracking-wide"
+                title="Back to Explore"
+              >
+                ← Back
+              </Link>
+              <Link
+                to={`/write?topic=${topic.id}`}
+                className="flex-1 flex items-center justify-center px-3 py-3 rounded-lg border border-brand-500 bg-brand-500 hover:bg-brand-600 transition-colors text-xs font-semibold uppercase tracking-wide text-white"
+                title="Add your poem"
+              >
+                Add Poem
+              </Link>
+            </div>
+
+            {/* Topic description */}
+            <div className="px-4 py-4 border-b border-border">
+              <p className="text-foreground text-sm leading-relaxed">
+                {topic.description
+                  ? topic.description
+                  : `A space for poems about ${topic.name.toLowerCase()} — where language meets feeling, and writers push each other toward clarity.`}
+              </p>
+            </div>
           </>
         )}
 
         {/* Feed tabs + poems */}
         <div className="sticky top-16 z-20 bg-background/90 backdrop-blur-md border-b border-border">
-          <FeedTabs active={activeTab} onChange={setActiveTab} className="px-4" />
+          <FeedTabs active={activeTab} onChange={setActiveTab} className="px-4" hideTabs={['discussed', 'hearted']} />
         </div>
 
         <div className="px-4 max-w-2xl mx-auto">
