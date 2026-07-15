@@ -14,29 +14,51 @@ const POEM_SELECT = `
 
 async function enrichPoems(rawPoems: any[], userId: string | undefined): Promise<Poem[]> {
   return Promise.all(rawPoems.map(async (poem: any) => {
-    const [likesRes, feedbackRes, likedRes, bookmarkedRes, pushedRes] = await Promise.all([
-      supabase.from('poem_likes').select('*', { count: 'exact', head: true }).eq('poem_id', poem.id),
-      supabase.from('feedback').select('*', { count: 'exact', head: true }).eq('poem_id', poem.id),
-      userId
-        ? supabase.from('poem_likes').select('poem_id').match({ poem_id: poem.id, user_id: userId }).maybeSingle()
-        : Promise.resolve({ data: null }),
-      userId
-        ? supabase.from('poem_bookmarks').select('poem_id').match({ poem_id: poem.id, user_id: userId }).maybeSingle()
-        : Promise.resolve({ data: null }),
-      userId
-        ? supabase.from('poem_boosts').select('id').match({ poem_id: poem.id, user_id: userId, feed_type: 'picks' }).maybeSingle()
-        : Promise.resolve({ data: null }),
-    ]);
+    try {
+      // For unauthenticated users, just return basic poem data
+      if (!userId) {
+        return {
+          ...poem,
+          tags: poem.poem_tags?.map((pt: any) => pt.tag).filter(Boolean) || [],
+          like_count: 0,
+          feedback_count: 0,
+          is_liked: false,
+          is_bookmarked: false,
+          is_pushed: false,
+        } as Poem;
+      }
 
-    return {
-      ...poem,
-      tags: poem.poem_tags?.map((pt: any) => pt.tag).filter(Boolean) || [],
-      like_count: likesRes.count || 0,
-      feedback_count: feedbackRes.count || 0,
-      is_liked: !!likedRes.data,
-      is_bookmarked: !!bookmarkedRes.data,
-      is_pushed: !!pushedRes.data,
-    } as Poem;
+      // For authenticated users, fetch engagement data
+      const [likesRes, feedbackRes, likedRes, bookmarkedRes, pushedRes] = await Promise.all([
+        supabase.from('poem_likes').select('*', { count: 'exact', head: true }).eq('poem_id', poem.id),
+        supabase.from('feedback').select('*', { count: 'exact', head: true }).eq('poem_id', poem.id),
+        supabase.from('poem_likes').select('poem_id').match({ poem_id: poem.id, user_id: userId }).maybeSingle(),
+        supabase.from('poem_bookmarks').select('poem_id').match({ poem_id: poem.id, user_id: userId }).maybeSingle(),
+        supabase.from('poem_boosts').select('id').match({ poem_id: poem.id, user_id: userId, feed_type: 'picks' }).maybeSingle(),
+      ]);
+
+      return {
+        ...poem,
+        tags: poem.poem_tags?.map((pt: any) => pt.tag).filter(Boolean) || [],
+        like_count: likesRes.count || 0,
+        feedback_count: feedbackRes.count || 0,
+        is_liked: !!likedRes.data,
+        is_bookmarked: !!bookmarkedRes.data,
+        is_pushed: !!pushedRes.data,
+      } as Poem;
+    } catch (error) {
+      console.error('[v0] Error enriching poem:', poem.id, error);
+      // Return basic poem data if enrichment fails
+      return {
+        ...poem,
+        tags: poem.poem_tags?.map((pt: any) => pt.tag).filter(Boolean) || [],
+        like_count: 0,
+        feedback_count: 0,
+        is_liked: false,
+        is_bookmarked: false,
+        is_pushed: false,
+      } as Poem;
+    }
   }));
 }
 
@@ -86,7 +108,6 @@ export default function HomepageMobile() {
       }
     } catch (err) {
       console.error('[v0] Error fetching poems:', err);
-    } finally {
       setLoading(false);
     }
   }
