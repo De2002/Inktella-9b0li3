@@ -5,25 +5,23 @@ import { useAuth } from '@/contexts/AuthContext';
 
 const Index = () => {
   const { user } = useAuth();
-  const [isMobile, setIsMobile] = useState(false);
-  const [mounted, setMounted] = useState(false);
+  const [isMobile, setIsMobile] = useState(() => {
+    // Check on mount
+    if (typeof window !== 'undefined') {
+      return window.innerWidth < 768;
+    }
+    return false;
+  });
 
   useEffect(() => {
-    setMounted(true);
     const handleResize = () => {
       setIsMobile(window.innerWidth < 768);
     };
-    handleResize();
     window.addEventListener('resize', handleResize);
     return () => window.removeEventListener('resize', handleResize);
   }, []);
 
-  // Don't render anything until client-side detection is complete
-  if (!mounted) {
-    return null;
-  }
-
-  // Mobile: show HomepageMobile for logged-out users
+  // Mobile logged-out: show HomepageMobile
   if (isMobile && !user) {
     return <HomepageMobile />;
   }
