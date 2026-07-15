@@ -40,7 +40,7 @@ export default function LoggedOutFooter() {
         
         {/* Copyright text */}
         <div className="border-t border-border/30 mt-4 pt-3">
-          <p className="text-xs text-foreground/50">© 2024 Inktella. All rights reserved.</p>
+          <p className="text-xs text-foreground/50">© 2026 Inktella. All rights reserved.</p>
         </div>
       </div>
     </nav>
