@@ -17,10 +17,8 @@ export default function LevelBadgeCard({ level, tella, progressPct, tellaNeeded 
 
   return (
     <div className="bg-surface p-6 rounded-xl border border-border shadow-sm">
-      <h3 className="font-bold text-base text-foreground mb-5">Your Inktella Level</h3>
-
       {/* Badge image */}
-      <div className="flex flex-col items-center mb-5">
+      <div className="flex flex-col items-center mb-4">
         <div className="relative">
           <img
             src={badgeImg}
