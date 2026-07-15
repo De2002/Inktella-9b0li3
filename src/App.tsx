@@ -4,6 +4,7 @@ import { AuthProvider } from '@/contexts/AuthContext';
 import { ThemeProvider } from '@/contexts/ThemeContext';
 import AppLayout from '@/components/layout/AppLayout';
 import LandingPage from '@/pages/LandingPage';
+import Index from '@/pages/Index';
 import FeedPage from '@/pages/FeedPage';
 import AuthPage from '@/pages/AuthPage';
 import ExplorePage from '@/pages/ExplorePage';
@@ -33,7 +34,7 @@ export default function App() {
           <Routes>
             <Route path="/auth" element={<AuthPage />} />
             <Route element={<AppLayout />}>
-              <Route path="/" element={<LandingPage />} />
+              <Route path="/" element={<Index />} />
               <Route path="/feed" element={<FeedPage />} />
               <Route path="/dashboard" element={<DashboardPage />} />
 
