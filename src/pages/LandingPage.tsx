@@ -4,7 +4,7 @@ import { ArrowRight, Feather, MessageSquare, BookOpen, Pen, Users } from 'lucide
 import { useAuth } from '@/contexts/AuthContext';
 import { setMetadata } from '@/lib/metadata';
 import logoSrc from '@/assets/logo.png';
-import CommunityShowcase from '@/components/features/CommunityShowcase';
+import DesktopHomeLayout from '@/components/features/DesktopHomeLayout';
 
 const HOW_IT_WORKS = [
   {
@@ -135,8 +135,8 @@ export default function LandingPage() {
         <div className="absolute bottom-0 left-0 right-0 h-24 bg-gradient-to-t from-background to-transparent pointer-events-none" />
       </section>
 
-      {/* ── LIVE COMMUNITY SHOWCASE ────────────────────────────────────────────── */}
-      <CommunityShowcase />
+      {/* ── DESKTOP HOME LAYOUT ────────────────────────────────────────────────── */}
+      <DesktopHomeLayout />
 
       {/* ── THE PROBLEM ────────────────────────────────────────────────────────── */}
       <section className="py-20 px-4 border-t border-border bg-background-subtle">
