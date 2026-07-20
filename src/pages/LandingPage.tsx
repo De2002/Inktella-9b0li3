@@ -4,7 +4,7 @@ import { ArrowRight, Feather, MessageSquare, BookOpen, Pen, Users } from 'lucide
 import { useAuth } from '@/contexts/AuthContext';
 import { setMetadata } from '@/lib/metadata';
 import logoSrc from '@/assets/logo.png';
-import CommunityShowcase from '@/components/features/CommunityShowcase';
+import DesktopHomeLayout from '@/components/features/DesktopHomeLayout';
 
 const HOW_IT_WORKS = [
   {
@@ -136,7 +136,7 @@ export default function LandingPage() {
       </section>
 
       {/* ── DESKTOP HOME LAYOUT ────────────────────────────────────────────────── */}
-      <CommunityShowcase />
+      <DesktopHomeLayout />
 
       {/* ── THE PROBLEM ────────────────────────────────────────────────────────── */}
       <section className="py-20 px-4 border-t border-border bg-background-subtle">
