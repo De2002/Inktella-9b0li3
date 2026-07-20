@@ -6,6 +6,8 @@ import FeedTabs from '@/components/features/FeedTabs';
 import PoemCard from '@/components/features/PoemCard';
 import ClassicPoemCard from '@/components/features/ClassicPoemCard';
 import FeedbackPanel from '@/components/features/FeedbackPanel';
+import AdContainer from '@/components/features/AdContainer';
+import { refreshAds } from '@/hooks/use-ads';
 import { supabase } from '@/lib/supabase';
 import type { Poem, FeedTab, UserProfile } from '@/types';
 import { getLevel, LEVEL_CONFIG } from '@/constants';
@@ -120,6 +122,17 @@ export default function FeedPage() {
       fetchPoems(true);
     }
   }, [user, activeTab, classicsTab, mode]);
+
+  // Refresh ads when poems change or tab switches
+  useEffect(() => {
+    if (poems.length > 0) {
+      // Small delay to ensure DOM is updated before refreshing ads
+      const timer = setTimeout(() => {
+        refreshAds();
+      }, 100);
+      return () => clearTimeout(timer);
+    }
+  }, [poems, activeTab]);
 
   // ── Following tab ─────────────────────────────────────────────────────────
   async function loadFollowingTab() {
@@ -460,23 +473,37 @@ export default function FeedPage() {
               <FeedEmptyState tab={activeTab} />
 
             ) : mode === 'modern' ? (
-              poems.map(poem => (
-                <PoemCard
-                  key={poem.id}
-                  poem={poem}
-                  feedLabel={poem.feed_label}
-                  onFeedbackClick={setActiveFeedback}
-                  onUpdate={(id, updates) => setPoems(prev => prev.map(p => p.id === id ? { ...p, ...updates } : p))}
-                />
-              ))
+              <>
+                {poems.map((poem, index) => (
+                  <div key={`poem-${poem.id}-${index}`}>
+                    <PoemCard
+                      poem={poem}
+                      feedLabel={poem.feed_label}
+                      onFeedbackClick={setActiveFeedback}
+                      onUpdate={(id, updates) => setPoems(prev => prev.map(p => p.id === id ? { ...p, ...updates } : p))}
+                    />
+                    {/* Insert ad every 2 poems */}
+                    {(index + 1) % 2 === 0 && (
+                      <AdContainer key={`ad-${index}`} />
+                    )}
+                  </div>
+                ))}
+              </>
             ) : (
-              poems.map(poem => (
-                <ClassicPoemCard
-                  key={poem.id}
-                  poem={poem}
-                  onUpdate={(id, updates) => setPoems(prev => prev.map(p => p.id === id ? { ...p, ...updates } : p))}
-                />
-              ))
+              <>
+                {poems.map((poem, index) => (
+                  <div key={`classic-poem-${poem.id}-${index}`}>
+                    <ClassicPoemCard
+                      poem={poem}
+                      onUpdate={(id, updates) => setPoems(prev => prev.map(p => p.id === id ? { ...p, ...updates } : p))}
+                    />
+                    {/* Insert ad every 2 poems */}
+                    {(index + 1) % 2 === 0 && (
+                      <AdContainer key={`ad-${index}`} />
+                    )}
+                  </div>
+                ))}
+              </>
             )}
 
             {hasMore && !loading && activeTab !== 'following' && (
@@ -629,23 +656,37 @@ export default function FeedPage() {
                   <FeedEmptyState tab={activeTab} />
 
                 ) : mode === 'modern' ? (
-                  poems.map(poem => (
-                    <PoemCard
-                      key={poem.id}
-                      poem={poem}
-                      feedLabel={poem.feed_label}
-                      onFeedbackClick={setActiveFeedback}
-                      onUpdate={(id, updates) => setPoems(prev => prev.map(p => p.id === id ? { ...p, ...updates } : p))}
-                    />
-                  ))
+                  <>
+                    {poems.map((poem, index) => (
+                      <div key={`poem-desktop-${poem.id}-${index}`}>
+                        <PoemCard
+                          poem={poem}
+                          feedLabel={poem.feed_label}
+                          onFeedbackClick={setActiveFeedback}
+                          onUpdate={(id, updates) => setPoems(prev => prev.map(p => p.id === id ? { ...p, ...updates } : p))}
+                        />
+                        {/* Insert ad every 2 poems */}
+                        {(index + 1) % 2 === 0 && (
+                          <AdContainer key={`ad-desktop-${index}`} />
+                        )}
+                      </div>
+                    ))}
+                  </>
                 ) : (
-                  poems.map(poem => (
-                    <ClassicPoemCard
-                      key={poem.id}
-                      poem={poem}
-                      onUpdate={(id, updates) => setPoems(prev => prev.map(p => p.id === id ? { ...p, ...updates } : p))}
-                    />
-                  ))
+                  <>
+                    {poems.map((poem, index) => (
+                      <div key={`classic-poem-desktop-${poem.id}-${index}`}>
+                        <ClassicPoemCard
+                          poem={poem}
+                          onUpdate={(id, updates) => setPoems(prev => prev.map(p => p.id === id ? { ...p, ...updates } : p))}
+                        />
+                        {/* Insert ad every 2 poems */}
+                        {(index + 1) % 2 === 0 && (
+                          <AdContainer key={`ad-desktop-${index}`} />
+                        )}
+                      </div>
+                    ))}
+                  </>
                 )}
 
                 {hasMore && !loading && activeTab !== 'following' && (
