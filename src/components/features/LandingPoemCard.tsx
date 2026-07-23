@@ -3,6 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { X, ArrowRight } from 'lucide-react';
 import { formatTimeAgo, getInitials } from '@/lib/utils';
 import { getLevel, LEVEL_CONFIG } from '@/constants';
+import { useTheme } from '@/contexts/ThemeContext';
 import type { Poem } from '@/types';
 
 interface LandingPoemCardProps {
@@ -23,7 +24,11 @@ function truncatePoem(content: string, maxLines: number) {
 
 export default function LandingPoemCard({ poem }: LandingPoemCardProps) {
   const navigate = useNavigate();
+  const { theme } = useTheme();
   const [showSheet, setShowSheet] = useState(false);
+  
+  // In light mode, use Literata (heavier serif) instead of Playfair Display
+  const poemFontClass = theme === 'light' ? 'font-literata' : 'font-serif';
 
   const author = (poem as ExtendedPoem).author;
   const level = author ? getLevel(author.tella_balance || 0) : 'observer';
@@ -60,7 +65,7 @@ export default function LandingPoemCard({ poem }: LandingPoemCardProps) {
         </h3>
 
         {/* Poem preview - preserve formatting */}
-        <div className="text-sm text-foreground-secondary leading-relaxed mb-3 whitespace-pre-wrap font-serif">
+        <div className={`text-sm text-foreground-secondary leading-relaxed mb-3 whitespace-pre-wrap ${poemFontClass}`}>
           {previewText}
         </div>
 
@@ -101,7 +106,7 @@ export default function LandingPoemCard({ poem }: LandingPoemCardProps) {
 
             {/* Full poem content */}
             <div className="flex-1 overflow-y-auto p-6">
-              <div className="font-serif text-foreground leading-relaxed text-base whitespace-pre-wrap mb-8">
+              <div className={`${poemFontClass} text-foreground leading-relaxed text-base whitespace-pre-wrap mb-8`}>
                 {(poem as ExtendedPoem).content}
               </div>
 
