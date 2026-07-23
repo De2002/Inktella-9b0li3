@@ -50,28 +50,28 @@ export default function WelcomeSection({ username, userLevel }: WelcomeSectionPr
   };
 
   return (
-    <div className="bg-gradient-to-r from-primary/5 to-primary/10 rounded-xl border border-primary/10 p-8">
-      <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-6">
+    <div className="bg-gradient-to-r from-primary/5 to-primary/10 rounded-lg border border-primary/10 p-5">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
         <div>
-          <h1 className="text-3xl md:text-4xl font-bold text-foreground mb-2">
+          <h1 className="text-2xl sm:text-3xl font-bold text-foreground mb-1">
             {getGreeting()}, <span className="text-primary">{username}</span>
           </h1>
-          <p className="text-foreground/70">Welcome back to your creator dashboard</p>
+          <p className="text-sm text-foreground/70">Welcome back to your creator dashboard</p>
         </div>
-        <div className="flex items-center gap-4">
-          <LevelBadge level={userLevel} tella={0} size="md" />
+        <div className="flex items-center gap-2">
+          <LevelBadge level={userLevel} tella={0} size="sm" />
         </div>
       </div>
 
       {/* Date and Time */}
       {dateTime.date && (
-        <div className="mt-6 flex flex-col sm:flex-row gap-4 pt-6 border-t border-primary/10">
-          <div className="flex items-center gap-2 text-foreground/70">
-            <Calendar className="w-4 h-4 text-primary" />
+        <div className="mt-3 flex flex-col sm:flex-row gap-3 pt-3 border-t border-primary/10">
+          <div className="flex items-center gap-1.5 text-xs sm:text-sm text-foreground/70">
+            <Calendar className="w-3 h-3 text-primary" />
             <span>{dateTime.date}</span>
           </div>
-          <div className="flex items-center gap-2 text-foreground/70">
-            <Clock className="w-4 h-4 text-primary" />
+          <div className="flex items-center gap-1.5 text-xs sm:text-sm text-foreground/70">
+            <Clock className="w-3 h-3 text-primary" />
             <span>{dateTime.time}</span>
           </div>
         </div>

@@ -1,4 +1,4 @@
-import { useEffect, useState, useCallback } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import { setMetadata } from '@/lib/metadata';
@@ -615,22 +615,22 @@ export default function DashboardPage() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 py-6 sm:py-8">
 
         {/* Welcome / Greeting */}
-        <div className="mb-8 sm:mb-12">
-          <p className="text-sm font-medium text-foreground-muted uppercase tracking-widest mb-1">{greeting}</p>
-          <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-foreground mb-2">{firstName}.</h1>
-          <p className="text-base sm:text-lg text-foreground-secondary">Every poem is a step closer to your legacy.</p>
+        <div className="mb-5 sm:mb-6">
+          <p className="text-xs font-medium text-foreground-muted uppercase tracking-wider mb-0.5">{greeting}</p>
+          <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-foreground mb-1">{firstName}.</h1>
+          <p className="text-sm sm:text-base text-foreground-secondary">Every poem is a step closer to your legacy.</p>
         </div>
 
         {/* Quick Stats */}
-        <div className="mb-8 sm:mb-12">
-          <h2 className="text-xl sm:text-2xl font-bold text-foreground mb-6">Quick Stats</h2>
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-0 bg-surface border border-border rounded-xl overflow-hidden">
+        <div className="mb-6 sm:mb-8">
+          <h2 className="text-lg font-bold text-foreground mb-3">Quick Stats</h2>
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-0 bg-surface border border-border rounded-lg overflow-hidden">
             {statCards.map((stat, index) => (
               <div
                 key={stat.label}
                 onClick={stat.clickable ? stat.onClick : undefined}
                 className={cn(
-                  'flex flex-col items-center py-6 sm:py-8 px-4 sm:px-6 transition-colors',
+                  'flex flex-col items-center py-3 sm:py-4 px-3 sm:px-4 transition-colors',
                   index % 2 === 1 ? 'border-l border-border' : '',
                   index < 2 ? 'border-b border-border sm:border-b-0' : '',
                   stat.clickable
@@ -638,13 +638,13 @@ export default function DashboardPage() {
                     : ''
                 )}
               >
-                <div className={cn(`${stat.bgColor} w-14 h-14 sm:w-16 sm:h-16 rounded-full flex items-center justify-center mb-3 transition-transform`, stat.clickable && 'group-hover:scale-105')}>
-                  <div className={stat.iconColor}>{stat.icon}</div>
+                <div className={cn(`${stat.bgColor} w-10 h-10 sm:w-12 sm:h-12 rounded-full flex items-center justify-center mb-2 transition-transform`, stat.clickable && 'group-hover:scale-105')}>
+                  <div className={stat.iconColor}>{React.cloneElement(stat.icon as React.ReactElement, { size: 18 })}</div>
                 </div>
-                <p className="text-xl sm:text-2xl font-bold text-foreground">{stat.value}</p>
-                <div className="flex items-center gap-1">
-                  <p className="text-sm text-foreground-secondary">{stat.label}</p>
-                  {stat.clickable && <ChevronRight size={12} className="text-foreground-muted opacity-0 group-hover:opacity-100 transition-opacity" />}
+                <p className="text-lg sm:text-xl font-bold text-foreground">{stat.value}</p>
+                <div className="flex items-center gap-0.5">
+                  <p className="text-xs sm:text-sm text-foreground-secondary">{stat.label}</p>
+                  {stat.clickable && <ChevronRight size={10} className="text-foreground-muted opacity-0 group-hover:opacity-100 transition-opacity" />}
                 </div>
               </div>
             ))}
@@ -652,16 +652,16 @@ export default function DashboardPage() {
         </div>
 
         {/* Recent Notifications & WhatsApp Channel */}
-        <div className="mb-8 sm:mb-12 grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6">
+        <div className="mb-6 sm:mb-8 grid grid-cols-1 lg:grid-cols-3 gap-3 sm:gap-4">
           {/* Recent Notifications */}
           <div className="lg:col-span-2">
-            <div className="flex items-center justify-between mb-6">
-              <h2 className="text-xl sm:text-2xl font-bold text-foreground">Recent Notifications</h2>
-              <Link to="/notifications" className="text-brand-500 hover:text-brand-600 text-sm font-medium transition-colors flex items-center gap-1">
-                View all <ChevronRight size={14} />
+            <div className="flex items-center justify-between mb-3">
+              <h2 className="text-lg font-bold text-foreground">Recent Notifications</h2>
+              <Link to="/notifications" className="text-brand-500 hover:text-brand-600 text-xs font-medium transition-colors flex items-center gap-1">
+                View all <ChevronRight size={12} />
               </Link>
             </div>
-            <div className="bg-surface p-4 sm:p-6 rounded-xl border border-border">
+            <div className="bg-surface p-3 sm:p-4 rounded-lg border border-border">
               {dataLoading ? (
                 <div className="space-y-4">
                   {[1, 2, 3].map(i => (
@@ -680,13 +680,13 @@ export default function DashboardPage() {
                   <p className="text-sm text-foreground-muted font-serif italic">No notifications yet.</p>
                 </div>
               ) : (
-                <div className="space-y-1">
+                <div className="space-y-0.5">
                   {notifications.map(notif => {
                     const actor = notif.actor;
                     const actorLevel = actor ? getLevel(actor.tella_balance || 0) : 'observer';
                     const actorCfg = LEVEL_CONFIG[actorLevel];
                     return (
-                      <div key={notif.id} className={cn('flex items-start gap-3 pb-4 last:pb-0 border-b border-border last:border-0', !notif.read && 'opacity-100')}>
+                      <div key={notif.id} className={cn('flex items-start gap-2 pb-2.5 last:pb-0 border-b border-border last:border-0', !notif.read && 'opacity-100')}>
                         <div className="flex-shrink-0">
                           {actor?.avatar_url ? (
                             <img src={actor.avatar_url} alt={actor.username} className="w-10 h-10 rounded-full object-cover" />
@@ -704,8 +704,8 @@ export default function DashboardPage() {
                           )}
                         </div>
                         <div className="flex-1 min-w-0">
-                          <p className="text-sm text-foreground-secondary leading-snug">{notif.content}</p>
-                          <p className="text-xs text-foreground-muted mt-1">{formatTimeAgo(notif.created_at)}</p>
+                          <p className="text-xs text-foreground-secondary leading-snug">{notif.content}</p>
+                          <p className="text-xs text-foreground-muted mt-0.5">{formatTimeAgo(notif.created_at)}</p>
                         </div>
                         {!notif.read && <span className="w-2 h-2 rounded-full bg-brand-500 shrink-0 mt-2" />}
                       </div>
