@@ -4,6 +4,7 @@ import { supabase } from '@/lib/supabase';
 import { useNavigate } from 'react-router-dom';
 import { getLevel, LEVEL_CONFIG } from '@/constants';
 import { formatTimeAgo, getInitials } from '@/lib/utils';
+import LandingPoemCard from './LandingPoemCard';
 import type { Poem } from '@/types';
 
 interface ExtendedPoem extends Poem {
@@ -148,52 +149,10 @@ export default function DesktopHomeLayout() {
               <p className="text-sm text-foreground-muted">Be the first to share something with the community.</p>
             </div>
           ) : (
-            <div className="divide-y divide-border">
-              {poems.map((poem) => {
-                const author = poem.author as any;
-                const level = author ? getLevel(author.tella_balance || 0) : 'observer';
-                const levelCfg = LEVEL_CONFIG[level];
-
-                return (
-                  <div
-                    key={poem.id}
-                    onClick={() => navigate('/auth')}
-                    className="group px-8 py-6 hover:bg-background-subtle/60 transition-colors cursor-pointer"
-                  >
-                    <div className="flex items-center gap-3 mb-3">
-                      <div
-                        className="w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold overflow-hidden shrink-0"
-                        style={{ background: levelCfg.color + '18', color: levelCfg.color }}
-                      >
-                        {author?.avatar_url
-                          ? <img src={author.avatar_url} alt={author.username} className="w-full h-full object-cover" />
-                          : getInitials(author?.username || '?')
-                        }
-                      </div>
-                      <div>
-                        <p className="text-sm font-semibold text-foreground leading-none">{author?.username || 'Anonymous'}</p>
-                        <p className="text-xs mt-0.5" style={{ color: levelCfg.color }}>{levelCfg.label}</p>
-                      </div>
-                      <span className="ml-auto text-xs text-foreground-muted">{formatTimeAgo(new Date(poem.created_at))}</span>
-                    </div>
-
-                    <h3 className="font-serif font-semibold text-lg text-foreground mb-2 leading-tight group-hover:text-brand-500 transition-colors">
-                      {poem.title}
-                    </h3>
-                    <p className="text-sm text-foreground-secondary line-clamp-3 leading-relaxed mb-4">
-                      {poem.content.split('\n').slice(0, 3).join('\n')}
-                    </p>
-
-                    <div className="flex items-center gap-4 text-xs text-foreground-muted">
-                      <span className="flex items-center gap-1"><Heart size={12} />{poem.like_count || 0}</span>
-                      <span className="flex items-center gap-1"><MessageSquare size={12} />{poem.feedback_count || 0}</span>
-                      <span className="ml-auto flex items-center gap-1 text-brand-500 opacity-0 group-hover:opacity-100 transition-opacity font-medium">
-                        Read <ArrowRight size={12} />
-                      </span>
-                    </div>
-                  </div>
-                );
-              })}
+            <div>
+              {poems.map((poem) => (
+                <LandingPoemCard key={poem.id} poem={poem} />
+              ))}
             </div>
           )}
         </div>
