@@ -136,12 +136,14 @@ export default function HomepageMobile() {
 
         {/* Action Buttons */}
         <div className="grid grid-cols-3 gap-2 px-4 py-4">
-          <Link
-            to="/about"
+          <a
+            href="https://blog.inktella.com"
+            target="_blank"
+            rel="noopener noreferrer"
             className="flex items-center justify-center py-2 px-1 bg-brand-500/10 hover:bg-brand-500/20 rounded-lg text-xs font-semibold text-brand-500 transition-colors"
           >
-            ABOUT
-          </Link>
+            BLOG
+          </a>
           <Link
             to="/explore"
             className="flex items-center justify-center py-2 px-1 bg-brand-500/10 hover:bg-brand-500/20 rounded-lg text-xs font-semibold text-brand-500 transition-colors"

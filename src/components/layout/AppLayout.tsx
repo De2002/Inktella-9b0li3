@@ -2,6 +2,7 @@ import { Outlet, useLocation } from 'react-router-dom';
 import { useLayoutEffect } from 'react';
 import Navbar from './Navbar';
 import MobileNav from './MobileNav';
+import MobileGuestNav from './MobileGuestNav';
 import { useAuth } from '@/contexts/AuthContext';
 
 export default function AppLayout() {
@@ -23,8 +24,8 @@ export default function AppLayout() {
           <Outlet />
         </main>
       </div>
-      {/* Mobile navigation for logged-in users */}
-      {user && <MobileNav />}
+      {/* Mobile navigation */}
+      {user ? <MobileNav /> : <MobileGuestNav />}
     </div>
   );
 }
