@@ -1,5 +1,5 @@
 import { Link, useNavigate, useLocation } from 'react-router-dom';
-import { Bell, Sun, Moon, Search, Settings, User, Droplet, Compass, Newspaper, LayoutGrid, BookOpen, ExternalLink } from 'lucide-react';
+import { Bell, Sun, Moon, Search, Settings, User, Droplet, Compass, Newspaper, LayoutGrid } from 'lucide-react';
 import { LaunchNoteDesktop } from '@/components/features/LaunchNote';
 import logoSrc from '@/assets/logo.png';
 import quillIcon from '@/assets/quill-icon.png';
@@ -117,18 +117,6 @@ export default function Navbar() {
         )}
 
         <div className="ml-auto flex items-center gap-2">
-          {/* Read our Blog - desktop only */}
-          <a
-            href="https://blog.inktella.com"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="hidden md:flex items-center gap-1.5 px-3 py-2 rounded-lg text-sm font-medium text-foreground-secondary hover:text-foreground hover:bg-background-subtle transition-colors whitespace-nowrap"
-          >
-            <BookOpen size={18} />
-            <span>Read our Blog</span>
-            <ExternalLink size={12} className="opacity-60" aria-hidden="true" />
-          </a>
-
           {/* Theme toggle */}
           <button
             onClick={toggleTheme}
@@ -310,10 +298,20 @@ export default function Navbar() {
               <Link to="/auth" className="md:hidden bg-brand-500 hover:bg-brand-600 text-white px-3 py-2 rounded-full text-xs font-medium transition-colors whitespace-nowrap">
                 Sign up
               </Link>
-              {/* Desktop - show "Get Started" */}
-              <Link to="/auth" className="hidden md:flex bg-brand-500 hover:bg-brand-600 text-white px-4 py-2 rounded-full text-sm font-medium transition-colors">
-                Get Started
-              </Link>
+              {/* Desktop - Read our Blog + Get Started */}
+              <div className="hidden md:flex items-center gap-2">
+                <a
+                  href="https://blog.inktella.com"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="px-4 py-2 rounded-full text-sm font-medium text-foreground-secondary hover:text-foreground hover:bg-background-subtle transition-colors whitespace-nowrap"
+                >
+                  Read our Blog
+                </a>
+                <Link to="/auth" className="bg-brand-500 hover:bg-brand-600 text-white px-4 py-2 rounded-full text-sm font-medium transition-colors">
+                  Get Started
+                </Link>
+              </div>
             </>
           )}
         </div>
