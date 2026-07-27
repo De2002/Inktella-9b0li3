@@ -1,5 +1,6 @@
 import { Link, useNavigate, useLocation } from 'react-router-dom';
-import { Bell, Sun, Moon, Search, Settings, User, Droplet, Compass, Newspaper, LayoutGrid } from 'lucide-react';
+import { Bell, Sun, Moon, Search, Settings, User, Droplet, Compass, Newspaper, LayoutGrid, BookOpen, ExternalLink } from 'lucide-react';
+import { LaunchNoteDesktop } from '@/components/features/LaunchNote';
 import logoSrc from '@/assets/logo.png';
 import quillIcon from '@/assets/quill-icon.png';
 import { useAuth } from '@/contexts/AuthContext';
@@ -58,6 +59,9 @@ export default function Navbar() {
           <span className="font-serif font-bold text-xl text-foreground tracking-tight">Inktella</span>
         </Link>
 
+        {/* Handwritten launch note - desktop, visitors only */}
+        {!user && <LaunchNoteDesktop />}
+
         {/* Search bar and nav buttons - desktop */}
         {user && (
           <>
@@ -113,6 +117,18 @@ export default function Navbar() {
         )}
 
         <div className="ml-auto flex items-center gap-2">
+          {/* Read our Blog - desktop only */}
+          <a
+            href="https://blog.inktella.com"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="hidden md:flex items-center gap-1.5 px-3 py-2 rounded-lg text-sm font-medium text-foreground-secondary hover:text-foreground hover:bg-background-subtle transition-colors whitespace-nowrap"
+          >
+            <BookOpen size={18} />
+            <span>Read our Blog</span>
+            <ExternalLink size={12} className="opacity-60" aria-hidden="true" />
+          </a>
+
           {/* Theme toggle */}
           <button
             onClick={toggleTheme}
