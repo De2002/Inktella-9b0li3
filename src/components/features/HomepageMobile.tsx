@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { supabase } from '@/lib/supabase';
 import { useAuth } from '@/contexts/AuthContext';
 import FeedTabs from './FeedTabs';
+import { LaunchNoteMobile } from './LaunchNote';
 import PoemCard from './PoemCard';
 import type { Poem, FeedTab } from '@/types';
 
@@ -127,6 +128,7 @@ export default function HomepageMobile() {
           <h1 className="text-3xl font-bold text-foreground mb-2">
             A place where poetry grows through connection
           </h1>
+          <LaunchNoteMobile />
           <p className="text-sm text-foreground-secondary">
             Read poems from emerging voices, share your perspective, and be part of a community that values thoughtful feedback. Whether you write, critique, or simply love poetry, Inktella gives you a place to engage and contribute.
           </p>
