@@ -5,8 +5,14 @@ export const LAUNCH_DATE = new Date('2026-07-22T00:00:00Z');
 
 /** Whole days elapsed since launch (never negative). */
 export function daysSinceLaunch(now: Date = new Date()): number {
+  // Get dates in local timezone (not UTC) for accurate day counting
+  const launchLocal = new Date(LAUNCH_DATE);
+  const launchDate = new Date(launchLocal.getFullYear(), launchLocal.getMonth(), launchLocal.getDate());
+  
+  const nowDate = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+  
   const MS_PER_DAY = 86_400_000;
-  const diff = Math.floor((now.getTime() - LAUNCH_DATE.getTime()) / MS_PER_DAY);
+  const diff = Math.floor((nowDate.getTime() - launchDate.getTime()) / MS_PER_DAY);
   return Math.max(diff, 0);
 }
 
