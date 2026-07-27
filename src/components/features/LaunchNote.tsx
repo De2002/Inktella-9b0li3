@@ -16,12 +16,32 @@ function ageLabel(days: number): string {
   return `${days} days old`;
 }
 
+import { useState, useEffect } from 'react';
+
 /**
  * Handwritten launch note for the desktop header.
  * Hidden on smaller viewports where header space is tight.
  */
 export function LaunchNoteDesktop() {
-  const days = daysSinceLaunch();
+  const [days, setDays] = useState(daysSinceLaunch());
+
+  useEffect(() => {
+    setDays(daysSinceLaunch());
+    
+    // Calculate time until midnight to update the counter
+    const now = new Date();
+    const tomorrow = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1);
+    const msUntilMidnight = tomorrow.getTime() - now.getTime();
+    
+    const timer = setTimeout(() => {
+      setDays(daysSinceLaunch());
+      // After first update, set interval for daily updates
+      const dailyInterval = setInterval(() => setDays(daysSinceLaunch()), 86_400_000);
+      return () => clearInterval(dailyInterval);
+    }, msUntilMidnight);
+    
+    return () => clearTimeout(timer);
+  }, []);
 
   return (
     <p
@@ -45,7 +65,25 @@ export function LaunchNoteDesktop() {
  * Compact, low-key version for the mobile hero.
  */
 export function LaunchNoteMobile() {
-  const days = daysSinceLaunch();
+  const [days, setDays] = useState(daysSinceLaunch());
+
+  useEffect(() => {
+    setDays(daysSinceLaunch());
+    
+    // Calculate time until midnight to update the counter
+    const now = new Date();
+    const tomorrow = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1);
+    const msUntilMidnight = tomorrow.getTime() - now.getTime();
+    
+    const timer = setTimeout(() => {
+      setDays(daysSinceLaunch());
+      // After first update, set interval for daily updates
+      const dailyInterval = setInterval(() => setDays(daysSinceLaunch()), 86_400_000);
+      return () => clearInterval(dailyInterval);
+    }, msUntilMidnight);
+    
+    return () => clearTimeout(timer);
+  }, []);
 
   return (
     <p
