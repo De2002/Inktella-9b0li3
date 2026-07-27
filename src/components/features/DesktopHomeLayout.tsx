@@ -180,6 +180,37 @@ export default function DesktopHomeLayout() {
             </div>
           </div>
 
+          {/* Platform Links */}
+          <div>
+            <p className="text-xs font-bold uppercase tracking-widest text-foreground-muted mb-4">Platform</p>
+            <div className="space-y-3">
+              <a
+                href="https://www.inktella.com/terms"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="block text-xs text-foreground-secondary hover:text-foreground transition-colors"
+              >
+                Terms of Use
+              </a>
+              <a
+                href="https://www.inktella.com/privacy"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="block text-xs text-foreground-secondary hover:text-foreground transition-colors"
+              >
+                Privacy Policy
+              </a>
+              <a
+                href="https://www.inktella.cyou/contact"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="block text-xs text-foreground-secondary hover:text-foreground transition-colors"
+              >
+                Contact Us
+              </a>
+            </div>
+          </div>
+
           {/* Active Members */}
           {recentJoins.length > 0 && (
             <div>
