@@ -10,7 +10,7 @@ export default function MobileNav() {
 
   const navItems = [
     { to: '/feed', icon: Newspaper, label: 'Feed' },
-    { to: '/explore', icon: Compass, label: 'Explore' },
+    { href: 'https://blog.inktella.com', icon: Compass, label: 'Blog', external: true },
     { to: '/write', icon: null, label: 'Write', fab: true },
     { to: '/ink', icon: Droplets, label: 'Ink' },
     { to: `/profile/${user?.username}`, icon: User, label: 'Me' },
@@ -19,19 +19,37 @@ export default function MobileNav() {
   return (
     <nav className="lg:hidden fixed bottom-0 left-0 right-0 bg-background/95 backdrop-blur-md border-t border-border z-40 h-16 pb-safe">
       <div className="flex items-center justify-around h-full px-2">
-        {navItems.map(({ to, icon: Icon, label, fab }) => {
-          const active = location.pathname === to ||
-            (to !== '/feed' && to !== `/profile/${user?.username}` && location.pathname.startsWith(to));
+        {navItems.map((item) => {
+          const { icon: Icon, label, fab, external } = item;
+          const to = 'to' in item ? item.to : undefined;
+          const href = 'href' in item ? item.href : undefined;
+          const active = to && (location.pathname === to ||
+            (to !== '/feed' && to !== `/profile/${user?.username}` && location.pathname.startsWith(to)));
 
           if (fab) {
             return (
               <button
                 key={to}
-                onClick={() => navigate(to)}
+                onClick={() => to && navigate(to)}
                 className="flex flex-col items-center justify-center -mt-6 w-14 h-14 bg-brand-500 hover:bg-brand-600 rounded-full shadow-lg text-white transition-transform active:scale-95 overflow-hidden"
               >
                 <img src={quillIcon} alt="Write" className="w-10 h-10 object-contain filter brightness-0 invert" />
               </button>
+            );
+          }
+
+          if (external) {
+            return (
+              <a
+                key={href}
+                href={href}
+                target="_blank"
+                rel="noopener noreferrer"
+                className={`flex flex-col items-center gap-0.5 px-3 py-1.5 rounded-lg min-w-[44px] min-h-[44px] justify-center transition-colors text-foreground-muted`}
+              >
+                <Icon size={20} />
+                <span className="text-[10px] font-medium">{label}</span>
+              </a>
             );
           }
 
