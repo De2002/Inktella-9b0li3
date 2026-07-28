@@ -2,7 +2,6 @@ import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { Toaster } from 'sonner';
 import { AuthProvider } from '@/contexts/AuthContext';
 import { ThemeProvider } from '@/contexts/ThemeContext';
-import { useRouteChange } from '@/hooks/use-route-change';
 import AppLayout from '@/components/layout/AppLayout';
 import LandingPage from '@/pages/LandingPage';
 import Index from '@/pages/Index';
@@ -28,8 +27,6 @@ import ContactPage from '@/pages/ContactPage';
 import NotFoundPage from '@/pages/NotFoundPage';
 
 function AppContent() {
-  useRouteChange();
-
   return (
     <Routes>
       <Route path="/auth" element={<AuthPage />} />
