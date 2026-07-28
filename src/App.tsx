@@ -2,6 +2,7 @@ import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { Toaster } from 'sonner';
 import { AuthProvider } from '@/contexts/AuthContext';
 import { ThemeProvider } from '@/contexts/ThemeContext';
+import { useRouteChange } from '@/hooks/use-route-change';
 import AppLayout from '@/components/layout/AppLayout';
 import LandingPage from '@/pages/LandingPage';
 import Index from '@/pages/Index';
@@ -26,35 +27,41 @@ import AboutPage from '@/pages/AboutPage';
 import ContactPage from '@/pages/ContactPage';
 import NotFoundPage from '@/pages/NotFoundPage';
 
+function AppContent() {
+  useRouteChange();
+
+  return (
+    <Routes>
+      <Route path="/auth" element={<AuthPage />} />
+      <Route element={<AppLayout />}>
+        <Route path="/" element={<Index />} />
+        <Route path="/feed" element={<FeedPage />} />
+        <Route path="/dashboard" element={<DashboardPage />} />
+        <Route path="/explore" element={<ExplorePage />} />
+        <Route path="/topic/:slug" element={<TopicPage />} />
+        <Route path="/poem/:id" element={<PoemPage />} />
+        <Route path="/write" element={<WritePage />} />
+        <Route path="/profile/:username" element={<ProfilePage />} />
+        <Route path="/ink" element={<InkPage />} />
+        <Route path="/notifications" element={<NotificationsPage />} />
+        <Route path="/critic-notes" element={<CriticNotesPage />} />
+        <Route path="/settings" element={<SettingsPage />} />
+        <Route path="/terms" element={<TermsOfUsePage />} />
+        <Route path="/privacy" element={<PrivacyPolicyPage />} />
+        <Route path="/about" element={<AboutPage />} />
+        <Route path="/contact" element={<ContactPage />} />
+        <Route path="*" element={<NotFoundPage />} />
+      </Route>
+    </Routes>
+  );
+}
+
 export default function App() {
   return (
     <ThemeProvider>
       <AuthProvider>
         <BrowserRouter future={{ v7_startTransition: true }} scrollRestoration="manual">
-          <Routes>
-            <Route path="/auth" element={<AuthPage />} />
-            <Route element={<AppLayout />}>
-              <Route path="/" element={<Index />} />
-              <Route path="/feed" element={<FeedPage />} />
-              <Route path="/dashboard" element={<DashboardPage />} />
-
-              <Route path="/explore" element={<ExplorePage />} />
-              <Route path="/topic/:slug" element={<TopicPage />} />
-              <Route path="/poem/:id" element={<PoemPage />} />
-              <Route path="/write" element={<WritePage />} />
-              <Route path="/profile/:username" element={<ProfilePage />} />
-              <Route path="/ink" element={<InkPage />} />
-              <Route path="/notifications" element={<NotificationsPage />} />
-              <Route path="/critic-notes" element={<CriticNotesPage />} />
-              <Route path="/settings" element={<SettingsPage />} />
-              <Route path="/terms" element={<TermsOfUsePage />} />
-              <Route path="/privacy" element={<PrivacyPolicyPage />} />
-              <Route path="/about" element={<AboutPage />} />
-
-              <Route path="/contact" element={<ContactPage />} />
-              <Route path="*" element={<NotFoundPage />} />
-            </Route>
-          </Routes>
+          <AppContent />
         </BrowserRouter>
         <Toaster
           position="bottom-right"
