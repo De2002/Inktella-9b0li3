@@ -7,13 +7,16 @@ export function useRouteChange() {
   useEffect(() => {
     // Reload vignette script on route change
     const reloadVignetteScript = () => {
-      // Remove existing vignette script if present
-      const existingScript = document.querySelector(
-        'script[src="https://n6wxm.com/vignette.min.js"]'
-      );
-      if (existingScript) {
-        existingScript.remove();
-      }
+      // Find and remove all vignette-related scripts
+      const scripts = document.querySelectorAll('script');
+      scripts.forEach((script) => {
+        if (
+          script.src === 'https://n6wxm.com/vignette.min.js' ||
+          (script.innerHTML && script.innerHTML.includes('n6wxm.com'))
+        ) {
+          script.remove();
+        }
+      });
 
       // Re-inject the vignette script
       const script = document.createElement('script');
